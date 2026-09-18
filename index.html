@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="scroll-smooth" lang="en">
+<html class="scroll-smooth scroll-pt-24" lang="en">
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -133,7 +133,7 @@
       box-shadow: 0 10px 30px -10px rgba(11, 35, 69, 0.2);
       transform: translateY(-4px);
     }
-    .card-gold-glow:hover {
+    .card-gold-glow hover:-translate-y-2:hover {
       box-shadow: 0 0 20px rgba(200, 155, 60, 0.25);
       border-color: #ffffff;
     }
@@ -308,7 +308,7 @@
           <span class="font-caption text-caption text-maritime-gold tracking-widest uppercase">Notice Board</span>
           <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mt-2">Bulletins & Notices</h2>
         </div>
-        <button id="open-admin-btn" class="flex items-center gap-2 border border-maritime-gold/50 text-maritime-gold px-6 py-2.5 uppercase text-xs font-bold tracking-wider hover:bg-maritime-gold hover:text-deep-sea transition-all duration-300 rounded-full btn-gold-glow">
+        <button id="open-admin-btn" class="flex items-center gap-2 border border-maritime-gold/50 text-maritime-gold px-6 py-2.5 uppercase text-xs font-bold tracking-wider hover:bg-maritime-gold hover:text-deep-sea transition-all duration-300 rounded-full active:scale-95 btn-gold-glow">
           <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
           Admin Control
         </button>
@@ -365,35 +365,35 @@
     </div>
     <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 transition-all duration-1000 opacity-100">
       <!-- Offer Cards -->
-      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-300 card-gold-glow flex flex-col justify-between">
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
         <div>
           <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">laptop_chromebook</span>
           <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Live Online Classes</h3>
         </div>
         <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">Real-time interaction with experts.</p>
       </div>
-      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-300 card-gold-glow flex flex-col justify-between">
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
         <div>
           <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">menu_book</span>
           <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Study Materials</h3>
         </div>
         <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">Exhaustive maritime resources.</p>
       </div>
-      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-300 card-gold-glow flex flex-col justify-between">
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
         <div>
           <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">record_voice_over</span>
           <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Personal Mentoring</h3>
         </div>
         <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">One-on-one career guidance.</p>
       </div>
-      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-300 card-gold-glow flex flex-col justify-between">
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
         <div>
           <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">groups</span>
           <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Interview Prep</h3>
         </div>
         <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">Confidence for sponsorship.</p>
       </div>
-      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-300 card-gold-glow flex flex-col justify-between">
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
         <div>
           <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">schedule</span>
           <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Flexible Learning</h3>
@@ -421,7 +421,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
         
         <!-- Card 1 (IMU-CET) -->
-        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer" style="transition-delay: 0ms">
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col justify-between cursor-pointer" style="transition-delay: 0ms">
           <div class="relative h-56 overflow-hidden">
             <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
             <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdSNm_aLjpS_ux9ZcXfRrHKWngG6YB7X1TsjTJtBX7Rz4DolDW0rP7Nff9zHK-nQngzZcADKuVH0dxsbQ3rxy2lXtNi_1bC_SXzGzFl8noQZaaIkhhzEbyjduuXtU79YNtVCzqhLrhBYu5MonLyQwSarTVvjwBsJm9863CgQoosD7k-6CSXdYrGmcQL-GADQKsbRE-Bp9sEM_eqBG4E7j_wXfijI7Xmo_36lUMCEk7Ws8zuB9Ikirg4A" alt="IMU-CET Preparation">
@@ -433,14 +433,14 @@
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Comprehensive entrance coaching for the Indian Maritime University Common Entrance Test. Master Math, Physics, and English.</p>
           </div>
           <div class="px-8 pb-8">
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
         </div>
 
         <!-- Card 2 (Entrance Exams) -->
-        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer" style="transition-delay: 100ms">
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col justify-between cursor-pointer" style="transition-delay: 100ms">
           <div class="relative h-56 overflow-hidden">
             <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
             <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSRDrHr88UPlJSiO6dT9eZWIDcraocCtvfuayTqdS1Y3R8kpvdCBOzsmdtEv1TPZdRAzD07B0pZYClNWHhI3o0yYiOjzhw-ZThW15S72L23Y5FvtYVkfq_2uRZVwA1kyIG1EZVCPFSN2NcFK5uyn17QotxHObMDw-tt8xo13ydaAGSgMF2SQKm1Zep84vKwRuq71DTM_xz85TAbLPICDFdHr9Fy0u6VloG0SuczTmldQ7nTOzovl5buw" alt="Close-up of ship machinery">
@@ -450,14 +450,14 @@
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Strategic preparation for various private and public merchant navy institute entrance exams across India.</p>
           </div>
           <div class="px-8 pb-8">
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
         </div>
 
         <!-- Card 3 (DNS Prep) -->
-        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer" style="transition-delay: 200ms">
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col justify-between cursor-pointer" style="transition-delay: 200ms">
           <div class="relative h-56 overflow-hidden">
             <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
             <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvBsihB7l96i8iivFSWVf0_3tVg7j3E2YhP_v6DFiaEBiLSEhCk-IAz-KnfucZl2MGQPZCiOfg5DUPZiVzRIAwPHeazW9fSbXPySS5hpzjOqhj2Bx7zM2e3sGnvbwyEXCCPivglVwVNKAqEBlntVHQJEGMlbegEDRW-jpbOwf-1wtYP-F3tNoQgVVCp8mT6tutoTlQLnHxRJaBbEzAkMQvhEpEHT3CspBoBpWoCDckUMhlZmeWuS9HQA" alt="Simulator system screens">
@@ -467,7 +467,7 @@
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Specialized module for Diploma in Nautical Science and Merchant Navy Sponsorship candidates.</p>
           </div>
           <div class="px-8 pb-8">
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
@@ -478,7 +478,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         
         <!-- Card 4 (Sponsorship) -->
-        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-1.5 flex flex-col sm:flex-row cursor-pointer" style="transition-delay: 300ms">
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col sm:flex-row cursor-pointer" style="transition-delay: 300ms">
           <div class="relative w-full sm:w-2/5 h-48 sm:h-auto overflow-hidden">
             <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
             <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy6ZAaMfsiWpuXARkjEMey28ZK0ZiEFfXmAHh4r_YWEORd03dYGJEHYU1a3rqz6QAxTEEzyMvxaYXbDH1wS01Ck2ETp9Usl_ier0_ayRb22AYYlz335SEtujAnCpmAaYu3DJ0mk27hCYiV2EaHaz60s-eGOaKcK7iHfcPQam59KenXhwDSft5tK5egsKKzOnS8E0axE9cPv3fjwuxrvqCVwlaoMcX2KPWdOrfZlqYlu6e5pXLM5RgETQ" alt="Interview panel setup">
@@ -486,14 +486,14 @@
           <div class="p-8 w-full sm:w-3/5 flex flex-col justify-center">
             <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">Sponsorship Interviews</h3>
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6">Master the art of clearing company sponsorship interviews with Maersk, MSC, Fleet Management, and more.</p>
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enquire Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
         </div>
 
         <!-- Card 5 (Aptitude Test Prep) -->
-        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-1.5 flex flex-col sm:flex-row cursor-pointer" style="transition-delay: 400ms">
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col sm:flex-row cursor-pointer" style="transition-delay: 400ms">
           <div class="relative w-full sm:w-2/5 h-48 sm:h-auto overflow-hidden">
             <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
             <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiYF-pUBYcBkXfaQTQRZxNs1NxCDijLbGIWJLJK5bZ5y9F5N1gjt9xj-ZRLFQh8h-PKGHfWzB_DBI96y2nbP7O6FS7fztu1tS_8oco_PQGpLOxO5E-6aHn3AcrRfJiR_qBHia82Va3RMLhk5cbffUbPycWHCUSyIIEuz5CzK3fIyN4yd9rWwBSVHwaeLg_Uy6K7ElPnaMoPdxnDmqAk8K-G1gzGF45VSxo6kUuPUcD_kyk4b_pDg8N_A" alt="Work space elements">
@@ -501,7 +501,7 @@
           <div class="p-8 w-full sm:w-3/5 flex flex-col justify-center">
             <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">Aptitude Test Prep</h3>
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6">Hone your logical reasoning, spatial awareness, and psychometric skills required for maritime recruitment.</p>
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enquire Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
@@ -1298,5 +1298,31 @@
       </div>
     </div>
   </div>
+
+  <!-- Scroll to Top Button -->
+  <button id="scroll-to-top" class="fixed bottom-8 right-8 bg-maritime-gold text-deep-sea p-3 rounded-full shadow-2xl opacity-0 invisible translate-y-4 hover:scale-110 active:scale-95 transition-all duration-300 z-50 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-maritime-gold/30" aria-label="Scroll to top">
+    <span class="material-symbols-outlined text-2xl">arrow_upward</span>
+  </button>
+
+  <script>
+    // Scroll to Top Logic
+    const scrollTopBtn = document.getElementById('scroll-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 500) {
+        scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+        scrollTopBtn.classList.add('opacity-100', 'visible', 'translate-y-0');
+      } else {
+        scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+        scrollTopBtn.classList.remove('opacity-100', 'visible', 'translate-y-0');
+      }
+    });
+
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
 </body>
 </html>
