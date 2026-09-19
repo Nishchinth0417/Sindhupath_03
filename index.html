@@ -1011,12 +1011,13 @@
     }
 
     // Build all three URL variants from a file ID
+    // lh3.googleusercontent.com is used as primaryUrl because it serves direct image binary streams without 302 redirects
     function buildPosterUrls(fileId) {
       return {
         id: fileId,
-        primaryUrl: `https://drive.google.com/uc?export=view&id=${fileId}`,
-        cdnUrl:     `https://lh3.googleusercontent.com/d/${fileId}=w1200`,
-        backupUrl:  `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`
+        primaryUrl: `https://lh3.googleusercontent.com/d/${fileId}=w1200`,
+        cdnUrl:     `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`,
+        backupUrl:  `https://drive.google.com/uc?export=view&id=${fileId}`
       };
     }
 
@@ -1078,6 +1079,7 @@
           src="${p.primaryUrl}"
           data-cdn="${p.cdnUrl}"
           data-backup="${p.backupUrl}"
+          referrerpolicy="no-referrer"
           class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           alt="Notice Banner"
           onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
@@ -1095,6 +1097,7 @@
             src="${p.primaryUrl}"
             data-cdn="${p.cdnUrl}"
             data-backup="${p.backupUrl}"
+            referrerpolicy="no-referrer"
             class="w-full h-full object-cover"
             alt="Notice Poster ${idx+1}"
             onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
@@ -1279,6 +1282,7 @@
           src="${currentUrl}"
           data-cdn="${cdnUrl}"
           data-backup="${backupUrl}"
+          referrerpolicy="no-referrer"
           class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
           alt="Notice Poster"
           onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
