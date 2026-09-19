@@ -984,7 +984,10 @@
         rows.forEach(row => {
           if (row.c && row.c[1] && row.c[1].v) {
             const rawUrl = String(row.c[1].v).trim();
-            if (rawUrl) result.push(convertDriveUrl(rawUrl));
+            // Only process actual URLs (Drive links or direct http URLs), skip raw filenames
+            if (rawUrl && (rawUrl.startsWith('http') || rawUrl.includes('drive.google.com'))) {
+              result.push(convertDriveUrl(rawUrl));
+            }
           }
         });
         return result;
