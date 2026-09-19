@@ -957,66 +957,72 @@
     
     // -------------------------------------------------------------
     // Google Sheets Poster Integration & Dynamic Slideshow Engine
+    // (Pattern from Ananth_Decor: JSONP script-tag + triple URL fallback)
     // -------------------------------------------------------------
-    const SHEET_GVIZ_URL = 'https://docs.google.com/spreadsheets/d/1lRqrTtCn7-185Izv0_sXQC42IDjNqvaxWN9ncoMKQj8/gviz/tq?tqx=out:json&sheet=Sheet1';
+    const SHEET_ID_POSTERS = '1lRqrTtCn7-185Izv0_sXQC42IDjNqvaxWN9ncoMKQj8';
 
-    let posterImages = [];
+    let posterImages = []; // each entry: { id, primaryUrl, cdnUrl, backupUrl }
     let currentSlideIndex = 0;
     let slideInterval = null;
 
-    function convertDriveUrl(url) {
-      if (!url) return '';
-      const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (idMatch && idMatch[1]) {
-        return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w1200`;
-      }
-      return url;
+    // Robust Drive file ID extractor — handles open?id=, /d/, id= patterns
+    function extractDriveFileId(val) {
+      if (!val) return null;
+      const match = val.toString().match(/(?:id=|\/d\/|open\?id=)([a-zA-Z0-9_-]{20,})/);
+      return match ? match[1].replace(/[^a-zA-Z0-9_-]/g, '') : null;
     }
 
-    function parseGvizJson(jsonText) {
-      // Strip the JSONP wrapper: /*O_o*/ google.visualization.Query.setResponse({...});
-      const json = jsonText.replace(/^\/\*.*?\*\/\s*google\.visualization\.Query\.setResponse\(/, '').replace(/\);\s*$/, '');
-      try {
-        const data = JSON.parse(json);
-        const rows = data.table.rows;
-        const result = [];
-        // Column B (index 1) has the Drive URL
-        rows.forEach(row => {
-          if (row.c && row.c[1] && row.c[1].v) {
-            const rawUrl = String(row.c[1].v).trim();
-            // Only process actual URLs (Drive links or direct http URLs), skip raw filenames
-            if (rawUrl && (rawUrl.startsWith('http') || rawUrl.includes('drive.google.com'))) {
-              result.push(convertDriveUrl(rawUrl));
-            }
-          }
-        });
-        return result;
-      } catch(e) {
-        console.error('Failed to parse gviz JSON:', e);
-        return [];
-      }
+    // Build all three URL variants from a file ID
+    function buildPosterUrls(fileId) {
+      return {
+        id: fileId,
+        primaryUrl: `https://drive.google.com/uc?export=view&id=${fileId}`,
+        cdnUrl:     `https://lh3.googleusercontent.com/d/${fileId}=w1200`,
+        backupUrl:  `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`
+      };
     }
 
-    async function fetchSheetPosters() {
-      try {
-        const response = await fetch(SHEET_GVIZ_URL);
-        const jsonText = await response.text();
-        const sheetPosters = parseGvizJson(jsonText);
-
-        if (sheetPosters.length > 0) {
-          posterImages = sheetPosters;
-        } else if (activePoster) {
-          posterImages = [activePoster];
-        } else {
-          posterImages = [];
-        }
-      } catch (err) {
-        console.error('Error fetching posters from Google Sheet:', err);
-        if (activePoster) {
-          posterImages = [activePoster];
-        }
+    // Called by JSONP script tag (Ananth_Decor pattern — bypasses CORS entirely)
+    window.onSheetPosterData = function(data) {
+      if (!data || !data.table || !data.table.rows) { renderPosterSlideshow(); return; }
+      const rows = data.table.rows;
+      const result = [];
+      rows.forEach(row => {
+        const c = row.c || [];
+        // Column B (index 1) = uploaded poster Drive URL
+        const rawVal = c[1] && c[1].v ? String(c[1].v).trim() : '';
+        const fileId = extractDriveFileId(rawVal);
+        if (fileId) result.push(buildPosterUrls(fileId));
+      });
+      if (result.length > 0) {
+        posterImages = result;
+      } else if (activePoster) {
+        posterImages = [{ id: '', primaryUrl: activePoster, cdnUrl: activePoster, backupUrl: activePoster }];
+      } else {
+        posterImages = [];
       }
       renderPosterSlideshow();
+    };
+
+    function fetchSheetPosters() {
+      const scriptId = 'sindhupath-sheet-poster-script';
+      const old = document.getElementById(scriptId);
+      if (old) old.remove();
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID_POSTERS}/gviz/tq?tqx=responseHandler:window.onSheetPosterData&sheet=Sheet1&t=${Date.now()}`;
+      script.onerror = () => {
+        console.warn('JSONP failed, trying fetch fallback...');
+        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID_POSTERS}/gviz/tq?tqx=out:json&sheet=Sheet1&t=${Date.now()}`)
+          .then(r => r.text())
+          .then(text => {
+            const m = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+            if (m && m[1]) { try { window.onSheetPosterData(JSON.parse(m[1])); } catch(e) { renderPosterSlideshow(); } }
+            else renderPosterSlideshow();
+          })
+          .catch(() => renderPosterSlideshow());
+      };
+      document.body.appendChild(script);
     }
 
     function renderPosterSlideshow() {
@@ -1029,18 +1035,32 @@
       }
 
       if (posterImages.length === 1) {
-        const singleUrl = posterImages[0];
-        posterDisplayContainer.innerHTML = `<img src="${singleUrl}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" alt="Notice Banner" onerror="this.src='hero-bg.jpg'">`;
-        downloadPosterBtn.href = singleUrl;
+        const p = posterImages[0];
+        posterDisplayContainer.innerHTML = `<img
+          src="${p.primaryUrl}"
+          data-cdn="${p.cdnUrl}"
+          data-backup="${p.backupUrl}"
+          class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          alt="Notice Banner"
+          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+        >`;
+        downloadPosterBtn.href = p.primaryUrl;
         return;
       }
 
       // If 2 or more images -> Render Slideshow Carousel
       currentSlideIndex = 0;
-      
-      let slidesHtml = posterImages.map((imgUrl, idx) => `
+
+      let slidesHtml = posterImages.map((p, idx) => `
         <div class="poster-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
-          <img src="${imgUrl}" class="w-full h-full object-cover" alt="Notice Poster ${idx+1}">
+          <img
+            src="${p.primaryUrl}"
+            data-cdn="${p.cdnUrl}"
+            data-backup="${p.backupUrl}"
+            class="w-full h-full object-cover"
+            alt="Notice Poster ${idx+1}"
+            onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+          >
         </div>
       `).join('');
 
@@ -1051,7 +1071,7 @@
       posterDisplayContainer.innerHTML = `
         <div class="relative w-full h-[380px] overflow-hidden group">
           ${slidesHtml}
-          
+
           <!-- Nav Controls -->
           <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
             <span class="material-symbols-outlined">chevron_left</span>
@@ -1098,7 +1118,7 @@
       });
 
       if (posterImages[currentSlideIndex]) {
-        downloadPosterBtn.href = posterImages[currentSlideIndex];
+        downloadPosterBtn.href = posterImages[currentSlideIndex].primaryUrl;
       }
     }
 
@@ -1210,9 +1230,19 @@
     });
 
     viewPosterBtn.addEventListener('click', () => {
-      const currentUrl = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : activePoster;
+      const p = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : null;
+      const currentUrl = p ? p.primaryUrl : activePoster;
+      const cdnUrl = p ? p.cdnUrl : '';
+      const backupUrl = p ? p.backupUrl : '';
       if (currentUrl) {
-        modalPosterContent.innerHTML = `<img src="${currentUrl}" class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl" alt="Notice Poster">`;
+        modalPosterContent.innerHTML = `<img
+          src="${currentUrl}"
+          data-cdn="${cdnUrl}"
+          data-backup="${backupUrl}"
+          class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
+          alt="Notice Poster"
+          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+        >`;
       } else {
         modalPosterContent.innerHTML = defaultPosterSVG;
       }
