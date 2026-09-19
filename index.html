@@ -334,56 +334,6 @@
     </div>
   </section>
 
-  <!-- Bulletin and News Section -->
-  <section id="announcements" class="py-stack-lg bg-white relative overflow-hidden border-t border-deep-sea/5">
-    <div class="nautical-grid absolute inset-0 transition-all duration-1000 opacity-100"></div>
-    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto relative z-10 transition-all duration-1000 opacity-100">
-      
-      <!-- Section Header -->
-      <div class="mb-12">
-        <span class="font-caption text-caption text-maritime-gold tracking-widest uppercase">Notice Board</span>
-        <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mt-2">Bulletins & Notices</h2>
-      </div>
-
-      <!-- Single Unified Notice Board -->
-      <div class="bg-white rounded-3xl shadow-2xl border-t-[6px] border-maritime-gold border-x border-b border-deep-sea/10 overflow-hidden max-w-4xl mx-auto">
-        
-        <!-- Notice Board Header -->
-        <div class="bg-deep-sea px-6 py-5 md:px-8 md:py-6 text-white flex items-center justify-between border-b border-white/10">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-maritime-gold text-3xl" style="font-variation-settings: 'FILL' 1;">campaign</span>
-            <div>
-              <h3 class="font-subhead-md text-xl md:text-2xl font-bold tracking-wider uppercase text-white">Academy Notice Board</h3>
-              <p class="text-xs text-white/70">Official Announcements & Latest Bulletins</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button id="view-poster-btn" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="View Notice Banner">
-              <span class="material-symbols-outlined text-lg">fullscreen</span>
-            </button>
-            <a id="download-poster-btn" href="#" download="sindhupath-notice.png" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Download Notice">
-              <span class="material-symbols-outlined text-lg">download</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- Featured Poster Banner (Optional / Dynamic) -->
-        <div id="poster-display-container" class="w-full h-[380px] bg-primary/40 border-b border-deep-sea/10 flex items-center justify-center overflow-hidden">
-          <!-- Default SVG or Image dynamically injected here -->
-        </div>
-
-        <!-- News Bulletins Feed -->
-        <div class="p-6 md:p-8">
-          <div class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar" id="news-feed-container">
-            <!-- News Cards dynamically injected here -->
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </section>
-
   <!-- What We Offer -->
   <section class="py-stack-lg bg-surface-container-low">
     <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center mb-16 transition-all duration-1000 opacity-100">
@@ -1066,10 +1016,11 @@
 
     function renderPosterSlideshow() {
       if (slideInterval) clearInterval(slideInterval);
+      if (!posterDisplayContainer) return;
 
       if (posterImages.length === 0) {
         posterDisplayContainer.innerHTML = defaultPosterSVG;
-        downloadPosterBtn.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);
+        if (downloadPosterBtn) downloadPosterBtn.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);
         return;
       }
 
@@ -1084,7 +1035,7 @@
           alt="Notice Banner"
           onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
         >`;
-        downloadPosterBtn.href = p.primaryUrl;
+        if (downloadPosterBtn) downloadPosterBtn.href = p.primaryUrl;
         return;
       }
 
@@ -1158,7 +1109,7 @@
         }
       });
 
-      if (posterImages[currentSlideIndex]) {
+      if (posterImages[currentSlideIndex] && downloadPosterBtn) {
         downloadPosterBtn.href = posterImages[currentSlideIndex].primaryUrl;
       }
     }
@@ -1186,6 +1137,7 @@
 
 // Render News Feed View
     function renderNewsFeed() {
+      if (!newsFeedContainer) return;
       if (newsList.length === 0) {
         newsFeedContainer.innerHTML = `
           <div class="text-center py-12 border border-dashed border-deep-sea/10 rounded-2xl bg-[#f7f9fc]">
@@ -1272,11 +1224,12 @@
       adminModal.classList.remove('flex');
     });
 
-    viewPosterBtn.addEventListener('click', () => {
-      const p = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : null;
-      const currentUrl = p ? p.primaryUrl : activePoster;
-      const cdnUrl = p ? p.cdnUrl : '';
-      const backupUrl = p ? p.backupUrl : '';
+    if (viewPosterBtn) {
+      viewPosterBtn.addEventListener('click', () => {
+        const p = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : null;
+        const currentUrl = p ? p.primaryUrl : activePoster;
+        const cdnUrl = p ? p.cdnUrl : '';
+        const backupUrl = p ? p.backupUrl : '';
       if (currentUrl) {
         modalPosterContent.innerHTML = `<img
           src="${currentUrl}"
@@ -1293,6 +1246,7 @@
       posterModal.classList.remove('hidden');
       posterModal.classList.add('flex');
     });
+    }
 
     closePosterModal.addEventListener('click', () => {
       posterModal.classList.add('hidden');
