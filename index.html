@@ -6,7 +6,7 @@
   <title>SINDHUPATH | Merchant Navy Academy</title>
   
   <!-- Tailwind CSS with Forms and Container Queries -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
   
   <!-- Premium Fonts from Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -161,7 +161,44 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: rgba(200, 155, 60, 0.5);
     }
+    /* Scrolled Header Overrides */
+    header.scrolled-header {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+    header.scrolled-header .text-white, 
+    header.scrolled-header .text-white\/90,
+    header.scrolled-header .text-white\/80 {
+      color: #0B2345 !important;
+    }
+    header.scrolled-header .hover\:text-white:hover {
+      color: #C89B3C !important;
+    }
+    header.scrolled-header .bg-black\/45 {
+      background-color: rgba(11, 35, 69, 0.05) !important;
+      border-color: rgba(11, 35, 69, 0.1) !important;
+    }
+    header.scrolled-header img.brightness-125 {
+      filter: brightness(0) !important;
+    }
+    header.scrolled-header a.bg-white.text-black {
+      background-color: #0B2345 !important;
+      color: #ffffff !important;
+    }
+    header.scrolled-header a.bg-white.text-black:hover {
+      background-color: #0a1f3e !important;
+    }
   </style>
+
+  <!-- Toastify CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <!-- Toastify JS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <!-- Typed.js -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body class="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen">
 
@@ -217,7 +254,7 @@
       <!-- Right Actions -->
       <div class="hidden md:flex items-center gap-5">
         <a href="login.html" class="text-white/90 hover:text-white transition-colors text-sm font-semibold">Log in</a>
-        <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="bg-white text-black hover:bg-white/90 active:scale-95 transition-all duration-200 px-5 py-2 rounded-full text-sm font-semibold shadow-md">Sign up</a>
+        <a href="#register" onclick="openRegModal(event)" class="bg-white text-black hover:bg-white/90 active:scale-95 transition-all duration-200 px-5 py-2 rounded-full text-sm font-semibold shadow-md">Sign up</a>
       </div>
 
       <!-- Mobile menu button -->
@@ -239,7 +276,7 @@
       <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#contact" id="drawer-link-contact">Contact</a>
       <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#become-host" id="drawer-link-become-host">Become a Host</a>
       <a href="login.html" class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm mt-4">Log in</a>
-      <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="bg-white text-black text-center font-semibold px-5 py-2.5 rounded-full text-sm mt-2 transition-all duration-200 hover:bg-white/90 active:scale-95 block shadow-md">Sign up</a>
+      <a href="#register" onclick="openRegModal(event)" class="bg-white text-black text-center font-semibold px-5 py-2.5 rounded-full text-sm mt-2 transition-all duration-200 hover:bg-white/90 active:scale-95 block shadow-md">Sign up</a>
     </nav>
   </div>
 
@@ -251,7 +288,7 @@
     <div class="relative z-10 px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full transition-all duration-1000 opacity-100">
       <div class="max-w-3xl">
         <p class="font-subhead-md text-subhead-md text-maritime-gold mb-4 uppercase tracking-widest animate-fade-in">Knowledge • Discipline • Destination</p>
-        <h1 class="font-display-xl text-[64px] md:text-display-xl text-white mb-6 leading-none animate-slide-up">YOUR JOURNEY TO THE SEA BEGINS HERE</h1>
+        <h1 class="font-display-xl text-[64px] md:text-display-xl text-white mb-6 leading-none animate-slide-up">YOUR JOURNEY TO <span id="typed-text" class="text-maritime-gold">THE SEA</span> BEGINS HERE</h1>
         <p class="font-body-lg text-body-lg text-white/80 mb-10 border-l-4 border-maritime-gold pl-6">
           SINDHUPATH Merchant Navy Academy provides elite coaching and mentoring for aspiring mariners to conquer competitive exams and secure high-ranking maritime careers.
         </p>
@@ -314,41 +351,37 @@
         </button>
       </div>
 
-      <!-- Grid Content -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <!-- Single Unified Notice Board -->
+      <div class="bg-white rounded-3xl shadow-2xl border-t-[6px] border-maritime-gold border-x border-b border-deep-sea/10 overflow-hidden max-w-4xl mx-auto">
         
-        <!-- Left: Poster Column -->
-        <div class="lg:col-span-5 flex flex-col items-center">
-          <div class="w-full max-w-[380px] bg-deep-sea p-3 rounded-2xl shadow-xl border border-maritime-gold/25 relative group overflow-hidden">
-            <div id="poster-display-container" class="aspect-[4/5.5] w-full flex items-center justify-center bg-primary rounded-xl overflow-hidden shadow-inner">
-              <!-- Default SVG or Image dynamically injected here -->
-            </div>
-            
-            <!-- Hover Overlay Actions -->
-            <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 z-20 rounded-2xl">
-              <button id="view-poster-btn" class="w-12 h-12 rounded-full bg-white text-deep-sea flex items-center justify-center hover:bg-maritime-gold hover:text-white transition-all shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300" title="View Fullscreen">
-                <span class="material-symbols-outlined">fullscreen</span>
-              </button>
-              <a id="download-poster-btn" href="#" download="sindhupath-notice.png" class="w-12 h-12 rounded-full bg-white text-deep-sea flex items-center justify-center hover:bg-maritime-gold hover:text-white transition-all shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75" title="Download Notice">
-                <span class="material-symbols-outlined">download</span>
-              </a>
+        <!-- Notice Board Header -->
+        <div class="bg-deep-sea px-6 py-5 md:px-8 md:py-6 text-white flex items-center justify-between border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-maritime-gold text-3xl" style="font-variation-settings: 'FILL' 1;">campaign</span>
+            <div>
+              <h3 class="font-subhead-md text-xl md:text-2xl font-bold tracking-wider uppercase text-white">Academy Notice Board</h3>
+              <p class="text-xs text-white/70">Official Announcements & Latest Bulletins</p>
             </div>
           </div>
-          <p class="font-caption text-caption text-on-surface-variant uppercase mt-3 tracking-widest text-center">Active Academy Announcement</p>
+          <div class="flex items-center gap-2">
+            <button id="view-poster-btn" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="View Notice Banner">
+              <span class="material-symbols-outlined text-lg">fullscreen</span>
+            </button>
+            <a id="download-poster-btn" href="#" download="sindhupath-notice.png" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Download Notice">
+              <span class="material-symbols-outlined text-lg">download</span>
+            </a>
+          </div>
         </div>
 
-        <!-- Right: News Bulletin Column (styled as requested board) -->
-        <div class="lg:col-span-7">
-          <div class="bg-white rounded-3xl shadow-xl border-t-[6px] border-maritime-gold p-6 md:p-8 flex flex-col h-full overflow-hidden max-h-[550px]">
-            <!-- Header -->
-            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-deep-sea/5">
-              <span class="material-symbols-outlined text-maritime-gold text-3xl" style="font-variation-settings: 'FILL' 1;">campaign</span>
-              <h3 class="font-subhead-md text-2xl font-bold tracking-wider text-deep-sea uppercase">Latest News</h3>
-            </div>
-            <!-- News Items Container -->
-            <div class="space-y-6 overflow-y-auto pr-2 custom-scrollbar flex-grow" id="news-feed-container">
-              <!-- News Cards dynamically injected here -->
-            </div>
+        <!-- Featured Poster Banner (Optional / Dynamic) -->
+        <div id="poster-display-container" class="w-full h-[380px] bg-primary/40 border-b border-deep-sea/10 flex items-center justify-center overflow-hidden">
+          <!-- Default SVG or Image dynamically injected here -->
+        </div>
+
+        <!-- News Bulletins Feed -->
+        <div class="p-6 md:p-8">
+          <div class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar" id="news-feed-container">
+            <!-- News Cards dynamically injected here -->
           </div>
         </div>
 
@@ -433,7 +466,7 @@
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Comprehensive entrance coaching for the Indian Maritime University Common Entrance Test. Master Math, Physics, and English.</p>
           </div>
           <div class="px-8 pb-8">
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="#register" onclick="openRegModal(event)" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
@@ -450,7 +483,7 @@
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Strategic preparation for various private and public merchant navy institute entrance exams across India.</p>
           </div>
           <div class="px-8 pb-8">
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="#register" onclick="openRegModal(event)" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
@@ -467,7 +500,7 @@
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Specialized module for Diploma in Nautical Science and Merchant Navy Sponsorship candidates.</p>
           </div>
           <div class="px-8 pb-8">
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="#register" onclick="openRegModal(event)" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
@@ -486,7 +519,7 @@
           <div class="p-8 w-full sm:w-3/5 flex flex-col justify-center">
             <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">Sponsorship Interviews</h3>
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6">Master the art of clearing company sponsorship interviews with Maersk, MSC, Fleet Management, and more.</p>
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="#register" onclick="openRegModal(event)" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enquire Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
@@ -501,7 +534,7 @@
           <div class="p-8 w-full sm:w-3/5 flex flex-col justify-center">
             <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">Aptitude Test Prep</h3>
             <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6">Hone your logical reasoning, spatial awareness, and psychometric skills required for maritime recruitment.</p>
-            <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+            <a href="#register" onclick="openRegModal(event)" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
               Enquire Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
           </div>
@@ -656,7 +689,7 @@
       <p class="font-body-lg text-body-lg text-white/70 mb-10 max-w-2xl mx-auto">
         Don't leave your dreams to chance. Join India's premier maritime academy and steer your future toward success.
       </p>
-      <a href="https://forms.gle/vjnJ7myuLJ5gYS7dA" target="_blank" rel="noopener noreferrer" class="bg-maritime-gold text-deep-sea font-display-xl text-3xl px-16 py-6 uppercase hover:bg-white hover:scale-105 active:scale-95 transition-all inline-block btn-gold-glow text-center">ENROLL NOW</a>
+      <a href="#register" onclick="openRegModal(event)" class="bg-maritime-gold text-deep-sea font-display-xl text-3xl px-16 py-6 uppercase hover:bg-white hover:scale-105 active:scale-95 transition-all inline-block btn-gold-glow text-center">REGISTER NOW</a>
     </div>
   </section>
 
@@ -664,9 +697,10 @@
   <footer id="contact" class="bg-deep-sea text-on-primary">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-stack-md px-margin-mobile md:px-gutter py-stack-lg max-w-container-max mx-auto border-t border-maritime-gold/30">
       <div class="space-y-4">
-        <div class="h-16 w-auto mb-4">
+        <a href="#" class="flex items-center gap-3 h-14 mb-4 hover:opacity-90 transition-opacity">
           <img src="logo.png" alt="SINDHUPATH Logo" class="h-full w-auto object-contain">
-        </div>
+          <span class="font-sans font-bold text-xl tracking-[0.15em] text-white uppercase">SINDHUPATH</span>
+        </a>
         <p class="font-body-md text-on-primary/60">India's leading Merchant Navy coaching institute, dedicated to shaping the deck officers and engineers of tomorrow.</p>
         <div class="flex gap-4 pt-4">
           <a href="https://www.linkedin.com/company/sindhupath/about/" target="_blank" rel="noopener noreferrer" class="text-maritime-gold hover:text-white transition-colors flex items-center justify-center w-10 h-10 border border-maritime-gold/30 hover:border-white" title="Visit LinkedIn">
@@ -718,11 +752,11 @@
     window.addEventListener('scroll', () => {
       const header = document.querySelector('header');
       if (window.scrollY > 50) {
-        header.classList.remove('bg-black/10', 'py-3');
-        header.classList.add('bg-[#0c0e12]/90', 'backdrop-blur-xl', 'py-2.5', 'shadow-xl');
+        header.classList.add('scrolled-header', 'py-2.5');
+        header.classList.remove('py-3');
       } else {
-        header.classList.add('bg-black/10', 'py-3');
-        header.classList.remove('bg-[#0c0e12]/90', 'backdrop-blur-xl', 'py-2.5', 'shadow-xl');
+        header.classList.remove('scrolled-header', 'py-2.5');
+        header.classList.add('py-3');
       }
     });
 
@@ -824,7 +858,7 @@
         date: 'Oct 15, 2026',
         title: 'Winter Enrollment Open',
         desc: 'Applications are now live for the upcoming IMU-CET batch. Secure your seat early.',
-        link: 'https://forms.gle/vjnJ7myuLJ5gYS7dA',
+        link: 'https://docs.google.com/forms/d/e/1FAIpQLScuh4w6FVC6gVCVBX9BqxI-m_-CRNsIy5NqEiAlPMajFJACzg/viewform',
         linkText: 'Register Online'
       },
       {
@@ -844,7 +878,7 @@
         date: 'Nov 05, 2026',
         title: 'Virtual Open House',
         desc: 'Join our online interactive session to interact with faculty and alumni.',
-        link: 'https://forms.gle/vjnJ7myuLJ5gYS7dA',
+        link: 'https://docs.google.com/forms/d/e/1FAIpQLScuh4w6FVC6gVCVBX9BqxI-m_-CRNsIy5NqEiAlPMajFJACzg/viewform',
         linkText: 'Enroll Now'
       }
     ];
@@ -920,19 +954,173 @@
     const resetNewsBtn = document.getElementById('reset-news-btn');
 
     // Render Poster View
-    function renderPoster() {
-      if (activePoster) {
-        posterDisplayContainer.innerHTML = `<img src="${activePoster}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" alt="Sindhupath Notice Banner">`;
-        downloadPosterBtn.href = activePoster;
-      } else {
-        posterDisplayContainer.innerHTML = defaultPosterSVG;
-        // Make the inline SVG downloadable
-        const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);
-        downloadPosterBtn.href = svgDataUrl;
+    
+    // -------------------------------------------------------------
+    // Google Sheets Poster Integration & Dynamic Slideshow Engine
+    // -------------------------------------------------------------
+    const SHEET_GVIZ_URL = 'https://docs.google.com/spreadsheets/d/1lRqrTtCn7-185Izv0_sXQC42IDjNqvaxWN9ncoMKQj8/gviz/tq?tqx=out:json&sheet=Sheet1';
+
+    let posterImages = [];
+    let currentSlideIndex = 0;
+    let slideInterval = null;
+
+    function convertDriveUrl(url) {
+      if (!url) return '';
+      const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (idMatch && idMatch[1]) {
+        return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w1200`;
+      }
+      return url;
+    }
+
+    function parseGvizJson(jsonText) {
+      // Strip the JSONP wrapper: /*O_o*/ google.visualization.Query.setResponse({...});
+      const json = jsonText.replace(/^\/\*.*?\*\/\s*google\.visualization\.Query\.setResponse\(/, '').replace(/\);\s*$/, '');
+      try {
+        const data = JSON.parse(json);
+        const rows = data.table.rows;
+        const result = [];
+        // Column B (index 1) has the Drive URL
+        rows.forEach(row => {
+          if (row.c && row.c[1] && row.c[1].v) {
+            const rawUrl = String(row.c[1].v).trim();
+            if (rawUrl) result.push(convertDriveUrl(rawUrl));
+          }
+        });
+        return result;
+      } catch(e) {
+        console.error('Failed to parse gviz JSON:', e);
+        return [];
       }
     }
 
-    // Render News Feed View
+    async function fetchSheetPosters() {
+      try {
+        const response = await fetch(SHEET_GVIZ_URL);
+        const jsonText = await response.text();
+        const sheetPosters = parseGvizJson(jsonText);
+
+        if (sheetPosters.length > 0) {
+          posterImages = sheetPosters;
+        } else if (activePoster) {
+          posterImages = [activePoster];
+        } else {
+          posterImages = [];
+        }
+      } catch (err) {
+        console.error('Error fetching posters from Google Sheet:', err);
+        if (activePoster) {
+          posterImages = [activePoster];
+        }
+      }
+      renderPosterSlideshow();
+    }
+
+    function renderPosterSlideshow() {
+      if (slideInterval) clearInterval(slideInterval);
+
+      if (posterImages.length === 0) {
+        posterDisplayContainer.innerHTML = defaultPosterSVG;
+        downloadPosterBtn.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);
+        return;
+      }
+
+      if (posterImages.length === 1) {
+        const singleUrl = posterImages[0];
+        posterDisplayContainer.innerHTML = `<img src="${singleUrl}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" alt="Notice Banner" onerror="this.src='hero-bg.jpg'">`;
+        downloadPosterBtn.href = singleUrl;
+        return;
+      }
+
+      // If 2 or more images -> Render Slideshow Carousel
+      currentSlideIndex = 0;
+      
+      let slidesHtml = posterImages.map((imgUrl, idx) => `
+        <div class="poster-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
+          <img src="${imgUrl}" class="w-full h-full object-cover" alt="Notice Poster ${idx+1}">
+        </div>
+      `).join('');
+
+      let dotsHtml = posterImages.map((_, idx) => `
+        <button onclick="goToSlide(${idx})" class="slide-dot w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-maritime-gold w-6' : 'bg-white/50 hover:bg-white'}"></button>
+      `).join('');
+
+      posterDisplayContainer.innerHTML = `
+        <div class="relative w-full h-[380px] overflow-hidden group">
+          ${slidesHtml}
+          
+          <!-- Nav Controls -->
+          <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+
+          <!-- Dots Indicators -->
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
+            ${dotsHtml}
+          </div>
+        </div>
+      `;
+
+      updateActiveSlideControls();
+
+      // Start auto-play slideshow every 4 seconds if > 1 images
+      slideInterval = setInterval(() => {
+        nextSlide();
+      }, 4000);
+    }
+
+    function updateActiveSlideControls() {
+      const slides = document.querySelectorAll('.poster-slide');
+      const dots = document.querySelectorAll('.slide-dot');
+
+      slides.forEach((slide, idx) => {
+        if (idx === currentSlideIndex) {
+          slide.classList.remove('opacity-0', 'z-0');
+          slide.classList.add('opacity-100', 'z-10');
+        } else {
+          slide.classList.remove('opacity-100', 'z-10');
+          slide.classList.add('opacity-0', 'z-0');
+        }
+      });
+
+      dots.forEach((dot, idx) => {
+        if (idx === currentSlideIndex) {
+          dot.className = 'slide-dot w-6 h-2.5 rounded-full bg-maritime-gold transition-all duration-300';
+        } else {
+          dot.className = 'slide-dot w-2.5 h-2.5 rounded-full bg-white/50 hover:bg-white transition-all duration-300';
+        }
+      });
+
+      if (posterImages[currentSlideIndex]) {
+        downloadPosterBtn.href = posterImages[currentSlideIndex];
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlideIndex = index;
+      updateActiveSlideControls();
+    }
+
+    function nextSlide() {
+      if (posterImages.length === 0) return;
+      currentSlideIndex = (currentSlideIndex + 1) % posterImages.length;
+      updateActiveSlideControls();
+    }
+
+    function prevSlide() {
+      if (posterImages.length === 0) return;
+      currentSlideIndex = (currentSlideIndex - 1 + posterImages.length) % posterImages.length;
+      updateActiveSlideControls();
+    }
+
+    function renderPoster() {
+      fetchSheetPosters();
+    }
+
+// Render News Feed View
     function renderNewsFeed() {
       if (newsList.length === 0) {
         newsFeedContainer.innerHTML = `
@@ -1019,8 +1207,9 @@
     });
 
     viewPosterBtn.addEventListener('click', () => {
-      if (activePoster) {
-        modalPosterContent.innerHTML = `<img src="${activePoster}" class="max-w-full max-h-[80vh] object-contain rounded-xl" alt="Notice Poster">`;
+      const currentUrl = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : activePoster;
+      if (currentUrl) {
+        modalPosterContent.innerHTML = `<img src="${currentUrl}" class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl" alt="Notice Poster">`;
       } else {
         modalPosterContent.innerHTML = defaultPosterSVG;
       }
@@ -1060,7 +1249,7 @@
       const file = e.target.files[0];
       if (file) {
         if (file.size > 2 * 1024 * 1024) {
-          alert('Image size exceeds 2MB limit. Please upload a smaller image.');
+          showToast('Image size exceeds 2MB limit. Please upload a smaller image.', 'error');
           posterFileInput.value = '';
           return;
         }
@@ -1080,13 +1269,13 @@
       if (tempPosterData) {
         activePoster = tempPosterData;
         localStorage.setItem(POSTER_KEY, activePoster);
-        alert('Poster image uploaded and saved successfully!');
+        showToast('Poster image uploaded and saved successfully!', 'success');
       } else if (urlValue) {
         activePoster = urlValue;
         localStorage.setItem(POSTER_KEY, activePoster);
-        alert('Poster URL saved successfully!');
+        showToast('Poster URL saved successfully!', 'success');
       } else {
-        alert('Please choose an image file or enter an image URL first.');
+        showToast('Please choose an image file or enter an image URL first.', 'warning');
         return;
       }
       
@@ -1160,7 +1349,7 @@
       addNewsForm.reset();
       renderNewsFeed();
       renderAdminNews();
-      alert('Announcement bulletin item added successfully!');
+      showToast('Announcement bulletin item added successfully!', 'success');
     });
 
     // Initial Bulletins Render
@@ -1323,6 +1512,168 @@
         behavior: 'smooth'
       });
     });
+  </script>
+
+      <!-- Registration Modal -->
+  <div id="reg-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-all duration-300">
+    <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+      <!-- Header -->
+      <div class="bg-deep-sea p-6 text-white text-center relative">
+        <button onclick="closeRegModal()" class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors focus:outline-none">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3 class="font-headline-lg-mobile text-2xl uppercase tracking-wider text-maritime-gold">Register Now</h3>
+        <p class="text-sm text-white/80 mt-1">Join India's premier maritime academy.</p>
+      </div>
+
+      <!-- Form Body -->
+      <div class="p-6 overflow-y-auto custom-scrollbar">
+        <form id="reg-form" onsubmit="submitRegForm(event)" class="space-y-4">
+          <input type="hidden" name="fbzx" value="7878738030924406895">
+          <input type="hidden" name="entry.605285063_year" id="dob-year">
+          <input type="hidden" name="entry.605285063_month" id="dob-month">
+          <input type="hidden" name="entry.605285063_day" id="dob-day">
+
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Full Name *</label>
+            <input type="text" name="entry.357012527" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="Enter your full name">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Email Address *</label>
+            <input type="email" name="entry.2121376446" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="yourname@email.com">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Phone Number / WhatsApp *</label>
+            <input type="tel" name="entry.1036945399" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="10-digit mobile number">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Date of Birth *</label>
+            <input type="date" id="dob-input" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Current Educational Qualification *</label>
+            <select name="entry.536136667" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors">
+              <option value="">Select Qualification...</option>
+              <option value="12th pass">12th Pass</option>
+              <option value="12th">12th (Appearing)</option>
+              <option value="11th">11th</option>
+              <option value="Graduate">Graduate</option>
+              <option value="Diploma">Diploma</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">English Percentage (10th/12th)</label>
+            <input type="text" name="entry.1621133166" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="e.g. 75%">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Normal Color Vision & Medical Fitness? *</label>
+            <select name="entry.370656981" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors">
+              <option value="">Select Status...</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Maybe">Maybe / Not Sure</option>
+            </select>
+          </div>
+
+          <button type="submit" id="reg-submit-btn" class="w-full bg-maritime-gold text-deep-sea py-3 mt-4 rounded-lg font-bold text-sm uppercase tracking-wider hover:bg-[#e6b95c] active:scale-95 transition-all shadow-md">
+            Submit Registration
+          </button>
+        </form>
+
+        <!-- Success Message -->
+        <div id="reg-success" class="hidden flex-col items-center justify-center text-center py-8 space-y-4">
+          <span class="material-symbols-outlined text-green-500 text-6xl">check_circle</span>
+          <h4 class="font-headline-lg-mobile text-2xl text-deep-sea uppercase">Registration Complete!</h4>
+          <p class="text-sm text-gray-600">Your details have been successfully recorded in our academy database. Our team will contact you shortly.</p>
+          <button onclick="closeRegModal()" class="mt-4 bg-deep-sea text-white px-8 py-2 rounded-full uppercase text-xs tracking-wider font-bold hover:bg-black transition-colors">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Registration Modal Logic
+    const regModal = document.getElementById('reg-modal');
+    const regForm = document.getElementById('reg-form');
+    const regSuccess = document.getElementById('reg-success');
+
+    function openRegModal(ev) {
+      if(ev) ev.preventDefault();
+      regModal.classList.remove('hidden');
+      regModal.classList.add('flex');
+    }
+
+    function closeRegModal() {
+      regModal.classList.add('hidden');
+      regModal.classList.remove('flex');
+      setTimeout(() => {
+        regForm.reset();
+        regForm.classList.remove('hidden');
+        regSuccess.classList.add('hidden');
+        regSuccess.classList.remove('flex');
+      }, 300);
+    }
+
+    async function submitRegForm(ev) {
+      ev.preventDefault();
+
+      const submitBtn = document.getElementById('reg-submit-btn');
+      submitBtn.innerText = 'Submitting...';
+      submitBtn.disabled = true;
+
+      // Handle Date of Birth parsing
+      const dobInput = document.getElementById('dob-input').value;
+      if (dobInput) {
+        const parts = dobInput.split('-');
+        if (parts.length === 3) {
+          document.getElementById('dob-year').value = parts[0];
+          document.getElementById('dob-month').value = parts[1];
+          document.getElementById('dob-day').value = parts[2];
+        }
+      }
+
+      // Convert FormData into URLSearchParams (x-www-form-urlencoded)
+      const rawFormData = new FormData(regForm);
+      const params = new URLSearchParams();
+      for (const [key, value] of rawFormData.entries()) {
+        if (value) {
+          params.append(key, value);
+        }
+      }
+
+      const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScuh4w6FVC6gVCVBX9BqxI-m_-CRNsIy5NqEiAlPMajFJACzg/formResponse';
+
+      try {
+        await fetch(formUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        });
+
+        // Update UI on success
+        regForm.classList.add('hidden');
+        regSuccess.classList.remove('hidden');
+        regSuccess.classList.add('flex');
+
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        }
+        if (typeof showToast === 'function') {
+          showToast('Registration submitted successfully!', 'success');
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        if (typeof showToast === 'function') {
+          showToast('Submission failed. Please try again.', 'error');
+        }
+      } finally {
+        submitBtn.innerText = 'Submit Registration';
+        submitBtn.disabled = false;
+      }
+    }
   </script>
 </body>
 </html>
