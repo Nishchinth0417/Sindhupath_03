@@ -977,10 +977,10 @@
       const ids = [];
       const segments = val.toString().split(/[\s,;]+/);
       for (const seg of segments) {
-        const match = seg.match(/(?:id=|\/d\/|open\?id=)([a-zA-Z0-9_-]{20,})/);
+        const match = seg.match(/(?:id=|\/d\/|\/file\/d\/|open\?id=)([a-zA-Z0-9_-]{20,})/);
         if (match && match[1]) {
           const cleanId = match[1].replace(/[^a-zA-Z0-9_-]/g, '');
-          if (cleanId) ids.push(cleanId);
+          if (cleanId && !ids.includes(cleanId)) ids.push(cleanId);
         }
       }
       return ids;
@@ -1401,9 +1401,12 @@
       showToast('Announcement bulletin item added successfully!', 'success');
     });
 
-    // Initial Bulletins Render
+    // Initial Bulletins Render & Live Auto-Refresh (Sync with Google Form responses every 60s)
     renderPoster();
     renderNewsFeed();
+    setInterval(() => {
+      fetchSheetPosters();
+    }, 60000);
   </script>
 
   <!-- Fullscreen Poster Modal -->
