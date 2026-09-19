@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html class="scroll-smooth scroll-pt-24" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>SINDHUPATH | Merchant Navy Academy</title>
+  
+  <!-- Tailwind CSS with Forms and Container Queries -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
+  
+  <!-- Premium Fonts from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "maritime-gold": "#C89B3C",
+            "surface-tint": "#4a5f84",
+            "error-container": "#ffdad6",
+            "secondary": "#7b5900",
+            "horizon-gray": "#F5F7FA",
+            "on-primary-fixed-variant": "#32476b",
+            "on-error": "#ffffff",
+            "secondary-container": "#fcca66",
+            "tertiary-container": "#3b1a00",
+            "on-secondary-container": "#755400",
+            "surface-container-highest": "#e0e3e6",
+            "on-primary-container": "#768bb3",
+            "on-tertiary-fixed-variant": "#663d1d",
+            "on-surface-variant": "#44474e",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed": "#021b3d",
+            "outline-variant": "#c4c6cf",
+            "background": "#f7f9fc",
+            "inverse-primary": "#b2c7f2",
+            "slate-text": "#1A1A1A",
+            "on-background": "#191c1e",
+            "tertiary": "#1b0900",
+            "deep-sea": "#0B2345",
+            "tertiary-fixed": "#ffdcc5",
+            "surface-container-high": "#e6e8eb",
+            "primary-fixed": "#d7e3ff",
+            "surface-container": "#eceef1",
+            "on-secondary": "#ffffff",
+            "primary-fixed-dim": "#b2c7f2",
+            "on-tertiary-container": "#b47f59",
+            "on-primary": "#ffffff",
+            "surface-bright": "#f7f9fc",
+            "on-secondary-fixed-variant": "#5d4200",
+            "tertiary-fixed-dim": "#f6ba90",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#f0bf5c",
+            "primary-container": "#0b2345",
+            "outline": "#74777f",
+            "surface-container-low": "#f2f4f7",
+            "surface-dim": "#d8dadd",
+            "inverse-surface": "#2d3133",
+            "surface-variant": "#e0e3e6",
+            "inverse-on-surface": "#eff1f4",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "surface": "#f7f9fc",
+            "secondary-fixed": "#ffdea4",
+            "on-secondary-fixed": "#261900",
+            "on-tertiary-fixed": "#301400",
+            "primary": "#000d25",
+            "on-surface": "#191c1e"
+          },
+          "borderRadius": {
+            "DEFAULT": "0px",
+            "lg": "0px",
+            "xl": "0px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "stack-lg": "64px",
+            "container-max": "1280px",
+            "base": "8px",
+            "margin-mobile": "16px",
+            "stack-sm": "12px",
+            "stack-md": "32px",
+            "gutter": "24px"
+          },
+          "fontFamily": {
+            "body-md": ["Montserrat"],
+            "display-xl": ["Bebas Neue"],
+            "label-bold": ["Montserrat"],
+            "headline-lg": ["Bebas Neue"],
+            "subhead-md": ["Oswald"],
+            "headline-lg-mobile": ["Bebas Neue"],
+            "body-lg": ["Montserrat"],
+            "caption": ["Oswald"]
+          },
+          "fontSize": {
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "display-xl": ["72px", {"lineHeight": "72px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+            "label-bold": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "headline-lg": ["48px", {"lineHeight": "48px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+            "subhead-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+            "headline-lg-mobile": ["36px", {"lineHeight": "36px", "fontWeight": "400"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "caption": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .nautical-grid {
+      background-image: radial-gradient(circle, #C89B3C 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.05;
+    }
+    .hero-gradient {
+      background: linear-gradient(to right, rgba(11, 35, 69, 0.95) 0%, rgba(11, 35, 69, 0.4) 100%);
+    }
+    .border-gold { border: 1px solid #C89B3C; }
+    .accent-bar-top { border-top: 4px solid #0B2345; }
+    
+    /* Custom Premium Micro-interactions */
+    .btn-gold-glow:hover {
+      box-shadow: 0 0 15px rgba(200, 155, 60, 0.4);
+    }
+    .card-hover:hover {
+      box-shadow: 0 10px 30px -10px rgba(11, 35, 69, 0.2);
+      transform: translateY(-4px);
+    }
+    .card-gold-glow hover:-translate-y-2:hover {
+      box-shadow: 0 0 20px rgba(200, 155, 60, 0.25);
+      border-color: #ffffff;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .floating-arrow {
+      animation: float 2.5s ease-in-out infinite;
+    }
+    
+    /* Custom Scrollbar for News Feed */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(11, 35, 69, 0.05);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(200, 155, 60, 0.3);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(200, 155, 60, 0.5);
+    }
+    /* Scrolled Header Overrides */
+    header.scrolled-header {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+    header.scrolled-header .text-white, 
+    header.scrolled-header .text-white\/90,
+    header.scrolled-header .text-white\/80 {
+      color: #0B2345 !important;
+    }
+    header.scrolled-header .hover\:text-white:hover {
+      color: #C89B3C !important;
+    }
+    header.scrolled-header .bg-black\/45 {
+      background-color: rgba(11, 35, 69, 0.05) !important;
+      border-color: rgba(11, 35, 69, 0.1) !important;
+    }
+    header.scrolled-header img.brightness-125 {
+      filter: brightness(0) !important;
+    }
+    header.scrolled-header a.bg-white.text-black {
+      background-color: #0B2345 !important;
+      color: #ffffff !important;
+    }
+    header.scrolled-header a.bg-white.text-black:hover {
+      background-color: #0a1f3e !important;
+    }
+  </style>
+
+  <!-- Toastify CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <!-- Toastify JS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <!-- Typed.js -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen">
+
+  <!-- TopNavBar -->
+  <header class="fixed top-0 w-full z-50 transition-all duration-300 bg-black/10 backdrop-blur-sm border-b border-white/5 py-3">
+    <nav class="flex justify-between items-center px-margin-mobile md:px-gutter max-w-[1400px] mx-auto w-full">
+      <!-- Far Left Logo -->
+      <a href="#" class="flex items-center gap-3 h-12 hover:opacity-90 transition-opacity">
+        <img src="logo.png" alt="SINDHUPATH Logo" class="h-full w-auto object-contain brightness-125">
+        <span class="font-sans font-bold text-[19px] tracking-[0.15em] text-white uppercase">SINDHUPATH</span>
+      </a>
+
+      <!-- Center Pill Navigation -->
+      <div class="hidden md:flex items-center bg-black/45 backdrop-blur-xl border border-white/10 rounded-full px-6 py-2 shadow-lg">
+        <div class="flex items-center gap-8">
+          <!-- Home Dropdown -->
+          <div class="relative group">
+            <button class="flex items-center gap-1 text-white/90 hover:text-white transition-colors text-sm font-medium py-1 focus:outline-none">
+              Home
+              <span class="material-symbols-outlined text-sm font-bold opacity-80 group-hover:rotate-180 transition-transform duration-300">keyboard_arrow_down</span>
+            </button>
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-48 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl py-2 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 origin-top">
+              <a href="#" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">Academy Portal</a>
+              <a href="#" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">Virtual Tour</a>
+              <a href="#" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">Student Life</a>
+            </div>
+          </div>
+
+          <!-- Courses Dropdown -->
+          <div class="relative group">
+            <button class="flex items-center gap-1 text-white/90 hover:text-white transition-colors text-sm font-medium py-1 focus:outline-none">
+              Courses
+              <span class="material-symbols-outlined text-sm font-bold opacity-80 group-hover:rotate-180 transition-transform duration-300">keyboard_arrow_down</span>
+            </button>
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl py-2 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 origin-top">
+              <a href="#courses" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">IMU-CET Prep</a>
+              <a href="#courses" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">Sponsorship Prep</a>
+              <a href="#courses" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">DNS Coaching</a>
+            </div>
+          </div>
+
+          <!-- Contact Link -->
+          <a href="#contact" class="text-white/90 hover:text-white transition-colors text-sm font-medium py-1">Contact</a>
+
+          <!-- About Link -->
+          <a href="#about" class="text-white/90 hover:text-white transition-colors text-sm font-medium py-1">About</a>
+
+          <!-- Become a Host Link -->
+          <a href="#become-host" class="text-white/90 hover:text-white transition-colors text-sm font-medium py-1">Become a Host</a>
+        </div>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="hidden md:flex items-center gap-5">
+        <a href="login.html" class="text-white/90 hover:text-white transition-colors text-sm font-semibold">Log in</a>
+        <a href="#register" onclick="openRegModal(event)" class="bg-white text-black hover:bg-white/90 active:scale-95 transition-all duration-200 px-5 py-2 rounded-full text-sm font-semibold shadow-md">Sign up</a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <button id="open-drawer" class="md:hidden text-white hover:text-white/80 focus:outline-none" aria-label="Open Mobile Menu">
+        <span class="material-symbols-outlined text-3xl">menu</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div id="mobile-drawer" class="fixed inset-y-0 right-0 w-72 bg-black/95 backdrop-blur-lg border-l border-white/10 z-50 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col p-6 shadow-2xl">
+    <button id="close-drawer" class="self-end text-white/80 hover:text-white mb-8 focus:outline-none" aria-label="Close Mobile Menu">
+      <span class="material-symbols-outlined text-3xl">close</span>
+    </button>
+    <nav class="flex flex-col gap-5 text-left">
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#">Home</a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#courses" id="drawer-link-courses">Courses</a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#about" id="drawer-link-about">About</a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#contact" id="drawer-link-contact">Contact</a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#become-host" id="drawer-link-become-host">Become a Host</a>
+      <a href="login.html" class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm mt-4">Log in</a>
+      <a href="#register" onclick="openRegModal(event)" class="bg-white text-black text-center font-semibold px-5 py-2.5 rounded-full text-sm mt-2 transition-all duration-200 hover:bg-white/90 active:scale-95 block shadow-md">Sign up</a>
+    </nav>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <div class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-1000 opacity-100" style="background-image: url('hero-bg.jpg')">
+      <div class="absolute inset-0 hero-gradient"></div>
+    </div>
+    <div class="relative z-10 px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full transition-all duration-1000 opacity-100">
+      <div class="max-w-3xl">
+        <p class="font-subhead-md text-subhead-md text-maritime-gold mb-4 uppercase tracking-widest animate-fade-in">Knowledge • Discipline • Destination</p>
+        <h1 class="font-display-xl text-[64px] md:text-display-xl text-white mb-6 leading-none animate-slide-up">YOUR JOURNEY TO <span id="typed-text" class="text-maritime-gold">THE SEA</span> BEGINS HERE</h1>
+        <p class="font-body-lg text-body-lg text-white/80 mb-10 border-l-4 border-maritime-gold pl-6">
+          SINDHUPATH Merchant Navy Academy provides elite coaching and mentoring for aspiring mariners to conquer competitive exams and secure high-ranking maritime careers.
+        </p>
+
+      </div>
+    </div>
+    <div class="absolute bottom-10 right-gutter hidden lg:block floating-arrow">
+      <span class="material-symbols-outlined text-maritime-gold text-4xl">keyboard_double_arrow_down</span>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-stack-lg bg-white relative overflow-hidden">
+    <div class="nautical-grid absolute inset-0 transition-all duration-1000 opacity-100"></div>
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto relative z-10 transition-all duration-1000 opacity-100">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-stack-md items-center">
+        <div class="space-y-6">
+          <span class="font-caption text-caption text-maritime-gold tracking-widest uppercase">Legacy of Excellence</span>
+          <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea">Welcome to Sindhupath Merchant Navy Academy</h2>
+          <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            At Sindhupath, we bridge the gap between aspiration and reality. Our academy is founded on the core values of maritime discipline and technical rigor. We specialize in preparing young cadets for the demanding life at sea through structured curriculum and expert-led mentorship.
+          </p>
+          <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            Whether you're aiming for the IMU-CET or seeking sponsorship from top-tier shipping companies, our holistic approach ensures you are not just exam-ready, but industry-ready.
+          </p>
+          <div class="grid grid-cols-2 gap-4 pt-4">
+            <div class="border-l-2 border-maritime-gold pl-4">
+              <p class="text-3xl font-display-xl text-deep-sea">100%</p>
+              <p class="font-caption text-caption uppercase">Focus on Discipline</p>
+            </div>
+            <div class="border-l-2 border-maritime-gold pl-4">
+              <p class="text-3xl font-display-xl text-deep-sea">24/7</p>
+              <p class="font-caption text-caption uppercase">Student Support</p>
+            </div>
+          </div>
+        </div>
+        <div class="relative group">
+          <div class="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-maritime-gold"></div>
+          <div class="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-maritime-gold"></div>
+          <img class="w-full grayscale group-hover:grayscale-0 transition-all duration-700 shadow-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaQXrtNSrRezATJlmALUgLFZaVsnwkbRgBcDOts2wGlkTVnvpreGe27yjVPAyfjl9nGFsKkYAOKrIpaxKZlZCN47aoOJKRCYHJzWBba55YDLBnrNhVMFgNEW1P-NBIn5VUeBkz3TFLUM3lEmRqPr_nKBX9V3VfzxFqKzuwsQaFDonTg_6wQe7RaCRmxBqNypo33KP2rmsxZrjvMuk7ojoe4lL-z-K35FrS4ozT_mOm3i_uhnXY5k-tKQ" alt="Cadets in white uniforms on a ship bridge">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bulletin and News Section -->
+  <section id="announcements" class="py-stack-lg bg-white relative overflow-hidden border-t border-deep-sea/5">
+    <div class="nautical-grid absolute inset-0 transition-all duration-1000 opacity-100"></div>
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto relative z-10 transition-all duration-1000 opacity-100">
+      
+      <!-- Section Header -->
+      <div class="mb-12">
+        <span class="font-caption text-caption text-maritime-gold tracking-widest uppercase">Notice Board</span>
+        <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mt-2">Bulletins & Notices</h2>
+      </div>
+
+      <!-- Single Unified Notice Board -->
+      <div class="bg-white rounded-3xl shadow-2xl border-t-[6px] border-maritime-gold border-x border-b border-deep-sea/10 overflow-hidden max-w-4xl mx-auto">
+        
+        <!-- Notice Board Header -->
+        <div class="bg-deep-sea px-6 py-5 md:px-8 md:py-6 text-white flex items-center justify-between border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-maritime-gold text-3xl" style="font-variation-settings: 'FILL' 1;">campaign</span>
+            <div>
+              <h3 class="font-subhead-md text-xl md:text-2xl font-bold tracking-wider uppercase text-white">Academy Notice Board</h3>
+              <p class="text-xs text-white/70">Official Announcements & Latest Bulletins</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="view-poster-btn" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="View Notice Banner">
+              <span class="material-symbols-outlined text-lg">fullscreen</span>
+            </button>
+            <a id="download-poster-btn" href="#" download="sindhupath-notice.png" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Download Notice">
+              <span class="material-symbols-outlined text-lg">download</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Featured Poster Banner (Optional / Dynamic) -->
+        <div id="poster-display-container" class="w-full h-[380px] bg-primary/40 border-b border-deep-sea/10 flex items-center justify-center overflow-hidden">
+          <!-- Default SVG or Image dynamically injected here -->
+        </div>
+
+        <!-- News Bulletins Feed -->
+        <div class="p-6 md:p-8">
+          <div class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar" id="news-feed-container">
+            <!-- News Cards dynamically injected here -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- What We Offer -->
+  <section class="py-stack-lg bg-surface-container-low">
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center mb-16 transition-all duration-1000 opacity-100">
+      <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mb-4 uppercase">What We Offer</h2>
+      <div class="w-24 h-1 bg-maritime-gold mx-auto"></div>
+    </div>
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 transition-all duration-1000 opacity-100">
+      <!-- Offer Cards -->
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
+        <div>
+          <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">laptop_chromebook</span>
+          <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Live Online Classes</h3>
+        </div>
+        <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">Real-time interaction with experts.</p>
+      </div>
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
+        <div>
+          <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">menu_book</span>
+          <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Study Materials</h3>
+        </div>
+        <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">Exhaustive maritime resources.</p>
+      </div>
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
+        <div>
+          <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">record_voice_over</span>
+          <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Personal Mentoring</h3>
+        </div>
+        <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">One-on-one career guidance.</p>
+      </div>
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
+        <div>
+          <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">groups</span>
+          <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Interview Prep</h3>
+        </div>
+        <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">Confidence for sponsorship.</p>
+      </div>
+      <div class="bg-white p-8 border-gold hover:bg-deep-sea group transition-all duration-500 ease-out card-gold-glow hover:-translate-y-2 flex flex-col justify-between">
+        <div>
+          <span class="material-symbols-outlined text-4xl text-maritime-gold mb-6 group-hover:text-white transition-colors">schedule</span>
+          <h3 class="font-subhead-md text-subhead-md text-deep-sea mb-2 group-hover:text-maritime-gold transition-colors">Flexible Learning</h3>
+        </div>
+        <p class="font-caption text-caption text-on-surface-variant group-hover:text-white/70 transition-colors uppercase mt-4">Study at your own pace.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses Section -->
+  <section id="courses" class="py-stack-lg bg-deep-sea text-white">
+    <!-- Section Header -->
+    <div class="reveal px-margin-mobile md:px-gutter max-w-container-max mx-auto mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
+      <div>
+        <span class="font-sans text-sm tracking-[0.2em] text-maritime-gold uppercase font-semibold">Career Tracks</span>
+        <h2 class="font-headline-lg text-4xl md:text-5xl mt-2 tracking-wide text-white">PROFESSIONAL TRAINING MODULES</h2>
+      </div>
+      <a href="#courses" class="group border border-maritime-gold/50 text-maritime-gold px-8 py-3 uppercase text-sm font-bold tracking-wider hover:bg-maritime-gold/10 hover:border-maritime-gold transition-all duration-300 rounded-full flex items-center gap-2">
+        View All Modules <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      </a>
+    </div>
+    
+    <div class="no-reveal px-margin-mobile md:px-gutter max-w-container-max mx-auto">
+      <!-- Top 3 Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+        
+        <!-- Card 1 (IMU-CET) -->
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col justify-between cursor-pointer" style="transition-delay: 0ms">
+          <div class="relative h-56 overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
+            <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdSNm_aLjpS_ux9ZcXfRrHKWngG6YB7X1TsjTJtBX7Rz4DolDW0rP7Nff9zHK-nQngzZcADKuVH0dxsbQ3rxy2lXtNi_1bC_SXzGzFl8noQZaaIkhhzEbyjduuXtU79YNtVCzqhLrhBYu5MonLyQwSarTVvjwBsJm9863CgQoosD7k-6CSXdYrGmcQL-GADQKsbRE-Bp9sEM_eqBG4E7j_wXfijI7Xmo_36lUMCEk7Ws8zuB9Ikirg4A" alt="IMU-CET Preparation">
+            <!-- Most Popular Badge -->
+            <div class="absolute top-4 left-4 z-20 bg-gradient-to-r from-maritime-gold to-[#e6b95c] text-deep-sea px-3 py-1 text-xs font-bold tracking-widest uppercase rounded-full shadow-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">MOST POPULAR</div>
+          </div>
+          <div class="p-8 pb-6 flex-grow">
+            <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">IMU-CET Coaching</h3>
+            <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Comprehensive entrance coaching for the Indian Maritime University Common Entrance Test. Master Math, Physics, and English.</p>
+          </div>
+          <div class="px-8 pb-8">
+            <a href="#register" onclick="openRegModal(event)" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+              Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2 (Entrance Exams) -->
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col justify-between cursor-pointer" style="transition-delay: 100ms">
+          <div class="relative h-56 overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
+            <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSRDrHr88UPlJSiO6dT9eZWIDcraocCtvfuayTqdS1Y3R8kpvdCBOzsmdtEv1TPZdRAzD07B0pZYClNWHhI3o0yYiOjzhw-ZThW15S72L23Y5FvtYVkfq_2uRZVwA1kyIG1EZVCPFSN2NcFK5uyn17QotxHObMDw-tt8xo13ydaAGSgMF2SQKm1Zep84vKwRuq71DTM_xz85TAbLPICDFdHr9Fy0u6VloG0SuczTmldQ7nTOzovl5buw" alt="Close-up of ship machinery">
+          </div>
+          <div class="p-8 pb-6 flex-grow">
+            <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">Entrance Exams Prep</h3>
+            <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Strategic preparation for various private and public merchant navy institute entrance exams across India.</p>
+          </div>
+          <div class="px-8 pb-8">
+            <a href="#register" onclick="openRegModal(event)" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+              Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3 (DNS Prep) -->
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col justify-between cursor-pointer" style="transition-delay: 200ms">
+          <div class="relative h-56 overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
+            <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvBsihB7l96i8iivFSWVf0_3tVg7j3E2YhP_v6DFiaEBiLSEhCk-IAz-KnfucZl2MGQPZCiOfg5DUPZiVzRIAwPHeazW9fSbXPySS5hpzjOqhj2Bx7zM2e3sGnvbwyEXCCPivglVwVNKAqEBlntVHQJEGMlbegEDRW-jpbOwf-1wtYP-F3tNoQgVVCp8mT6tutoTlQLnHxRJaBbEzAkMQvhEpEHT3CspBoBpWoCDckUMhlZmeWuS9HQA" alt="Simulator system screens">
+          </div>
+          <div class="p-8 pb-6 flex-grow">
+            <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">DNS (MNS) Preparation</h3>
+            <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6 h-16 overflow-hidden">Specialized module for Diploma in Nautical Science and Merchant Navy Sponsorship candidates.</p>
+          </div>
+          <div class="px-8 pb-8">
+            <a href="#register" onclick="openRegModal(event)" class="w-full py-3 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+              Enroll Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom 2 Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Card 4 (Sponsorship) -->
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col sm:flex-row cursor-pointer" style="transition-delay: 300ms">
+          <div class="relative w-full sm:w-2/5 h-48 sm:h-auto overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
+            <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy6ZAaMfsiWpuXARkjEMey28ZK0ZiEFfXmAHh4r_YWEORd03dYGJEHYU1a3rqz6QAxTEEzyMvxaYXbDH1wS01Ck2ETp9Usl_ier0_ayRb22AYYlz335SEtujAnCpmAaYu3DJ0mk27hCYiV2EaHaz60s-eGOaKcK7iHfcPQam59KenXhwDSft5tK5egsKKzOnS8E0axE9cPv3fjwuxrvqCVwlaoMcX2KPWdOrfZlqYlu6e5pXLM5RgETQ" alt="Interview panel setup">
+          </div>
+          <div class="p-8 w-full sm:w-3/5 flex flex-col justify-center">
+            <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">Sponsorship Interviews</h3>
+            <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6">Master the art of clearing company sponsorship interviews with Maersk, MSC, Fleet Management, and more.</p>
+            <a href="#register" onclick="openRegModal(event)" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+              Enquire Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 5 (Aptitude Test Prep) -->
+        <div class="reveal group relative bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden hover:border-maritime-gold/50 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-maritime-gold/20 flex flex-col sm:flex-row cursor-pointer" style="transition-delay: 400ms">
+          <div class="relative w-full sm:w-2/5 h-48 sm:h-auto overflow-hidden">
+            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-500 z-10"></div>
+            <img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiYF-pUBYcBkXfaQTQRZxNs1NxCDijLbGIWJLJK5bZ5y9F5N1gjt9xj-ZRLFQh8h-PKGHfWzB_DBI96y2nbP7O6FS7fztu1tS_8oco_PQGpLOxO5E-6aHn3AcrRfJiR_qBHia82Va3RMLhk5cbffUbPycWHCUSyIIEuz5CzK3fIyN4yd9rWwBSVHwaeLg_Uy6K7ElPnaMoPdxnDmqAk8K-G1gzGF45VSxo6kUuPUcD_kyk4b_pDg8N_A" alt="Work space elements">
+          </div>
+          <div class="p-8 w-full sm:w-3/5 flex flex-col justify-center">
+            <h3 class="font-sans text-xl font-bold text-maritime-gold mb-3 group-hover:brightness-125 transition-all">Aptitude Test Prep</h3>
+            <p class="font-body-md text-white/70 text-sm leading-relaxed mb-6">Hone your logical reasoning, spatial awareness, and psychometric skills required for maritime recruitment.</p>
+            <a href="#register" onclick="openRegModal(event)" class="w-max py-2.5 px-6 border border-white/10 rounded-full uppercase text-xs font-bold tracking-widest group-hover:bg-gradient-to-r group-hover:from-maritime-gold group-hover:to-[#e6b95c] group-hover:border-transparent group-hover:text-deep-sea active:scale-95 transition-all duration-500 flex items-center justify-center gap-2">
+              Enquire Now <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Section -->
+  <section class="py-stack-lg bg-white overflow-hidden">
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center mb-16 transition-all duration-1000 opacity-100">
+      <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mb-4 uppercase">Why Choose Sindhupath?</h2>
+      <div class="w-24 h-1 bg-maritime-gold mx-auto"></div>
+    </div>
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-1000 opacity-100">
+      <div class="text-center p-8 border border-horizon-gray hover:border-maritime-gold transition-all card-hover">
+        <span class="material-symbols-outlined text-5xl text-maritime-gold mb-4" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+        <p class="font-display-xl text-5xl text-deep-sea">15+</p>
+        <p class="font-subhead-md text-subhead-md uppercase">Expert Faculty</p>
+      </div>
+      <div class="text-center p-8 border border-horizon-gray hover:border-maritime-gold transition-all card-hover">
+        <span class="material-symbols-outlined text-5xl text-maritime-gold mb-4" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+        <p class="font-display-xl text-5xl text-deep-sea">95%</p>
+        <p class="font-subhead-md text-subhead-md uppercase">Proven Results</p>
+      </div>
+      <div class="text-center p-8 border border-horizon-gray hover:border-maritime-gold transition-all card-hover">
+        <span class="material-symbols-outlined text-5xl text-maritime-gold mb-4" style="font-variation-settings: 'FILL' 1;">payments</span>
+        <p class="font-display-xl text-5xl text-deep-sea">BEST</p>
+        <p class="font-subhead-md text-subhead-md uppercase">Affordable Fees</p>
+      </div>
+      <div class="text-center p-8 border border-horizon-gray hover:border-maritime-gold transition-all card-hover">
+        <span class="material-symbols-outlined text-5xl text-maritime-gold mb-4" style="font-variation-settings: 'FILL' 1;">map</span>
+        <p class="font-display-xl text-5xl text-deep-sea">PAN-INDIA</p>
+        <p class="font-subhead-md text-subhead-md uppercase">Students Network</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Learning Process Timeline -->
+  <section class="py-stack-lg bg-surface-container-high overflow-x-hidden">
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center mb-20 transition-all duration-1000 opacity-100">
+      <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mb-4 uppercase">Our Learning Process</h2>
+      <p class="font-body-md text-on-surface-variant">The roadmap to your successful maritime career</p>
+    </div>
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto relative transition-all duration-1000 opacity-100">
+      <!-- Timeline Horizontal Line (Desktop) -->
+      <div class="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-deep-sea/10 -translate-y-1/2"></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8 relative z-10">
+        <!-- Step 1 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-16 h-16 bg-deep-sea text-maritime-gold flex items-center justify-center font-display-xl text-3xl group-hover:scale-110 transition-transform mb-6">01</div>
+          <h4 class="font-subhead-md text-caption uppercase mb-2">Register</h4>
+          <p class="text-xs text-on-surface-variant px-4">Begin your journey with a simple enrollment.</p>
+        </div>
+        <!-- Step 2 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-16 h-16 bg-white text-deep-sea border-2 border-deep-sea flex items-center justify-center font-display-xl text-3xl group-hover:scale-110 transition-transform mb-6">02</div>
+          <h4 class="font-subhead-md text-caption uppercase mb-2">Live Classes</h4>
+          <p class="text-xs text-on-surface-variant px-4">Interactive sessions with industry experts.</p>
+        </div>
+        <!-- Step 3 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-16 h-16 bg-deep-sea text-maritime-gold flex items-center justify-center font-display-xl text-3xl group-hover:scale-110 transition-transform mb-6">03</div>
+          <h4 class="font-subhead-md text-caption uppercase mb-2">Study Materials</h4>
+          <p class="text-xs text-on-surface-variant px-4">Access our digital library of maritime resources.</p>
+        </div>
+        <!-- Step 4 -->
+        <div class="flex flex-col items-center text-center group flex-col">
+          <div class="w-16 h-16 bg-white text-deep-sea border-2 border-deep-sea flex items-center justify-center font-display-xl text-3xl group-hover:scale-110 transition-transform mb-6">04</div>
+          <h4 class="font-subhead-md text-caption uppercase mb-2">Mock Tests</h4>
+          <p class="text-xs text-on-surface-variant px-4">Simulate the real exam environment.</p>
+        </div>
+        <!-- Step 5 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-16 h-16 bg-deep-sea text-maritime-gold flex items-center justify-center font-display-xl text-3xl group-hover:scale-110 transition-transform mb-6">05</div>
+          <h4 class="font-subhead-md text-caption uppercase mb-2">Mentoring</h4>
+          <p class="text-xs text-on-surface-variant px-4">Refine your skills with personal feedback.</p>
+        </div>
+        <!-- Step 6 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-16 h-16 bg-white text-deep-sea border-2 border-deep-sea flex items-center justify-center font-display-xl text-3xl group-hover:scale-110 transition-transform mb-6">06</div>
+          <h4 class="font-subhead-md text-caption uppercase mb-2">Interview Prep</h4>
+          <p class="text-xs text-on-surface-variant px-4">Final polish for your sponsorship interview.</p>
+        </div>
+        <!-- Step 7 -->
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-16 h-16 bg-maritime-gold text-deep-sea flex items-center justify-center font-display-xl text-3xl group-hover:scale-110 transition-transform mb-6">07</div>
+          <h4 class="font-subhead-md text-caption uppercase mb-2 text-maritime-gold">Sail Away</h4>
+          <p class="text-xs text-on-surface-variant px-4">Join the Merchant Navy with pride.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-stack-lg bg-white relative overflow-hidden">
+    <div class="px-margin-mobile md:px-gutter max-w-4xl mx-auto relative z-10 transition-all duration-1000 opacity-100">
+      <div class="text-center mb-12">
+        <span class="font-caption text-caption text-maritime-gold tracking-widest uppercase">FAQ</span>
+        <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mb-4 uppercase">Frequently Asked Questions</h2>
+        <div class="w-24 h-1 bg-maritime-gold mx-auto"></div>
+      </div>
+      
+      <div class="space-y-4">
+        <!-- FAQ item 1 -->
+        <div class="border border-deep-sea/10 transition-all duration-300">
+          <button class="faq-toggle w-full flex justify-between items-center p-6 text-left hover:bg-horizon-gray transition-colors focus:outline-none">
+            <span class="font-subhead-md text-lg text-deep-sea uppercase">What is the IMU-CET exam?</span>
+            <span class="material-symbols-outlined text-maritime-gold faq-icon transition-transform">add</span>
+          </button>
+          <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <p class="p-6 pt-0 font-body-md text-on-surface-variant leading-relaxed">
+              The Indian Maritime University Common Entrance Test (IMU-CET) is a national-level entrance exam conducted for admissions to undergraduate maritime courses in India, including DNS, B.Sc. Nautical Science, and B.Tech Marine Engineering.
+            </p>
+          </div>
+        </div>
+        
+        <!-- FAQ item 2 -->
+        <div class="border border-deep-sea/10 transition-all duration-300">
+          <button class="faq-toggle w-full flex justify-between items-center p-6 text-left hover:bg-horizon-gray transition-colors focus:outline-none">
+            <span class="font-subhead-md text-lg text-deep-sea uppercase">What does "Sponsorship" mean in the Merchant Navy?</span>
+            <span class="material-symbols-outlined text-maritime-gold faq-icon transition-transform">add</span>
+          </button>
+          <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <p class="p-6 pt-0 font-body-md text-on-surface-variant leading-relaxed">
+              Sponsorship is a guarantee of employment at sea upon successful completion of your academic program. Top-tier shipping companies recruit students prior to the start of their training course.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ item 3 -->
+        <div class="border border-deep-sea/10 transition-all duration-300">
+          <button class="faq-toggle w-full flex justify-between items-center p-6 text-left hover:bg-horizon-gray transition-colors focus:outline-none">
+            <span class="font-subhead-md text-lg text-deep-sea uppercase">What is the eligibility criteria for DNS sponsorship?</span>
+            <span class="material-symbols-outlined text-maritime-gold faq-icon transition-transform">add</span>
+          </button>
+          <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <p class="p-6 pt-0 font-body-md text-on-surface-variant leading-relaxed">
+              Generally, candidates must have passed 10+2 with Physics, Chemistry, and Mathematics (PCM) at a minimum aggregate of 60%, and obtained at least 50% in English in both 10th and 12th standards. Age must be between 17 and 25 years.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="relative py-24 overflow-hidden">
+    <div class="absolute inset-0 bg-deep-sea transition-all duration-1000 opacity-100"></div>
+    <div class="relative z-10 px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center transition-all duration-1000 opacity-100">
+      <h2 class="font-display-xl text-5xl md:text-7xl text-white mb-6 uppercase">Ready to Begin Your Journey?</h2>
+      <p class="font-body-lg text-body-lg text-white/70 mb-10 max-w-2xl mx-auto">
+        Don't leave your dreams to chance. Join India's premier maritime academy and steer your future toward success.
+      </p>
+      <a href="#register" onclick="openRegModal(event)" class="bg-maritime-gold text-deep-sea font-display-xl text-3xl px-16 py-6 uppercase hover:bg-white hover:scale-105 active:scale-95 transition-all inline-block btn-gold-glow text-center">REGISTER NOW</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="bg-deep-sea text-on-primary">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-stack-md px-margin-mobile md:px-gutter py-stack-lg max-w-container-max mx-auto border-t border-maritime-gold/30">
+      <div class="space-y-4">
+        <a href="#" class="flex items-center gap-3 h-14 mb-4 hover:opacity-90 transition-opacity">
+          <img src="logo.png" alt="SINDHUPATH Logo" class="h-full w-auto object-contain">
+          <span class="font-sans font-bold text-xl tracking-[0.15em] text-white uppercase">SINDHUPATH</span>
+        </a>
+        <p class="font-body-md text-on-primary/60">India's leading Merchant Navy coaching institute, dedicated to shaping the deck officers and engineers of tomorrow.</p>
+        <div class="flex gap-4 pt-4">
+          <a href="https://www.linkedin.com/company/sindhupath/about/" target="_blank" rel="noopener noreferrer" class="text-maritime-gold hover:text-white transition-colors flex items-center justify-center w-10 h-10 border border-maritime-gold/30 hover:border-white" title="Visit LinkedIn">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
+            </svg>
+          </a>
+          <a href="mailto:Sindhupath@outlook.com" class="text-maritime-gold hover:text-white transition-colors flex items-center justify-center w-10 h-10 border border-maritime-gold/30 hover:border-white" title="Send Email to Sindhupath">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-label-bold text-maritime-gold uppercase mb-6">Training</h4>
+        <ul class="space-y-3">
+          <li><a class="font-body-md text-on-primary/80 hover:text-white transition-colors" href="#courses">IMU-CET Prep</a></li>
+          <li><a class="font-body-md text-on-primary/80 hover:text-white transition-colors" href="#courses">DNS Sponsorship</a></li>
+          <li><a class="font-body-md text-on-primary/80 hover:text-white transition-colors" href="#courses">Mentorship</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-label-bold text-maritime-gold uppercase mb-6">Contact Us</h4>
+        <ul class="space-y-3">
+          <li>
+            <a class="font-body-md text-on-primary/80 hover:text-white transition-colors flex items-center gap-2" href="mailto:Sindhupath@outlook.com" title="Email Sindhupath">
+              <span class="material-symbols-outlined text-base">mail</span> Sindhupath@outlook.com
+            </a>
+          </li>
+          <li><a class="font-body-md text-on-primary/80 hover:text-white transition-colors" href="#about">About Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-label-bold text-maritime-gold uppercase mb-6">Legal</h4>
+        <ul class="space-y-3">
+          <li><a class="font-body-md text-on-primary/80 hover:text-white transition-colors" href="#">Terms of Service</a></li>
+          <li><a class="font-body-md text-on-primary/80 hover:text-white transition-colors" href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="bg-primary py-8 text-center px-margin-mobile">
+      <p class="font-caption text-caption text-on-primary/40 uppercase tracking-[0.2em]">© 2026 SINDHUPATH MERCHANT NAVY ACADEMY. ALL RIGHTS RESERVED.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Animated Yellow Hero Text (Typed.js)
+    if (typeof Typed !== 'undefined' && document.getElementById('typed-text')) {
+      new Typed('#typed-text', {
+        strings: ['THE SEA', 'EXCELLENCE', 'DISCIPLINE', 'A HIGH-PAYING CAREER', 'IMU-CET SUCCESS'],
+        typeSpeed: 70,
+        backSpeed: 45,
+        backDelay: 3500,
+        loop: true
+      });
+    }
+
+    // Scroll header styling transition
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled-header', 'py-2.5');
+        header.classList.remove('py-3');
+      } else {
+        header.classList.remove('scrolled-header', 'py-2.5');
+        header.classList.add('py-3');
+      }
+    });
+
+    // 1. Mobile Drawer Navigation Toggle
+    const openDrawerBtn = document.getElementById('open-drawer');
+    const closeDrawerBtn = document.getElementById('close-drawer');
+    const drawer = document.getElementById('mobile-drawer');
+    const drawerLinks = [
+      document.getElementById('drawer-link-courses'),
+      document.getElementById('drawer-link-about'),
+      document.getElementById('drawer-link-contact'),
+      document.getElementById('drawer-link-become-host')
+    ];
+
+    openDrawerBtn.addEventListener('click', () => {
+      drawer.classList.remove('translate-x-full');
+    });
+
+    const closeDrawer = () => {
+      drawer.classList.add('translate-x-full');
+    };
+
+    closeDrawerBtn.addEventListener('click', closeDrawer);
+    drawerLinks.forEach(link => {
+      if (link) link.addEventListener('click', closeDrawer);
+    });
+
+    // 2. FAQ Accordion Toggle
+    document.querySelectorAll('.faq-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const content = button.nextElementSibling;
+        const icon = button.querySelector('.faq-icon');
+        
+        if (content.style.maxHeight) {
+          content.style.maxHeight = null;
+          icon.style.transform = 'rotate(0deg)';
+          icon.innerText = 'add';
+          button.parentElement.classList.remove('border-maritime-gold');
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+          icon.style.transform = 'rotate(45deg)';
+          icon.innerText = 'add';
+          button.parentElement.classList.add('border-maritime-gold');
+        }
+      });
+    });
+
+    // 3. Staggered Scroll Reveal Animations using IntersectionObserver
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-10');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Track sections for scroll entrance
+    document.querySelectorAll('section > div:not(.no-reveal), .reveal').forEach(el => {
+      el.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+      observer.observe(el);
+    });
+
+    // -------------------------------------------------------------
+    // Bulletin Board & Notices Logic
+    // -------------------------------------------------------------
+    // Helper to parse date string (e.g. "Oct 15, 2026") into day & month
+    function parseDateStr(dateStr) {
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const month = months[d.getMonth()];
+        return { day, month };
+      }
+      
+      // Fallback regex parsing (e.g. "Oct 15, 2026")
+      const match = dateStr.match(/([A-Za-z]+)\s+(\d+)/);
+      if (match) {
+        const month = match[1].substring(0, 3).toUpperCase();
+        const day = String(parseInt(match[2])).padStart(2, '0');
+        return { day, month };
+      }
+      
+      return { day: '15', month: 'OCT' };
+    }
+
+    const defaultNews = [
+      {
+        id: 1,
+        tag: 'Admissions',
+        tagColor: 'bg-maritime-gold/20 text-maritime-gold border border-maritime-gold/30',
+        date: 'Oct 15, 2026',
+        title: 'Winter Enrollment Open',
+        desc: 'Applications are now live for the upcoming IMU-CET batch. Secure your seat early.',
+        link: 'https://docs.google.com/forms/d/e/1FAIpQLScuh4w6FVC6gVCVBX9BqxI-m_-CRNsIy5NqEiAlPMajFJACzg/viewform',
+        linkText: 'Register Online'
+      },
+      {
+        id: 2,
+        tag: 'Urgent',
+        tagColor: 'bg-red-500/10 text-red-500 border border-red-500/20',
+        date: 'Oct 22, 2026',
+        title: 'New Sponsorship Drive',
+        desc: 'Major shipping lines announcing fresh sponsorship exams. Prepare with our focused crash course.',
+        link: '#courses',
+        linkText: 'Learn More'
+      },
+      {
+        id: 3,
+        tag: 'New',
+        tagColor: 'bg-green-500/10 text-green-500 border border-green-500/20',
+        date: 'Nov 05, 2026',
+        title: 'Virtual Open House',
+        desc: 'Join our online interactive session to interact with faculty and alumni.',
+        link: 'https://docs.google.com/forms/d/e/1FAIpQLScuh4w6FVC6gVCVBX9BqxI-m_-CRNsIy5NqEiAlPMajFJACzg/viewform',
+        linkText: 'Enroll Now'
+      }
+    ];
+
+    const defaultPosterSVG = `<svg width="100%" height="100%" viewBox="0 0 400 550" class="w-full h-full rounded-xl" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="posterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B2345" />
+      <stop offset="50%" stop-color="#000d25" />
+      <stop offset="100%" stop-color="#05142b" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="550" fill="url(#posterGrad)" rx="12"/>
+  <circle cx="200" cy="275" r="180" fill="none" stroke="#C89B3C" stroke-width="1" stroke-opacity="0.15" stroke-dasharray="5,5" />
+  <circle cx="200" cy="275" r="140" fill="none" stroke="#C89B3C" stroke-width="1" stroke-opacity="0.1" />
+  <path d="M 200,80 L 208,105 L 235,105 L 212,120 L 220,145 L 200,130 L 180,145 L 188,120 L 165,105 L 192,105 Z" fill="#C89B3C" />
+  <text x="200" y="210" font-family="'Oswald', sans-serif" font-size="26" fill="#C89B3C" text-anchor="middle" letter-spacing="3" font-weight="600">SINDHUPATH</text>
+  <text x="200" y="240" font-family="'Montserrat', sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" font-weight="500" letter-spacing="2">MERCHANT NAVY ACADEMY</text>
+  <line x1="120" y1="260" x2="280" y2="260" stroke="#C89B3C" stroke-width="1.5" />
+  
+  <rect x="40" y="285" width="320" height="45" rx="6" fill="rgba(200,155,60,0.12)" stroke="rgba(200,155,60,0.3)" stroke-width="1" />
+  <text x="200" y="312" font-family="'Montserrat', sans-serif" font-size="13" fill="#C89B3C" text-anchor="middle" font-weight="bold" letter-spacing="1">ADMISSIONS OPEN: JAN 2027 BATCH</text>
+  
+  <text x="200" y="370" font-family="'Montserrat', sans-serif" font-size="12" fill="#E2E2E2" text-anchor="middle">Elite Preparation for IMU-CET & DNS Sponsorship</text>
+  <text x="200" y="395" font-family="'Montserrat', sans-serif" font-size="12" fill="#E2E2E2" text-anchor="middle">Sponsorship Guidance with Top Shipping Lines</text>
+  <text x="200" y="420" font-family="'Montserrat', sans-serif" font-size="12" fill="#E2E2E2" text-anchor="middle">100% Sponsorship Track Record</text>
+  
+  <circle cx="200" cy="460" r="15" fill="none" stroke="#C89B3C" stroke-width="1.5" />
+  <path d="M 195,460 L 205,460 M 200,455 L 200,465" stroke="#C89B3C" stroke-width="1.5" />
+  
+  <text x="200" y="500" font-family="'Oswald', sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">STEER YOUR CAREER TO THE SEAS</text>
+</svg>`;
+
+    // LocalStorage keys
+    const POSTER_KEY = 'sindhupath_poster';
+    const NEWS_KEY = 'sindhupath_news';
+
+    // State Variables
+    let activePoster = localStorage.getItem(POSTER_KEY) || null;
+    let newsList = JSON.parse(localStorage.getItem(NEWS_KEY)) || null;
+    let tempPosterData = null; // store file base64 temporarily before saving
+
+    if (!newsList) {
+      newsList = [...defaultNews];
+      localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
+    }
+
+    // Elements
+    const posterDisplayContainer = document.getElementById('poster-display-container');
+    const newsFeedContainer = document.getElementById('news-feed-container');
+    const openAdminBtn = document.getElementById('open-admin-btn');
+    const adminModal = document.getElementById('admin-modal');
+    const closeAdminModal = document.getElementById('close-admin-modal');
+    const viewPosterBtn = document.getElementById('view-poster-btn');
+    const downloadPosterBtn = document.getElementById('download-poster-btn');
+    const posterModal = document.getElementById('poster-modal');
+    const closePosterModal = document.getElementById('close-poster-modal');
+    const modalPosterContent = document.getElementById('modal-poster-content');
+
+    // Admin Elements
+    const tabPosterBtn = document.getElementById('tab-poster-btn');
+    const tabNewsBtn = document.getElementById('tab-news-btn');
+    const tabPosterContent = document.getElementById('tab-poster-content');
+    const tabNewsContent = document.getElementById('tab-news-content');
+    const posterFileInput = document.getElementById('poster-file-input');
+    const posterUrlInput = document.getElementById('poster-url-input');
+    const fileUploadStatus = document.getElementById('file-upload-status');
+    const savePosterBtn = document.getElementById('save-poster-btn');
+    const resetPosterBtn = document.getElementById('reset-poster-btn');
+    
+    const addNewsForm = document.getElementById('add-news-form');
+    const adminNewsList = document.getElementById('admin-news-list');
+    const resetNewsBtn = document.getElementById('reset-news-btn');
+
+    // Render Poster View
+    
+    // -------------------------------------------------------------
+    // Google Sheets Poster Integration & Dynamic Slideshow Engine
+    // (Pattern from Ananth_Decor: JSONP script-tag + triple URL fallback)
+    // -------------------------------------------------------------
+    const SHEET_ID_POSTERS = '1lRqrTtCn7-185Izv0_sXQC42IDjNqvaxWN9ncoMKQj8';
+
+    let posterImages = []; // each entry: { id, primaryUrl, cdnUrl, backupUrl }
+    let currentSlideIndex = 0;
+    let slideInterval = null;
+
+    // Extract ALL Drive file IDs from a cell value — handles multiple comma-separated URLs
+    // Same pattern as Ananth_Decor: splits on whitespace/comma/semicolon, matches each segment
+    function extractDriveFileIds(val) {
+      if (!val) return [];
+      const ids = [];
+      const segments = val.toString().split(/[\s,;]+/);
+      for (const seg of segments) {
+        const match = seg.match(/(?:id=|\/d\/|\/file\/d\/|open\?id=)([a-zA-Z0-9_-]{20,})/);
+        if (match && match[1]) {
+          const cleanId = match[1].replace(/[^a-zA-Z0-9_-]/g, '');
+          if (cleanId && !ids.includes(cleanId)) ids.push(cleanId);
+        }
+      }
+      return ids;
+    }
+
+    // Build all three URL variants from a file ID
+    function buildPosterUrls(fileId) {
+      return {
+        id: fileId,
+        primaryUrl: `https://drive.google.com/uc?export=view&id=${fileId}`,
+        cdnUrl:     `https://lh3.googleusercontent.com/d/${fileId}=w1200`,
+        backupUrl:  `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`
+      };
+    }
+
+    // Called by JSONP script tag (Ananth_Decor pattern — bypasses CORS entirely)
+    window.onSheetPosterData = function(data) {
+      if (!data || !data.table || !data.table.rows) { renderPosterSlideshow(); return; }
+      const rows = data.table.rows;
+      const result = [];
+      rows.forEach(row => {
+        const c = row.c || [];
+        // Column B (index 1) = uploaded poster Drive URL(s) — may be multiple comma-separated
+        const rawVal = c[1] && c[1].v ? String(c[1].v).trim() : '';
+        const fileIds = extractDriveFileIds(rawVal);
+        fileIds.forEach(fid => result.push(buildPosterUrls(fid)));
+      });
+      if (result.length > 0) {
+        posterImages = result;
+      } else if (activePoster) {
+        posterImages = [{ id: '', primaryUrl: activePoster, cdnUrl: activePoster, backupUrl: activePoster }];
+      } else {
+        posterImages = [];
+      }
+      renderPosterSlideshow();
+    };
+
+    function fetchSheetPosters() {
+      const scriptId = 'sindhupath-sheet-poster-script';
+      const old = document.getElementById(scriptId);
+      if (old) old.remove();
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID_POSTERS}/gviz/tq?tqx=responseHandler:window.onSheetPosterData&sheet=Sheet1&t=${Date.now()}`;
+      script.onerror = () => {
+        console.warn('JSONP failed, trying fetch fallback...');
+        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID_POSTERS}/gviz/tq?tqx=out:json&sheet=Sheet1&t=${Date.now()}`)
+          .then(r => r.text())
+          .then(text => {
+            const m = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+            if (m && m[1]) { try { window.onSheetPosterData(JSON.parse(m[1])); } catch(e) { renderPosterSlideshow(); } }
+            else renderPosterSlideshow();
+          })
+          .catch(() => renderPosterSlideshow());
+      };
+      document.body.appendChild(script);
+    }
+
+    function renderPosterSlideshow() {
+      if (slideInterval) clearInterval(slideInterval);
+
+      if (posterImages.length === 0) {
+        posterDisplayContainer.innerHTML = defaultPosterSVG;
+        downloadPosterBtn.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);
+        return;
+      }
+
+      if (posterImages.length === 1) {
+        const p = posterImages[0];
+        posterDisplayContainer.innerHTML = `<img
+          src="${p.primaryUrl}"
+          data-cdn="${p.cdnUrl}"
+          data-backup="${p.backupUrl}"
+          class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          alt="Notice Banner"
+          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+        >`;
+        downloadPosterBtn.href = p.primaryUrl;
+        return;
+      }
+
+      // If 2 or more images -> Render Slideshow Carousel
+      currentSlideIndex = 0;
+
+      let slidesHtml = posterImages.map((p, idx) => `
+        <div class="poster-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
+          <img
+            src="${p.primaryUrl}"
+            data-cdn="${p.cdnUrl}"
+            data-backup="${p.backupUrl}"
+            class="w-full h-full object-cover"
+            alt="Notice Poster ${idx+1}"
+            onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+          >
+        </div>
+      `).join('');
+
+      let dotsHtml = posterImages.map((_, idx) => `
+        <button onclick="goToSlide(${idx})" class="slide-dot w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-maritime-gold w-6' : 'bg-white/50 hover:bg-white'}"></button>
+      `).join('');
+
+      posterDisplayContainer.innerHTML = `
+        <div class="relative w-full h-[380px] overflow-hidden group">
+          ${slidesHtml}
+
+          <!-- Nav Controls -->
+          <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+
+          <!-- Dots Indicators -->
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
+            ${dotsHtml}
+          </div>
+        </div>
+      `;
+
+      updateActiveSlideControls();
+
+      // Start auto-play slideshow every 4 seconds if > 1 images
+      slideInterval = setInterval(() => {
+        nextSlide();
+      }, 4000);
+    }
+
+    function updateActiveSlideControls() {
+      const slides = document.querySelectorAll('.poster-slide');
+      const dots = document.querySelectorAll('.slide-dot');
+
+      slides.forEach((slide, idx) => {
+        if (idx === currentSlideIndex) {
+          slide.classList.remove('opacity-0', 'z-0');
+          slide.classList.add('opacity-100', 'z-10');
+        } else {
+          slide.classList.remove('opacity-100', 'z-10');
+          slide.classList.add('opacity-0', 'z-0');
+        }
+      });
+
+      dots.forEach((dot, idx) => {
+        if (idx === currentSlideIndex) {
+          dot.className = 'slide-dot w-6 h-2.5 rounded-full bg-maritime-gold transition-all duration-300';
+        } else {
+          dot.className = 'slide-dot w-2.5 h-2.5 rounded-full bg-white/50 hover:bg-white transition-all duration-300';
+        }
+      });
+
+      if (posterImages[currentSlideIndex]) {
+        downloadPosterBtn.href = posterImages[currentSlideIndex].primaryUrl;
+      }
+    }
+
+    function goToSlide(index) {
+      currentSlideIndex = index;
+      updateActiveSlideControls();
+    }
+
+    function nextSlide() {
+      if (posterImages.length === 0) return;
+      currentSlideIndex = (currentSlideIndex + 1) % posterImages.length;
+      updateActiveSlideControls();
+    }
+
+    function prevSlide() {
+      if (posterImages.length === 0) return;
+      currentSlideIndex = (currentSlideIndex - 1 + posterImages.length) % posterImages.length;
+      updateActiveSlideControls();
+    }
+
+    function renderPoster() {
+      fetchSheetPosters();
+    }
+
+// Render News Feed View
+    function renderNewsFeed() {
+      if (newsList.length === 0) {
+        newsFeedContainer.innerHTML = `
+          <div class="text-center py-12 border border-dashed border-deep-sea/10 rounded-2xl bg-[#f7f9fc]">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">info</span>
+            <p class="font-bold text-deep-sea text-base">No active bulletins</p>
+            <p class="text-xs text-on-surface-variant">Check back later for academy news and updates.</p>
+          </div>
+        `;
+        return;
+      }
+
+      newsFeedContainer.innerHTML = newsList.map(item => {
+        const parsed = parseDateStr(item.date);
+        return `
+          <div class="flex items-start gap-4 border-b border-deep-sea/5 pb-5 last:border-b-0 last:pb-0 group reveal opacity-100 translate-y-0">
+            <!-- Date Badge -->
+            <div class="shrink-0 w-14 h-14 md:w-16 md:h-16 bg-deep-sea rounded-xl flex flex-col items-center justify-center shadow-md border border-white/10">
+              <span class="font-display-xl text-lg md:text-xl text-maritime-gold font-bold leading-none">${parsed.day}</span>
+              <span class="font-caption text-[9px] md:text-[10px] text-maritime-gold font-semibold tracking-wider uppercase mt-1 leading-none">${parsed.month}</span>
+            </div>
+            <!-- News Content -->
+            <div class="flex-grow min-w-0">
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <h4 class="font-subhead-md text-base md:text-lg font-bold text-deep-sea group-hover:text-maritime-gold transition-colors duration-300">
+                  ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>` : item.title}
+                </h4>
+                <span class="${item.tagColor} text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">${item.tag}</span>
+              </div>
+              <p class="font-body-md text-xs md:text-sm text-on-surface-variant leading-relaxed mt-1">${item.desc}</p>
+              ${item.link ? `
+              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-maritime-gold hover:text-deep-sea transition-colors mt-2">
+                ${item.linkText || 'Read Details'}
+                <span class="material-symbols-outlined text-xs">arrow_forward</span>
+              </a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render News list in Admin panel (for deletion)
+    function renderAdminNews() {
+      if (newsList.length === 0) {
+        adminNewsList.innerHTML = `<p class="text-xs text-white/50 py-4 text-center">No bulletins added yet.</p>`;
+        return;
+      }
+
+      adminNewsList.innerHTML = newsList.map(item => `
+        <div class="flex justify-between items-center py-3 gap-4">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="${item.tagColor} text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full">${item.tag}</span>
+              <span class="text-[10px] text-white/40">${item.date}</span>
+            </div>
+            <p class="font-bold text-xs text-white truncate">${item.title}</p>
+          </div>
+          <button onclick="deleteNewsItem(${item.id})" class="text-red-400 hover:text-red-500 font-bold text-xs shrink-0 flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">delete</span> Delete
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // Delete News Item
+    window.deleteNewsItem = function(id) {
+      newsList = newsList.filter(item => item.id !== id);
+      localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
+      renderNewsFeed();
+      renderAdminNews();
+    };
+
+    // Modal Triggers
+    if (openAdminBtn) {
+      openAdminBtn.addEventListener('click', () => {
+        adminModal.classList.remove('hidden');
+        adminModal.classList.add('flex');
+        renderAdminNews();
+      });
+    }
+
+    closeAdminModal.addEventListener('click', () => {
+      adminModal.classList.add('hidden');
+      adminModal.classList.remove('flex');
+    });
+
+    viewPosterBtn.addEventListener('click', () => {
+      const p = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : null;
+      const currentUrl = p ? p.primaryUrl : activePoster;
+      const cdnUrl = p ? p.cdnUrl : '';
+      const backupUrl = p ? p.backupUrl : '';
+      if (currentUrl) {
+        modalPosterContent.innerHTML = `<img
+          src="${currentUrl}"
+          data-cdn="${cdnUrl}"
+          data-backup="${backupUrl}"
+          class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
+          alt="Notice Poster"
+          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+        >`;
+      } else {
+        modalPosterContent.innerHTML = defaultPosterSVG;
+      }
+      posterModal.classList.remove('hidden');
+      posterModal.classList.add('flex');
+    });
+
+    closePosterModal.addEventListener('click', () => {
+      posterModal.classList.add('hidden');
+      posterModal.classList.remove('flex');
+    });
+
+    // Close Modals on Outer Click
+    window.addEventListener('click', (e) => {
+      if (e.target === adminModal) closeAdminModal.click();
+      if (e.target === posterModal) closePosterModal.click();
+    });
+
+    // Tab Switching in Admin Panel
+    tabPosterBtn.addEventListener('click', () => {
+      tabPosterBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-maritime-gold text-maritime-gold bg-white/5 transition-all";
+      tabNewsBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-transparent text-white/60 hover:text-white transition-all";
+      tabPosterContent.classList.remove('hidden');
+      tabNewsContent.classList.add('hidden');
+    });
+
+    tabNewsBtn.addEventListener('click', () => {
+      tabNewsBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-maritime-gold text-maritime-gold bg-white/5 transition-all";
+      tabPosterBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-transparent text-white/60 hover:text-white transition-all";
+      tabNewsContent.classList.remove('hidden');
+      tabPosterContent.classList.add('hidden');
+      renderAdminNews();
+    });
+
+    // File Input Change Listener
+    posterFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          showToast('Image size exceeds 2MB limit. Please upload a smaller image.', 'error');
+          posterFileInput.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          tempPosterData = evt.target.result;
+          fileUploadStatus.classList.remove('hidden');
+          posterUrlInput.value = ''; // clear url input if file uploaded
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Save Poster Action
+    savePosterBtn.addEventListener('click', () => {
+      const urlValue = posterUrlInput.value.trim();
+      if (tempPosterData) {
+        activePoster = tempPosterData;
+        localStorage.setItem(POSTER_KEY, activePoster);
+        showToast('Poster image uploaded and saved successfully!', 'success');
+      } else if (urlValue) {
+        activePoster = urlValue;
+        localStorage.setItem(POSTER_KEY, activePoster);
+        showToast('Poster URL saved successfully!', 'success');
+      } else {
+        showToast('Please choose an image file or enter an image URL first.', 'warning');
+        return;
+      }
+      
+      // Reset temporary states & render
+      tempPosterData = null;
+      fileUploadStatus.classList.add('hidden');
+      posterFileInput.value = '';
+      posterUrlInput.value = '';
+      renderPoster();
+      closeAdminModal.click();
+    });
+
+    // Reset Poster Action
+    resetPosterBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset to the default poster?')) {
+        activePoster = null;
+        localStorage.removeItem(POSTER_KEY);
+        tempPosterData = null;
+        fileUploadStatus.classList.add('hidden');
+        posterFileInput.value = '';
+        posterUrlInput.value = '';
+        renderPoster();
+        closeAdminModal.click();
+      }
+    });
+
+    // Reset News Action
+    resetNewsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to reset all bulletins to default items?')) {
+        newsList = [...defaultNews];
+        localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
+        renderNewsFeed();
+        renderAdminNews();
+      }
+    });
+
+    // Add News Item Form Submit
+    addNewsForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const badge = document.getElementById('news-badge-input').value;
+      const title = document.getElementById('news-title-input').value.trim();
+      const desc = document.getElementById('news-desc-input').value.trim();
+      const link = document.getElementById('news-link-input').value.trim();
+      const linkText = document.getElementById('news-btn-text-input').value.trim();
+
+      let tagColor = 'bg-blue-500/10 text-blue-500 border border-blue-500/20'; // general / notice
+      if (badge === 'Urgent') {
+        tagColor = 'bg-red-500/10 text-red-500 border border-red-500/20';
+      } else if (badge === 'Admissions') {
+        tagColor = 'bg-maritime-gold/20 text-maritime-gold border border-maritime-gold/30';
+      } else if (badge === 'New') {
+        tagColor = 'bg-green-500/10 text-green-500 border border-green-500/20';
+      }
+
+      const newItem = {
+        id: Date.now(),
+        tag: badge,
+        tagColor: tagColor,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+        title: title,
+        desc: desc,
+        link: link || null,
+        linkText: linkText || null
+      };
+
+      newsList.unshift(newItem);
+      localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
+      
+      // Reset Form & render
+      addNewsForm.reset();
+      renderNewsFeed();
+      renderAdminNews();
+      showToast('Announcement bulletin item added successfully!', 'success');
+    });
+
+    // Initial Bulletins Render & Live Auto-Refresh (Sync with Google Form responses every 60s)
+    renderPoster();
+    renderNewsFeed();
+    setInterval(() => {
+      fetchSheetPosters();
+    }, 60000);
+  </script>
+
+  <!-- Fullscreen Poster Modal -->
+  <div id="poster-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 transition-all duration-300">
+    <div class="relative max-w-lg w-full bg-transparent flex flex-col items-center">
+      <button id="close-poster-modal" class="absolute -top-12 right-0 text-white/85 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all focus:outline-none">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+      <div id="modal-poster-content" class="w-full max-h-[80vh] flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl">
+        <!-- Injected dynamic poster image or SVG markup -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Control Modal -->
+  <div id="admin-modal" class="fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 transition-all duration-300">
+    <div class="bg-deep-sea text-white border border-maritime-gold/30 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-[#07172E]">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-maritime-gold">admin_panel_settings</span>
+          <h3 class="font-sans font-bold tracking-wide uppercase text-lg">Sindhupath Bulletin Admin</h3>
+        </div>
+        <button id="close-admin-modal" class="text-white/60 hover:text-white focus:outline-none">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex border-b border-white/10 bg-[#0c1e36]">
+        <button id="tab-poster-btn" class="flex-1 py-3 font-semibold text-sm border-b-2 border-maritime-gold text-maritime-gold bg-white/5 transition-all">Manage Poster</button>
+        <button id="tab-news-btn" class="flex-1 py-3 font-semibold text-sm border-b-2 border-transparent text-white/60 hover:text-white transition-all">Manage News & Links</button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto flex-grow space-y-6">
+        
+        <!-- Tab 1: Manage Poster -->
+        <div id="tab-poster-content" class="space-y-6">
+          <div class="bg-primary/50 p-4 border border-white/5 rounded-xl">
+            <h4 class="font-bold text-maritime-gold text-sm uppercase mb-2">Update Notice Poster</h4>
+            <p class="text-xs text-white/70 leading-relaxed">Upload a new promotional banner, exam announcement, or information poster. You can upload an image file (PNG/JPG) or paste an image URL.</p>
+          </div>
+
+          <!-- Upload File Form -->
+          <div class="space-y-4">
+            <label class="block text-xs uppercase font-bold text-white/80 tracking-wider">Method A: Upload Local Image</label>
+            <div class="flex items-center justify-center w-full">
+              <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 hover:border-maritime-gold/50 rounded-xl cursor-pointer hover:bg-white/[0.02] transition-all">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                  <span class="material-symbols-outlined text-maritime-gold text-3xl mb-2">cloud_upload</span>
+                  <p class="text-sm font-semibold">Click to upload poster image</p>
+                  <p class="text-xs text-white/50 mt-1">PNG, JPG or JPEG (Max 2MB)</p>
+                </div>
+                <input type="file" id="poster-file-input" class="hidden" accept="image/*" />
+              </label>
+            </div>
+            <div id="file-upload-status" class="text-xs text-green-400 hidden flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">check_circle</span> Image loaded successfully! Click Save below.
+            </div>
+          </div>
+
+          <!-- URL Input Form -->
+          <div class="space-y-2">
+            <label class="block text-xs uppercase font-bold text-white/80 tracking-wider">Method B: Image URL</label>
+            <input type="url" id="poster-url-input" placeholder="https://example.com/poster.jpg" class="w-full bg-primary/40 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-maritime-gold transition-all" />
+          </div>
+
+          <div class="flex gap-4 pt-4 border-t border-white/5">
+            <button id="save-poster-btn" class="flex-1 bg-maritime-gold text-deep-sea py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-white hover:scale-[1.02] active:scale-95 transition-all">Save Poster</button>
+            <button id="reset-poster-btn" class="bg-white/15 text-white px-5 py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-white/25 active:scale-95 transition-all">Reset Default</button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Manage News & Links -->
+        <div id="tab-news-content" class="hidden space-y-6">
+          
+          <!-- Add News Form -->
+          <form id="add-news-form" class="space-y-4 bg-primary/30 p-5 border border-white/5 rounded-xl">
+            <h4 class="font-bold text-maritime-gold text-sm uppercase mb-4">Add News Bulletin</h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs uppercase font-bold text-white/80 tracking-wider mb-2">Category Badge</label>
+                <select id="news-badge-input" class="w-full bg-primary/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-maritime-gold transition-all">
+                  <option value="New">New</option>
+                  <option value="Urgent">Urgent</option>
+                  <option value="Admissions">Admissions</option>
+                  <option value="Notice">Notice</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs uppercase font-bold text-white/80 tracking-wider mb-2">Notice Title</label>
+                <input type="text" id="news-title-input" placeholder="e.g. IMU CET Form Out" required class="w-full bg-primary/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-maritime-gold transition-all" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs uppercase font-bold text-white/80 tracking-wider mb-2">Short Description</label>
+              <textarea id="news-desc-input" rows="2" placeholder="Brief details about the announcement..." required class="w-full bg-primary/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-maritime-gold transition-all"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs uppercase font-bold text-white/80 tracking-wider mb-2">Link/Action URL</label>
+                <input type="text" id="news-link-input" placeholder="e.g. https://forms.gle/... or #courses" class="w-full bg-primary/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-maritime-gold transition-all" />
+              </div>
+              <div>
+                <label class="block text-xs uppercase font-bold text-white/80 tracking-wider mb-2">Button Text</label>
+                <input type="text" id="news-btn-text-input" placeholder="e.g. Apply Now" class="w-full bg-primary/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-maritime-gold transition-all" />
+              </div>
+            </div>
+
+            <button type="submit" class="w-full bg-maritime-gold text-deep-sea py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-white hover:scale-[1.02] active:scale-95 transition-all">Add Bulletin Item</button>
+          </form>
+
+          <!-- Current News List -->
+          <div class="space-y-3">
+            <div class="flex justify-between items-center mb-2">
+              <h4 class="font-bold text-white text-xs uppercase tracking-widest">Active Bulletins</h4>
+              <button id="reset-news-btn" class="text-xs text-maritime-gold hover:underline hover:text-white transition-colors">Reset Default News</button>
+            </div>
+            <div id="admin-news-list" class="space-y-3 divide-y divide-white/5">
+              <!-- News items listed here with delete button -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <button id="scroll-to-top" class="fixed bottom-8 right-8 bg-maritime-gold text-deep-sea p-3 rounded-full shadow-2xl opacity-0 invisible translate-y-4 hover:scale-110 active:scale-95 transition-all duration-300 z-50 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-maritime-gold/30" aria-label="Scroll to top">
+    <span class="material-symbols-outlined text-2xl">arrow_upward</span>
+  </button>
+
+  <script>
+    // Scroll to Top Logic
+    const scrollTopBtn = document.getElementById('scroll-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 500) {
+        scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+        scrollTopBtn.classList.add('opacity-100', 'visible', 'translate-y-0');
+      } else {
+        scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+        scrollTopBtn.classList.remove('opacity-100', 'visible', 'translate-y-0');
+      }
+    });
+
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+
+      <!-- Registration Modal -->
+  <div id="reg-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-all duration-300">
+    <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+      <!-- Header -->
+      <div class="bg-deep-sea p-6 text-white text-center relative">
+        <button onclick="closeRegModal()" class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors focus:outline-none">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3 class="font-headline-lg-mobile text-2xl uppercase tracking-wider text-maritime-gold">Register Now</h3>
+        <p class="text-sm text-white/80 mt-1">Join India's premier maritime academy.</p>
+      </div>
+
+      <!-- Form Body -->
+      <div class="p-6 overflow-y-auto custom-scrollbar">
+        <form id="reg-form" onsubmit="submitRegForm(event)" class="space-y-4">
+          <input type="hidden" name="fbzx" value="7878738030924406895">
+          <input type="hidden" name="entry.605285063_year" id="dob-year">
+          <input type="hidden" name="entry.605285063_month" id="dob-month">
+          <input type="hidden" name="entry.605285063_day" id="dob-day">
+
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Full Name *</label>
+            <input type="text" name="entry.357012527" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="Enter your full name">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Email Address *</label>
+            <input type="email" name="entry.2121376446" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="yourname@email.com">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Phone Number / WhatsApp *</label>
+            <input type="tel" name="entry.1036945399" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="10-digit mobile number">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Date of Birth *</label>
+            <input type="date" id="dob-input" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Current Educational Qualification *</label>
+            <select name="entry.536136667" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors">
+              <option value="">Select Qualification...</option>
+              <option value="12th pass">12th Pass</option>
+              <option value="12th">12th (Appearing)</option>
+              <option value="11th">11th</option>
+              <option value="Graduate">Graduate</option>
+              <option value="Diploma">Diploma</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">English Percentage (10th/12th)</label>
+            <input type="text" name="entry.1621133166" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors" placeholder="e.g. 75%">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-deep-sea uppercase tracking-wider mb-1">Normal Color Vision & Medical Fitness? *</label>
+            <select name="entry.370656981" required class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-maritime-gold focus:ring-1 focus:ring-maritime-gold transition-colors">
+              <option value="">Select Status...</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Maybe">Maybe / Not Sure</option>
+            </select>
+          </div>
+
+          <button type="submit" id="reg-submit-btn" class="w-full bg-maritime-gold text-deep-sea py-3 mt-4 rounded-lg font-bold text-sm uppercase tracking-wider hover:bg-[#e6b95c] active:scale-95 transition-all shadow-md">
+            Submit Registration
+          </button>
+        </form>
+
+        <!-- Success Message -->
+        <div id="reg-success" class="hidden flex-col items-center justify-center text-center py-8 space-y-4">
+          <span class="material-symbols-outlined text-green-500 text-6xl">check_circle</span>
+          <h4 class="font-headline-lg-mobile text-2xl text-deep-sea uppercase">Registration Complete!</h4>
+          <p class="text-sm text-gray-600">Your details have been successfully recorded in our academy database. Our team will contact you shortly.</p>
+          <button onclick="closeRegModal()" class="mt-4 bg-deep-sea text-white px-8 py-2 rounded-full uppercase text-xs tracking-wider font-bold hover:bg-black transition-colors">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Registration Modal Logic
+    const regModal = document.getElementById('reg-modal');
+    const regForm = document.getElementById('reg-form');
+    const regSuccess = document.getElementById('reg-success');
+
+    function openRegModal(ev) {
+      if(ev) ev.preventDefault();
+      regModal.classList.remove('hidden');
+      regModal.classList.add('flex');
+    }
+
+    function closeRegModal() {
+      regModal.classList.add('hidden');
+      regModal.classList.remove('flex');
+      setTimeout(() => {
+        regForm.reset();
+        regForm.classList.remove('hidden');
+        regSuccess.classList.add('hidden');
+        regSuccess.classList.remove('flex');
+      }, 300);
+    }
+
+    async function submitRegForm(ev) {
+      ev.preventDefault();
+
+      const submitBtn = document.getElementById('reg-submit-btn');
+      submitBtn.innerText = 'Submitting...';
+      submitBtn.disabled = true;
+
+      // Handle Date of Birth parsing
+      const dobInput = document.getElementById('dob-input').value;
+      if (dobInput) {
+        const parts = dobInput.split('-');
+        if (parts.length === 3) {
+          document.getElementById('dob-year').value = parts[0];
+          document.getElementById('dob-month').value = parts[1];
+          document.getElementById('dob-day').value = parts[2];
+        }
+      }
+
+      // Convert FormData into URLSearchParams (x-www-form-urlencoded)
+      const rawFormData = new FormData(regForm);
+      const params = new URLSearchParams();
+      for (const [key, value] of rawFormData.entries()) {
+        if (value) {
+          params.append(key, value);
+        }
+      }
+
+      const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScuh4w6FVC6gVCVBX9BqxI-m_-CRNsIy5NqEiAlPMajFJACzg/formResponse';
+
+      try {
+        await fetch(formUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        });
+
+        // Update UI on success
+        regForm.classList.add('hidden');
+        regSuccess.classList.remove('hidden');
+        regSuccess.classList.add('flex');
+
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        }
+        if (typeof showToast === 'function') {
+          showToast('Registration submitted successfully!', 'success');
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        if (typeof showToast === 'function') {
+          showToast('Submission failed. Please try again.', 'error');
+        }
+      } finally {
+        submitBtn.innerText = 'Submit Registration';
+        submitBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
