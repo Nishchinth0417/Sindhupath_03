@@ -965,11 +965,20 @@
     let currentSlideIndex = 0;
     let slideInterval = null;
 
-    // Robust Drive file ID extractor — handles open?id=, /d/, id= patterns
-    function extractDriveFileId(val) {
-      if (!val) return null;
-      const match = val.toString().match(/(?:id=|\/d\/|open\?id=)([a-zA-Z0-9_-]{20,})/);
-      return match ? match[1].replace(/[^a-zA-Z0-9_-]/g, '') : null;
+    // Extract ALL Drive file IDs from a cell value — handles multiple comma-separated URLs
+    // Same pattern as Ananth_Decor: splits on whitespace/comma/semicolon, matches each segment
+    function extractDriveFileIds(val) {
+      if (!val) return [];
+      const ids = [];
+      const segments = val.toString().split(/[\s,;]+/);
+      for (const seg of segments) {
+        const match = seg.match(/(?:id=|\/d\/|open\?id=)([a-zA-Z0-9_-]{20,})/);
+        if (match && match[1]) {
+          const cleanId = match[1].replace(/[^a-zA-Z0-9_-]/g, '');
+          if (cleanId) ids.push(cleanId);
+        }
+      }
+      return ids;
     }
 
     // Build all three URL variants from a file ID
@@ -989,10 +998,10 @@
       const result = [];
       rows.forEach(row => {
         const c = row.c || [];
-        // Column B (index 1) = uploaded poster Drive URL
+        // Column B (index 1) = uploaded poster Drive URL(s) — may be multiple comma-separated
         const rawVal = c[1] && c[1].v ? String(c[1].v).trim() : '';
-        const fileId = extractDriveFileId(rawVal);
-        if (fileId) result.push(buildPosterUrls(fileId));
+        const fileIds = extractDriveFileIds(rawVal);
+        fileIds.forEach(fid => result.push(buildPosterUrls(fid)));
       });
       if (result.length > 0) {
         posterImages = result;
