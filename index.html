@@ -748,6 +748,17 @@
   </footer>
 
   <script>
+    // Animated Yellow Hero Text (Typed.js)
+    if (typeof Typed !== 'undefined' && document.getElementById('typed-text')) {
+      new Typed('#typed-text', {
+        strings: ['THE SEA', 'EXCELLENCE', 'DISCIPLINE', 'A HIGH-PAYING CAREER', 'IMU-CET SUCCESS'],
+        typeSpeed: 70,
+        backSpeed: 45,
+        backDelay: 3500,
+        loop: true
+      });
+    }
+
     // Scroll header styling transition
     window.addEventListener('scroll', () => {
       const header = document.querySelector('header');
