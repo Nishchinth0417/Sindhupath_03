@@ -311,7 +311,6 @@
   } catch(e) { console.warn('Supabase init error:', e); }
 
   const ADMIN_EMAILS = ['ashvaishgowda03@gmail.com', 'nunishchinth@gmail.com'];
-  const ADMIN_PASS   = '1234';
 
   // --- UI Helpers ---
   const loginFormPanel = document.getElementById('login-form-panel');
@@ -376,21 +375,19 @@
 
     // ---- ADMIN PATH ----
     if (ADMIN_EMAILS.includes(email)) {
-      if (password !== ADMIN_PASS) {
-        showStatus('Access Denied: Wrong password for admin account.', 'error');
+      if (!sbClient) {
+        showStatus('Auth service unavailable. Please refresh and try again.', 'error');
+        return;
+      }
+      showStatus('Verifying credentials...', 'info');
+      const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+      if (error || !data.session) {
+        showStatus('Access Denied: ' + (error?.message || 'Invalid credentials.'), 'error');
         document.getElementById('password').value = '';
         document.getElementById('password').focus();
         return;
       }
-
-      showStatus('Admin verified! Opening Upload Portal...', 'success');
-
-      // Try Supabase auth in background (non-blocking)
-      if (sbClient) {
-        sbClient.auth.signInWithPassword({ email, password }).catch(() => {});
-      }
-
-      localStorage.setItem('sp_admin_email', email);
+      showStatus('Admin verified!', 'success');
       document.getElementById('admin-email-display').textContent = email;
       showPanel('admin');
       fetchAdminNotices();
@@ -420,18 +417,26 @@
   document.getElementById('admin-logout-btn').addEventListener('click', logoutUser);
   document.getElementById('cadet-logout-btn').addEventListener('click', logoutUser);
 
-  // --- Restore session on page load (without reload loop) ---
-  (function restoreSession() {
-    // Clean up any legacy session keys from old code to prevent loops
+  // --- Restore session on page load (checks real Supabase session, not just localStorage) ---
+  (async function restoreSession() {
+    // Clean up legacy session keys from old code to prevent loops
     localStorage.removeItem('sindhupath_logged_email');
+    localStorage.removeItem('sp_admin_email'); // no longer used — real session is the source of truth
 
-    const adminEmail = localStorage.getItem('sp_admin_email');
     const cadetEmail = localStorage.getItem('sp_cadet_email');
-    if (adminEmail && ADMIN_EMAILS.includes(adminEmail)) {
-      document.getElementById('admin-email-display').textContent = adminEmail;
-      showPanel('admin');
-      fetchAdminNotices();
-    } else if (cadetEmail) {
+
+    if (sbClient) {
+      const { data: { session } } = await sbClient.auth.getSession();
+      const adminEmail = session?.user?.email;
+      if (adminEmail && ADMIN_EMAILS.includes(adminEmail)) {
+        document.getElementById('admin-email-display').textContent = adminEmail;
+        showPanel('admin');
+        fetchAdminNotices();
+        return;
+      }
+    }
+
+    if (cadetEmail) {
       document.getElementById('cadet-email-display').textContent = cadetEmail;
       showPanel('cadet');
     } else {

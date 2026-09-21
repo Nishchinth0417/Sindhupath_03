@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sindhupath — Supabase Verification</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 2rem; }
+    h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem; color: #f8fafc; }
+    p.sub { font-size: 0.8rem; color: #64748b; margin-bottom: 2rem; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem; }
+    .badge { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+    .card-body h2 { font-size: 0.9rem; font-weight: 600; color: #f1f5f9; }
+    .card-body p  { font-size: 0.78rem; color: #94a3b8; margin-top: 0.2rem; line-height: 1.5; }
+    .card-body code { font-family: monospace; font-size: 0.75rem; background: #0f172a; padding: 0.1rem 0.3rem; border-radius: 4px; color: #7dd3fc; }
+    .pass  { border-color: #22c55e55; }
+    .fail  { border-color: #ef444455; }
+    .warn  { border-color: #f59e0b55; }
+    .pending { border-color: #475569; }
+    .pass  h2 { color: #4ade80; }
+    .fail  h2 { color: #f87171; }
+    .warn  h2 { color: #fbbf24; }
+    button#run-btn { background: #6366f1; color: #fff; border: none; border-radius: 8px; padding: 0.65rem 1.5rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem; }
+    button#run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #summary { font-size: 0.85rem; color: #94a3b8; margin-bottom: 1rem; }
+    hr { border: none; border-top: 1px solid #1e293b; margin: 1.5rem 0; }
+    .auth-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+    .auth-box h2 { font-size: 0.9rem; font-weight: 600; color: #f1f5f9; margin-bottom: 0.75rem; }
+    .auth-box input { width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 0.5rem 0.75rem; color: #e2e8f0; font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .auth-box button { background: #0ea5e9; color: #fff; border: none; border-radius: 6px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    #auth-result { font-size: 0.78rem; margin-top: 0.5rem; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+<h1>🔍 Sindhupath — Supabase Verification</h1>
+<p class="sub">Project: lbdunyobsfdwtmdhuapb.supabase.co</p>
+
+<button id="run-btn" onclick="runAll()">▶ Run All Checks</button>
+<div id="summary"></div>
+<div id="results"></div>
+
+<hr />
+
+<div class="auth-box">
+  <h2>🔐 Admin Login Test (manual)</h2>
+  <input id="test-email" type="email" placeholder="Admin email" />
+  <input id="test-password" type="password" placeholder="Admin password" />
+  <button onclick="testAdminLogin()">Test Sign In</button>
+  <div id="auth-result"></div>
+</div>
+
+<script>
+  const SUPABASE_URL      = 'https://lbdunyobsfdwtmdhuapb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHVueW9ic2Zkd3RtZGh1YXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NDExNDYsImV4cCI6MjEwNTUxNzE0Nn0.vnCG22PHUHJ1TitPQCwBJY23xZiH8deVtwnlkLTMAt4';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const CHECKS = [
+    {
+      id: 'public-read',
+      label: '1 — Public read on notices table',
+      desc: 'Anon client should be able to SELECT from notices (RLS "Public read" policy).',
+      run: async () => {
+        const { data, error } = await sb.from('notices').select('*').limit(5);
+        if (error) throw new Error(error.message);
+        return `✅ OK — ${data.length} row(s) returned`;
+      }
+    },
+    {
+      id: 'anon-insert-blocked',
+      label: '2 — Anon INSERT blocked by RLS',
+      desc: 'An unauthenticated insert should be rejected (RLS "Admin insert" policy).',
+      run: async () => {
+        const { error } = await sb.from('notices').insert([{ title: 'RLS_TEST', image_url: 'https://example.com/test.jpg' }]);
+        if (!error) throw new Error('INSERT SUCCEEDED — RLS is NOT blocking anonymous writes! Fix immediately.');
+        if (error.code === '42501' || error.message.toLowerCase().includes('policy') || error.message.toLowerCase().includes('rls') || error.code === 'PGRST301') {
+          return `✅ Blocked — "${error.message}"`;
+        }
+        throw new Error('Unexpected error: ' + error.message);
+      }
+    },
+    {
+      id: 'anon-delete-blocked',
+      label: '3 — Anon DELETE blocked by RLS',
+      desc: 'An unauthenticated delete should be rejected (RLS "Admin delete" policy).',
+      run: async () => {
+        const { error } = await sb.from('notices').delete().eq('id', 0);
+        if (!error) throw new Error('DELETE SUCCEEDED without auth — RLS is NOT blocking anonymous deletes!');
+        if (error.code === '42501' || error.message.toLowerCase().includes('policy') || error.message.toLowerCase().includes('rls') || error.code === 'PGRST301') {
+          return `✅ Blocked — "${error.message}"`;
+        }
+        throw new Error('Unexpected error: ' + error.message);
+      }
+    },
+    {
+      id: 'storage-bucket-public',
+      label: '4 — posters bucket public URL accessible',
+      desc: 'getPublicUrl() should return a well-formed https URL (does not upload anything).',
+      run: async () => {
+        const { data } = sb.storage.from('posters').getPublicUrl('verify_test.jpg');
+        if (!data?.publicUrl || !data.publicUrl.startsWith('https://')) {
+          throw new Error('publicUrl is malformed: ' + JSON.stringify(data));
+        }
+        return `✅ OK — ${data.publicUrl}`;
+      }
+    },
+    {
+      id: 'anon-upload-blocked',
+      label: '5 — Anon upload to posters bucket blocked',
+      desc: 'Uploading without auth should be rejected by storage RLS ("Admin upload" policy).',
+      run: async () => {
+        const blob = new Blob(['verify'], { type: 'text/plain' });
+        const { error } = await sb.storage.from('posters').upload('__rls_verify_anon.txt', blob, { upsert: false });
+        if (!error) {
+          // Clean up the accidentally-uploaded file
+          await sb.storage.from('posters').remove(['__rls_verify_anon.txt']);
+          throw new Error('UPLOAD SUCCEEDED without auth — storage RLS is NOT blocking anonymous uploads!');
+        }
+        return `✅ Blocked — "${error.message}"`;
+      }
+    },
+    {
+      id: 'notices-table-schema',
+      label: '6 — notices table has required columns',
+      desc: 'Checks that id, title, image_url, created_at columns exist and are returned.',
+      run: async () => {
+        const { data, error } = await sb.from('notices').select('id, title, image_url, created_at').limit(1);
+        if (error) throw new Error(error.message);
+        return `✅ Schema OK — columns: id, title, image_url, created_at`;
+      }
+    }
+  ];
+
+  function renderCard(check, state, message) {
+    const el = document.getElementById('card-' + check.id);
+    const badge = state === 'pass' ? '✅' : state === 'fail' ? '❌' : state === 'running' ? '⏳' : '⬜';
+    el.className = 'card ' + (state === 'pass' ? 'pass' : state === 'fail' ? 'fail' : state === 'running' ? 'pending' : 'pending');
+    el.innerHTML = `
+      <div class="badge">${badge}</div>
+      <div class="card-body">
+        <h2>${check.label}</h2>
+        <p>${check.desc}</p>
+        ${message ? `<p><code>${message}</code></p>` : ''}
+      </div>`;
+  }
+
+  function initCards() {
+    const container = document.getElementById('results');
+    container.innerHTML = '';
+    CHECKS.forEach(c => {
+      const div = document.createElement('div');
+      div.id = 'card-' + c.id;
+      div.className = 'card pending';
+      div.innerHTML = `<div class="badge">⬜</div><div class="card-body"><h2>${c.label}</h2><p>${c.desc}</p></div>`;
+      container.appendChild(div);
+    });
+  }
+
+  async function runAll() {
+    const btn = document.getElementById('run-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Running...';
+    document.getElementById('summary').textContent = '';
+    initCards();
+
+    let passed = 0, failed = 0;
+
+    for (const check of CHECKS) {
+      renderCard(check, 'running', 'Running...');
+      try {
+        const msg = await check.run();
+        renderCard(check, 'pass', msg);
+        passed++;
+      } catch (err) {
+        renderCard(check, 'fail', err.message);
+        failed++;
+      }
+    }
+
+    const total = passed + failed;
+    const summary = document.getElementById('summary');
+    if (failed === 0) {
+      summary.style.color = '#4ade80';
+      summary.textContent = `✅ All ${total} checks passed — Supabase is configured correctly!`;
+    } else {
+      summary.style.color = '#f87171';
+      summary.textContent = `❌ ${failed} of ${total} checks failed — see details above.`;
+    }
+
+    btn.disabled = false;
+    btn.textContent = '▶ Run All Checks';
+  }
+
+  async function testAdminLogin() {
+    const email    = document.getElementById('test-email').value.trim();
+    const password = document.getElementById('test-password').value;
+    const result   = document.getElementById('auth-result');
+    result.style.color = '#94a3b8';
+    result.textContent = '⏳ Signing in...';
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      result.style.color = '#f87171';
+      result.textContent = '❌ Failed: ' + error.message;
+    } else {
+      result.style.color = '#4ade80';
+      result.textContent = `✅ Signed in as ${data.user.email} — session token received. Upload will now be authenticated.`;
+      // Sign out immediately so we don't leave a session open in this test page
+      await sb.auth.signOut();
+      result.textContent += ' (signed out after test)';
+    }
+  }
+
+  // Auto-init cards on load
+  initCards();
+</script>
+</body>
+</html>
