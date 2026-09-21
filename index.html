@@ -367,7 +367,7 @@
             <a id="download-poster-btn" href="#" download="sindhupath-notice.png" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Download Notice">
               <span class="material-symbols-outlined text-lg">download</span>
             </a>
-            <button id="open-admin-btn" onclick="openAdminAuthModal()" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Admin Panel">
+            <button id="open-admin-btn" onclick="openAdminPortal()" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Admin Panel">
               <span class="material-symbols-outlined text-lg">lock</span>
             </button>
           </div>
@@ -1242,105 +1242,18 @@
       renderAdminNews();
     };
 
-    // ── Admin Auth via Supabase (no hardcoded password) ──────────────────────
-    const ADMIN_EMAILS_IDX = ['ashvaishgowda03@gmail.com', 'nunishchinth@gmail.com'];
-    const adminAuthModal    = document.getElementById('admin-auth-modal');
-    const closeAdminAuthModal = document.getElementById('close-admin-auth-modal');
-    const adminAuthForm     = document.getElementById('admin-auth-form');
-    const adminEmailInput   = document.getElementById('admin-email-input');
-    const adminPasswordInput = document.getElementById('admin-password-input');
-    const adminAuthStatus   = document.getElementById('admin-auth-status');
-    const adminAuthSubmitBtn = document.getElementById('admin-auth-submit-btn');
-    const toggleAdminPassBtn = document.getElementById('toggle-admin-pass-btn');
-
-    function showAdminAuthStatus(msg, type) {
-      if (!adminAuthStatus) return;
-      adminAuthStatus.className = 'text-xs px-3 py-2 rounded-lg ' +
-        (type === 'error' ? 'bg-red-500/15 text-red-400' : 'bg-green-500/15 text-green-400');
-      adminAuthStatus.textContent = msg;
-      adminAuthStatus.classList.remove('hidden');
-    }
-
-    window.openAdminAuthModal = async function() {
-      // Check if a real Supabase session already exists
+    // ── Admin Portal Navigation ──────────────────────────────────────────
+    window.openAdminAuthModal = window.openAdminPortal = async function() {
+      const ADMIN_EMAILS_IDX = ['ashvaishgowda03@gmail.com', 'nunishchinth@gmail.com'];
       if (supabaseClient) {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session && ADMIN_EMAILS_IDX.includes(session.user.email)) {
+        if (session && ADMIN_EMAILS_IDX.includes(session.user.email?.toLowerCase())) {
           window.location.href = 'admin.html';
           return;
         }
       }
-      adminAuthModal.classList.remove('hidden');
-      adminAuthModal.classList.add('flex');
-      if (adminEmailInput) adminEmailInput.focus();
-      if (adminAuthStatus) adminAuthStatus.classList.add('hidden');
+      window.location.href = 'login.html';
     };
-
-    if (closeAdminAuthModal) {
-      closeAdminAuthModal.addEventListener('click', () => {
-        adminAuthModal.classList.add('hidden');
-        adminAuthModal.classList.remove('flex');
-      });
-    }
-
-    if (toggleAdminPassBtn && adminPasswordInput) {
-      toggleAdminPassBtn.addEventListener('click', () => {
-        const icon = toggleAdminPassBtn.querySelector('.material-symbols-outlined');
-        if (adminPasswordInput.type === 'password') {
-          adminPasswordInput.type = 'text';
-          icon.textContent = 'visibility_off';
-        } else {
-          adminPasswordInput.type = 'password';
-          icon.textContent = 'visibility';
-        }
-      });
-    }
-
-    if (adminAuthForm) {
-      adminAuthForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email    = adminEmailInput ? adminEmailInput.value.trim().toLowerCase() : '';
-        const password = adminPasswordInput ? adminPasswordInput.value : '';
-
-        if (!email || !password) {
-          showAdminAuthStatus('Please enter email and password.', 'error');
-          return;
-        }
-        if (!ADMIN_EMAILS_IDX.includes(email)) {
-          showAdminAuthStatus('Not an admin account.', 'error');
-          return;
-        }
-        if (!supabaseClient) {
-          showAdminAuthStatus('Auth service unavailable. Refresh and try again.', 'error');
-          return;
-        }
-
-        if (adminAuthSubmitBtn) { adminAuthSubmitBtn.disabled = true; adminAuthSubmitBtn.textContent = 'Signing in...'; }
-        showAdminAuthStatus('Verifying with Supabase...', 'info');
-
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-        if (adminAuthSubmitBtn) { adminAuthSubmitBtn.disabled = false; adminAuthSubmitBtn.textContent = 'Sign In'; }
-
-        if (error || !data.session) {
-          showAdminAuthStatus('Access Denied: ' + (error?.message || 'Invalid credentials.'), 'error');
-          if (adminPasswordInput) { adminPasswordInput.value = ''; adminPasswordInput.focus(); }
-          return;
-        }
-
-        adminAuthModal.classList.add('hidden');
-        adminAuthModal.classList.remove('flex');
-        if (typeof showToast === 'function') showToast('Access Granted: Opening Admin Portal...', 'success');
-        setTimeout(() => {
-          window.location.href = 'admin.html';
-        }, 500);
-      });
-    }
-
-    closeAdminModal.addEventListener('click', () => {
-      adminModal.classList.add('hidden');
-      adminModal.classList.remove('flex');
-    });
 
     if (viewPosterBtn) {
       viewPosterBtn.addEventListener('click', () => {
@@ -1348,168 +1261,37 @@
         const currentUrl = p ? p.primaryUrl : activePoster;
         const cdnUrl = p ? p.cdnUrl : '';
         const backupUrl = p ? p.backupUrl : '';
-      if (currentUrl) {
-        modalPosterContent.innerHTML = `<img
-          src="${currentUrl}"
-          data-cdn="${cdnUrl}"
-          data-backup="${backupUrl}"
-          referrerpolicy="no-referrer"
-          class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
-          alt="Notice Poster"
-          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
-        >`;
-      } else {
-        modalPosterContent.innerHTML = defaultPosterSVG;
-      }
-      posterModal.classList.remove('hidden');
-      posterModal.classList.add('flex');
-    });
+        if (currentUrl) {
+          modalPosterContent.innerHTML = `<img
+            src="${currentUrl}"
+            data-cdn="${cdnUrl}"
+            data-backup="${backupUrl}"
+            referrerpolicy="no-referrer"
+            class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
+            alt="Notice Poster"
+            onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+          >`;
+        } else {
+          modalPosterContent.innerHTML = defaultPosterSVG;
+        }
+        if (posterModal) {
+          posterModal.classList.remove('hidden');
+          posterModal.classList.add('flex');
+        }
+      });
     }
 
-    closePosterModal.addEventListener('click', () => {
-      posterModal.classList.add('hidden');
-      posterModal.classList.remove('flex');
-    });
+    if (closePosterModal) {
+      closePosterModal.addEventListener('click', () => {
+        if (posterModal) {
+          posterModal.classList.add('hidden');
+          posterModal.classList.remove('flex');
+        }
+      });
+    }
 
-    // Close Modals on Outer Click
     window.addEventListener('click', (e) => {
-      if (e.target === adminModal) closeAdminModal.click();
-      if (e.target === posterModal) closePosterModal.click();
-    });
-
-    // Tab Switching in Admin Panel
-    tabPosterBtn.addEventListener('click', () => {
-      tabPosterBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-maritime-gold text-maritime-gold bg-white/5 transition-all";
-      tabNewsBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-transparent text-white/60 hover:text-white transition-all";
-      tabPosterContent.classList.remove('hidden');
-      tabNewsContent.classList.add('hidden');
-    });
-
-    tabNewsBtn.addEventListener('click', () => {
-      tabNewsBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-maritime-gold text-maritime-gold bg-white/5 transition-all";
-      tabPosterBtn.className = "flex-1 py-3 font-semibold text-sm border-b-2 border-transparent text-white/60 hover:text-white transition-all";
-      tabNewsContent.classList.remove('hidden');
-      tabPosterContent.classList.add('hidden');
-      renderAdminNews();
-    });
-
-    // File Input Change Listener
-    posterFileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-          showToast('Image size exceeds 2MB limit. Please upload a smaller image.', 'error');
-          posterFileInput.value = '';
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          tempPosterData = evt.target.result;
-          fileUploadStatus.classList.remove('hidden');
-          posterUrlInput.value = ''; // clear url input if file uploaded
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Save Poster Action (Direct Cloud Storage to Supabase)
-    savePosterBtn.addEventListener('click', async () => {
-      const urlValue = posterUrlInput.value.trim();
-      const file = posterFileInput.files ? posterFileInput.files[0] : null;
-
-      if (file && supabaseClient) {
-        if (typeof showToast === 'function') showToast('Uploading poster to Supabase Storage...', 'info');
-        try {
-          const fileName = `poster_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-          const { data: uploadData, error: uploadErr } = await supabaseClient
-            .storage
-            .from('posters')
-            .upload(fileName, file, { cacheControl: '3600', upsert: true });
-
-          if (uploadErr) throw uploadErr;
-
-          const { data: pubData } = supabaseClient
-            .storage
-            .from('posters')
-            .getPublicUrl(fileName);
-
-          const publicUrl = pubData.publicUrl;
-
-          const { error: dbErr } = await supabaseClient
-            .from('notices')
-            .insert([{ title: file.name, image_url: publicUrl }]);
-
-          if (dbErr) throw dbErr;
-
-          activePoster = publicUrl;
-          localStorage.setItem(POSTER_KEY, activePoster);
-          if (typeof showToast === 'function') showToast('Poster uploaded & published to Supabase live server!', 'success');
-        } catch (err) {
-          console.error('Supabase Upload error:', err);
-          if (tempPosterData) {
-            activePoster = tempPosterData;
-            localStorage.setItem(POSTER_KEY, activePoster);
-            if (typeof showToast === 'function') showToast('Saved poster to local fallback!', 'warning');
-          } else {
-            if (typeof showToast === 'function') showToast('Supabase Upload Error: ' + (err.message || 'Check storage bucket'), 'error');
-            return;
-          }
-        }
-      } else if (tempPosterData) {
-        activePoster = tempPosterData;
-        localStorage.setItem(POSTER_KEY, activePoster);
-        if (supabaseClient) {
-          try {
-            await supabaseClient.from('notices').insert([{ title: 'Notice Poster', image_url: activePoster }]);
-          } catch(e) {}
-        }
-        if (typeof showToast === 'function') showToast('Poster saved successfully!', 'success');
-      } else if (urlValue) {
-        activePoster = urlValue;
-        localStorage.setItem(POSTER_KEY, activePoster);
-        if (supabaseClient) {
-          try {
-            await supabaseClient.from('notices').insert([{ title: 'Notice Link', image_url: urlValue }]);
-          } catch(e) {}
-        }
-        if (typeof showToast === 'function') showToast('Poster URL saved successfully!', 'success');
-      } else {
-        if (typeof showToast === 'function') showToast('Please choose an image file or enter an image URL first.', 'warning');
-        return;
-      }
-      
-      // Reset temporary states & render
-      tempPosterData = null;
-      fileUploadStatus.classList.add('hidden');
-      posterFileInput.value = '';
-      posterUrlInput.value = '';
-      fetchSupabasePosters();
-      closeAdminModal.click();
-    });
-
-    // Reset Poster Action
-    resetPosterBtn.addEventListener('click', async () => {
-      if (confirm('Are you sure you want to reset to the default poster?')) {
-        activePoster = null;
-        localStorage.removeItem(POSTER_KEY);
-        tempPosterData = null;
-        fileUploadStatus.classList.add('hidden');
-        posterFileInput.value = '';
-        posterUrlInput.value = '';
-        fetchSupabasePosters();
-        closeAdminModal.click();
-      }
-    });
-
-    // Reset News Action
-    resetNewsBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (confirm('Are you sure you want to reset all bulletins to default items?')) {
-        newsList = [...defaultNews];
-        localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
-        renderNewsFeed();
-        renderAdminNews();
-      }
+      if (e.target === posterModal && posterModal) closePosterModal.click();
     });
 
     // Add News Item Form Submit
@@ -1795,139 +1577,6 @@
       }
     }
   </script>
-
-  <!-- ============================================================ -->
-  <!-- Admin Auth Modal — Supabase sign-in gate                     -->
-  <!-- ============================================================ -->
-  <div id="admin-auth-modal" class="fixed inset-0 z-[120] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-sm p-8 shadow-2xl relative">
-      <button id="close-admin-auth-modal" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-      <div class="flex items-center gap-3 mb-6">
-        <span class="material-symbols-outlined text-maritime-gold text-3xl" style="font-variation-settings:'FILL' 1">admin_panel_settings</span>
-        <div>
-          <h3 class="font-bold text-white text-lg uppercase tracking-wider">Admin Sign In</h3>
-          <p class="text-xs text-white/50">Verified via Supabase Auth</p>
-        </div>
-      </div>
-      <form id="admin-auth-form" class="space-y-3">
-        <input id="admin-email-input" type="email" placeholder="Admin email" autocomplete="email"
-          class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-white text-sm placeholder-white/30 focus:outline-none focus:border-maritime-gold/70" />
-        <div class="relative">
-          <input id="admin-password-input" type="password" placeholder="Password" autocomplete="current-password"
-            class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-white text-sm placeholder-white/30 focus:outline-none focus:border-maritime-gold/70 pr-12" />
-          <button type="button" id="toggle-admin-pass-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-lg">visibility</span>
-          </button>
-        </div>
-        <div id="admin-auth-status" class="hidden text-xs px-3 py-2 rounded-lg"></div>
-        <button type="submit" id="admin-auth-submit-btn"
-          class="w-full bg-maritime-gold text-deep-sea font-bold py-3 rounded-xl uppercase tracking-wider text-sm hover:brightness-110 transition-all">
-          Sign In
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- Admin Panel Modal                                            -->
-  <!-- ============================================================ -->
-  <div id="admin-modal" class="fixed inset-0 z-[115] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl">
-
-      <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-maritime-gold" style="font-variation-settings:'FILL' 1">campaign</span>
-          <h3 class="font-bold text-white uppercase tracking-wider text-sm">Admin Panel</h3>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="sync-notices-btn" title="Sync notices from Supabase"
-            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-maritime-gold hover:text-deep-sea text-white/70 text-xs font-semibold transition-all border border-white/10">
-            <span class="material-symbols-outlined text-base">sync</span>
-            <span>Sync</span>
-          </button>
-          <button id="admin-logout-btn-idx" title="Sign out"
-            class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-white/50 text-xs font-semibold transition-all border border-white/10">
-            <span class="material-symbols-outlined text-base">logout</span>
-          </button>
-          <button id="close-admin-modal" class="text-white/50 hover:text-white transition-colors p-1">
-            <span class="material-symbols-outlined">close</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Tabs -->
-      <div class="flex border-b border-white/10 shrink-0">
-        <button id="tab-poster-btn" class="flex-1 py-3 font-semibold text-sm border-b-2 border-maritime-gold text-maritime-gold bg-white/5 transition-all">
-          Poster / Banner
-        </button>
-        <button id="tab-news-btn" class="flex-1 py-3 font-semibold text-sm border-b-2 border-transparent text-white/60 hover:text-white transition-all">
-          Bulletin News
-        </button>
-      </div>
-
-      <!-- Scrollable Body -->
-      <div class="overflow-y-auto flex-1 p-6 space-y-4">
-
-        <!-- Tab: Poster -->
-        <div id="tab-poster-content" class="space-y-4">
-          <p class="text-xs text-white/50">Upload a poster image or paste a public image URL.</p>
-          <label class="block cursor-pointer border-2 border-dashed border-white/20 hover:border-maritime-gold/60 rounded-xl p-5 text-center transition-all">
-            <span class="material-symbols-outlined text-maritime-gold text-3xl mb-1 block">image</span>
-            <span id="upload-file-label" class="text-xs text-white/60">Click to choose poster image</span>
-            <input id="poster-file-input" type="file" accept="image/*" class="hidden" />
-          </label>
-          <div id="file-upload-status" class="hidden text-xs text-maritime-gold bg-maritime-gold/10 border border-maritime-gold/30 rounded-lg px-3 py-2">
-            ✓ File selected — ready to upload
-          </div>
-          <div>
-            <label class="block text-xs text-white/50 mb-1">Or paste image URL</label>
-            <input id="poster-url-input" type="url" placeholder="https://example.com/poster.jpg"
-              class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-maritime-gold/70" />
-          </div>
-          <div class="flex gap-3 pt-1">
-            <button id="save-poster-btn"
-              class="flex-1 flex items-center justify-center gap-2 bg-maritime-gold text-deep-sea font-bold py-2.5 rounded-xl text-sm uppercase tracking-wider hover:brightness-110 transition-all">
-              <span class="material-symbols-outlined text-base">cloud_upload</span>
-              <span>Upload &amp; Publish</span>
-            </button>
-            <button id="reset-poster-btn"
-              class="px-4 py-2.5 rounded-xl border border-white/20 text-white/60 hover:text-red-400 hover:border-red-400/40 text-sm font-semibold transition-all">
-              Reset
-            </button>
-          </div>
-        </div>
-
-        <!-- Tab: News -->
-        <div id="tab-news-content" class="hidden space-y-4">
-          <form id="add-news-form" class="space-y-3">
-            <input type="text" id="news-title-input" placeholder="Headline / Title" required
-              class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-maritime-gold/70" />
-            <textarea id="news-body-input" placeholder="Full announcement text..." rows="3" required
-              class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-maritime-gold/70 resize-none"></textarea>
-            <select id="news-type-input"
-              class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-maritime-gold/70">
-              <option value="notice">📌 Notice</option>
-              <option value="exam">📝 Exam</option>
-              <option value="admission">🎓 Admission</option>
-              <option value="result">🏆 Result</option>
-            </select>
-            <button type="submit"
-              class="w-full bg-maritime-gold text-deep-sea font-bold py-2.5 rounded-xl text-sm uppercase tracking-wider hover:brightness-110 transition-all">
-              Add Bulletin
-            </button>
-          </form>
-          <div id="admin-news-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
-          <button id="reset-news-btn" class="w-full py-2 rounded-xl border border-white/10 text-white/40 hover:text-red-400 text-xs transition-all">
-            Reset All Bulletins to Default
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
 </body>
+</html>
 </html>
