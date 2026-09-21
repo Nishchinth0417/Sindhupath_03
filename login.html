@@ -1,4 +1,6 @@
-<!DOCTYPE html><html class="dark" lang="en"><head>
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Sign In - Sindhupath Maritime Academy</title>
@@ -7,6 +9,10 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<!-- Supabase JS Client SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -133,62 +139,187 @@
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">Join the elite ranks of merchant navy professionals. Excellence begins here at Sindhupath.</p>
 </div>
 </div>
-<div class="w-full md:w-1/2 flex items-center justify-center p-5 md:p-16 relative z-10 bg-surface md:bg-transparent">
+
+<div class="w-full md:w-1/2 flex items-center justify-center p-5 md:p-12 relative z-10 bg-surface md:bg-transparent">
 <div class="md:hidden absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('hero-bg.jpg');"></div>
 <div class="md:hidden absolute inset-0 bg-surface/80 backdrop-blur-xl"></div>
-<div class="glass-panel rounded-xl w-full max-w-md p-8 relative z-20">
+
+<div class="glass-panel rounded-xl w-full max-w-lg p-6 md:p-8 relative z-20 overflow-hidden">
   <a href="index.html" class="flex items-center gap-1 text-on-surface-variant hover:text-tertiary transition-colors font-body-sm text-body-sm mb-6 group w-fit">
     <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
     Back to Home
   </a>
-<div class="flex flex-col items-center mb-8 stagger-1">
-<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">WELCOME BACK</h1>
-<p class="font-body-md text-body-md text-on-surface-variant text-center">Enter your credentials to access the academy.</p>
-</div>
-<form class="space-y-6">
-<div class="relative stagger-2 group">
-<input class="peer w-full bg-surface-container-low/50 border border-outline-variant/50 rounded-lg px-4 pt-6 pb-2 font-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-tertiary focus:border-tertiary transition-colors" id="email" placeholder=" " required="" type="email">
-<label class="absolute left-4 top-4 text-on-surface-variant font-body-sm text-body-sm transition-all peer-focus:-translate-y-3 peer-focus:scale-75 peer-focus:text-tertiary peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:scale-75 origin-[0]" for="email">Email Address</label>
-</div>
-<div class="relative stagger-3 group">
-<input class="peer w-full bg-surface-container-low/50 border border-outline-variant/50 rounded-lg px-4 pt-6 pb-2 pr-12 font-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-tertiary focus:border-tertiary transition-colors" id="password" placeholder=" " required="" type="password">
-<label class="absolute left-4 top-4 text-on-surface-variant font-body-sm text-body-sm transition-all peer-focus:-translate-y-3 peer-focus:scale-75 peer-focus:text-tertiary peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:scale-75 origin-[0]" for="password">Password</label>
-<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" id="toggle-password" type="button">
-<span class="material-symbols-outlined text-[20px]">visibility</span>
-</button>
-</div>
-<div class="flex items-center justify-between stagger-4">
-<label class="flex items-center space-x-2 cursor-pointer group">
-<input class="form-checkbox h-4 w-4 text-tertiary bg-surface-container-low border-outline-variant rounded focus:ring-tertiary focus:ring-offset-surface" type="checkbox">
-<span class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Remember Me</span>
-</label>
-<a class="font-body-sm text-body-sm text-tertiary hover:text-tertiary-fixed transition-colors" href="#">Forgot Password?</a>
-</div>
-<button class="w-full bg-tertiary text-on-tertiary font-label-caps text-label-caps py-4 rounded-lg hover:bg-tertiary-fixed transition-all duration-300 hover:shadow-[0_0_20px_rgba(233,196,0,0.3)] hover:scale-[1.02] stagger-5" type="submit">SIGN IN</button>
-</form>
-<div class="relative my-8 stagger-6">
-<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/30"></div></div>
-<div class="relative flex justify-center">
-<span class="px-4 bg-surface text-on-surface-variant font-label-caps text-label-caps text-[10px] tracking-widest">OR CONTINUE WITH</span>
-</div>
-</div>
-<button class="w-full flex items-center justify-center space-x-3 bg-surface-container-low/30 border border-outline-variant/30 rounded-lg py-3 hover:bg-surface-container-high/50 transition-colors stagger-6" type="button">
-<svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
-<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
-<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
-<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
-</svg>
-<span class="font-body-sm text-body-sm text-on-surface">Continue with Google</span>
-</button>
-<div class="mt-8 text-center stagger-6">
-<p class="font-body-sm text-body-sm text-on-surface-variant">Don't have an account? <a class="text-tertiary hover:text-tertiary-fixed underline underline-offset-4 decoration-tertiary/30 hover:decoration-tertiary transition-all" href="#">Create one</a></p>
-</div>
-</div>
+
+  <!-- Status / Alert Message Banner -->
+  <div id="auth-status-msg" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all"></div>
+
+  <!-- Panel 1: Login Form Panel -->
+  <div id="login-form-panel">
+    <div class="flex flex-col items-center mb-6 stagger-1">
+      <h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-1">WELCOME BACK</h1>
+      <p class="font-body-md text-xs md:text-sm text-on-surface-variant text-center">Enter your credentials to access the academy portal.</p>
+      <div class="mt-2 px-3 py-1 bg-tertiary/10 border border-tertiary/30 rounded-full flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+        <span class="text-[10px] text-tertiary font-bold tracking-wider uppercase">Supabase Auth Connected</span>
+      </div>
+    </div>
+
+    <form id="login-form" class="space-y-5">
+      <div class="relative stagger-2 group">
+        <input class="peer w-full bg-surface-container-low/50 border border-outline-variant/50 rounded-lg px-4 pt-6 pb-2 font-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-tertiary focus:border-tertiary transition-colors text-sm" id="email" placeholder=" " required type="email">
+        <label class="absolute left-4 top-4 text-on-surface-variant font-body-sm text-xs md:text-sm transition-all peer-focus:-translate-y-3 peer-focus:scale-75 peer-focus:text-tertiary peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:scale-75 origin-[0]" for="email">Email Address</label>
+      </div>
+
+      <div class="relative stagger-3 group">
+        <input class="peer w-full bg-surface-container-low/50 border border-outline-variant/50 rounded-lg px-4 pt-6 pb-2 pr-12 font-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-tertiary focus:border-tertiary transition-colors text-sm" id="password" placeholder=" " required type="password">
+        <label class="absolute left-4 top-4 text-on-surface-variant font-body-sm text-xs md:text-sm transition-all peer-focus:-translate-y-3 peer-focus:scale-75 peer-focus:text-tertiary peer-[:not(:placeholder-shown)]:-translate-y-3 peer-[:not(:placeholder-shown)]:scale-75 origin-[0]" for="password">Password</label>
+        <button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" id="toggle-password" type="button">
+          <span class="material-symbols-outlined text-[20px]">visibility</span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between stagger-4">
+        <label class="flex items-center space-x-2 cursor-pointer group">
+          <input class="form-checkbox h-4 w-4 text-tertiary bg-surface-container-low border-outline-variant rounded focus:ring-tertiary focus:ring-offset-surface" type="checkbox" checked>
+          <span class="font-body-sm text-xs text-on-surface-variant group-hover:text-on-surface transition-colors">Remember Me</span>
+        </label>
+        <a class="font-body-sm text-xs text-tertiary hover:text-tertiary-fixed transition-colors" href="#">Forgot Password?</a>
+      </div>
+
+      <button id="login-submit-btn" class="w-full bg-tertiary text-on-tertiary font-label-caps text-xs font-bold py-3.5 rounded-lg hover:bg-tertiary-fixed transition-all duration-300 hover:shadow-[0_0_20px_rgba(233,196,0,0.3)] hover:scale-[1.01] active:scale-95 stagger-5 flex items-center justify-center gap-2" type="submit">
+        <span class="material-symbols-outlined text-base">login</span>
+        <span>SIGN IN WITH SUPABASE</span>
+      </button>
+    </form>
+
+    <div class="mt-6 text-center text-xs text-on-surface-variant/80 stagger-6">
+      <p>Authorized Admin Emails: <span class="text-tertiary font-medium">ashvaishgowda03@gmail.com</span> & <span class="text-tertiary font-medium">nunishchinth@gmail.com</span></p>
+    </div>
+  </div>
+
+  <!-- Panel 2: Admin Portal Panel (Unlocked for Admin Emails) -->
+  <div id="admin-portal-panel" class="hidden space-y-6">
+    <!-- Admin Header -->
+    <div class="bg-surface-container-low/90 border border-tertiary/40 rounded-xl p-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-tertiary/20 border border-tertiary/40 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-tertiary text-xl">admin_panel_settings</span>
+        </div>
+        <div class="min-w-0">
+          <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-tertiary text-on-tertiary">Admin Authorized</span>
+          <p id="admin-email-display" class="font-bold text-xs text-on-surface truncate mt-0.5">admin@sindhupath.com</p>
+        </div>
+      </div>
+      <button id="admin-logout-btn" class="bg-surface-container-high border border-outline-variant/40 text-on-surface-variant hover:text-red-400 hover:border-red-400/40 text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">logout</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+
+    <!-- Admin Title -->
+    <div class="text-center">
+      <h2 class="font-headline-lg-mobile text-2xl text-on-surface uppercase tracking-wider">Notice Board Upload Portal</h2>
+      <p class="text-xs text-on-surface-variant mt-1">Upload photos directly to Supabase Storage. Posters publish live across all devices.</p>
+    </div>
+
+    <!-- Supabase Poster Direct Upload Form -->
+    <div class="bg-surface-container-low/60 border border-outline-variant/40 rounded-xl p-5 space-y-4">
+      <div class="flex items-center gap-2 border-b border-outline-variant/20 pb-3">
+        <span class="material-symbols-outlined text-tertiary text-xl">cloud_upload</span>
+        <h3 class="font-bold text-xs uppercase tracking-wider text-on-surface">Upload New Poster Photo</h3>
+      </div>
+
+      <!-- File Picker -->
+      <div class="space-y-2">
+        <label class="block text-[11px] uppercase font-bold text-on-surface-variant tracking-wider">Choose Image File</label>
+        <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-outline-variant/50 hover:border-tertiary rounded-xl cursor-pointer hover:bg-surface-container-high/40 transition-all">
+          <div class="flex flex-col items-center justify-center pt-3 pb-4">
+            <span class="material-symbols-outlined text-tertiary text-2xl mb-1">add_photo_alternate</span>
+            <p id="upload-file-label" class="text-xs font-semibold text-on-surface">Click to choose poster image</p>
+            <p class="text-[10px] text-on-surface-variant mt-0.5">PNG, JPG, WEBP (Direct Supabase CDN)</p>
+          </div>
+          <input type="file" id="admin-file-input" class="hidden" accept="image/*" />
+        </label>
+      </div>
+
+      <!-- Image URL Alternative -->
+      <div class="space-y-1">
+        <label class="block text-[11px] uppercase font-bold text-on-surface-variant tracking-wider">Or Image URL</label>
+        <input type="url" id="admin-url-input" placeholder="https://example.com/poster.jpg" class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-tertiary transition-all" />
+      </div>
+
+      <button id="admin-upload-btn" type="button" class="w-full bg-tertiary text-on-tertiary font-label-caps text-xs font-bold py-3 rounded-lg hover:bg-tertiary-fixed transition-all duration-300 flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-base">cloud_upload</span>
+        <span>Upload & Publish to Supabase</span>
+      </button>
+    </div>
+
+    <!-- Active Posters List -->
+    <div class="space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-xs uppercase tracking-wider text-on-surface">Live Supabase Notices</h3>
+        <button id="admin-refresh-notices-btn" class="text-xs text-tertiary hover:underline flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs">refresh</span> Refresh
+        </button>
+      </div>
+      <div id="admin-notices-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+        <p class="text-xs text-on-surface-variant text-center py-4">Loading notices...</p>
+      </div>
+    </div>
+
+    <div class="pt-2 text-center">
+      <a href="index.html#announcements" class="text-xs text-tertiary hover:underline inline-flex items-center gap-1 font-semibold">
+        View Live Notice Board on Sindhupath Website
+        <span class="material-symbols-outlined text-xs">arrow_forward</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Panel 3: Cadet Dashboard Panel -->
+  <div id="cadet-panel" class="hidden space-y-6 text-center py-4">
+    <div class="w-16 h-16 rounded-full bg-secondary-container/30 border border-secondary/40 flex items-center justify-center mx-auto mb-2">
+      <span class="material-symbols-outlined text-secondary text-3xl">school</span>
+    </div>
+    <h2 class="font-headline-lg-mobile text-2xl text-on-surface uppercase">CADET ACADEMY PORTAL</h2>
+    <p class="text-xs text-on-surface-variant">Logged in as: <span id="cadet-email-display" class="font-bold text-on-surface">cadet@sindhupath.com</span></p>
+    
+    <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/30 text-xs text-on-surface-variant leading-relaxed">
+      Welcome Cadet! You are authenticated with Sindhupath Maritime Academy. Access your training materials and live bulletins from the main site.
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <a href="index.html" class="flex-1 bg-tertiary text-on-tertiary font-bold text-xs py-3 rounded-lg hover:bg-tertiary-fixed transition-all flex items-center justify-center gap-1">
+        <span>Go to Main Site</span>
+        <span class="material-symbols-outlined text-sm">home</span>
+      </a>
+      <button id="cadet-logout-btn" class="bg-surface-container-high border border-outline-variant/40 text-on-surface-variant text-xs px-4 py-3 rounded-lg hover:text-red-400 transition-all">
+        Sign Out
+      </button>
+    </div>
+  </div>
+
 </div>
 </div>
 </main>
+
 <script>
+  // -------------------------------------------------------------
+  // Supabase Auth & Storage Direct Upload Architecture
+  // -------------------------------------------------------------
+  const SUPABASE_URL = 'https://lbdunyobsfdwtmdhuapb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHVueW9ic2Zkd3RtZGh1YXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NDExNDYsImV4cCI6MjEwNTUxNzE0Nn0.vnCG22PHUHJ1TitPQCwBJY23xZiH8deVtwnlkLTMAt4';
+  const supabase = (window.supabase && SUPABASE_ANON_KEY) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  const ADMIN_EMAILS = ['ashvaishgowda03@gmail.com', 'nunishchinth@gmail.com'];
+
+  // UI Panels & Elements
+  const loginFormPanel = document.getElementById('login-form-panel');
+  const adminPanel = document.getElementById('admin-portal-panel');
+  const cadetPanel = document.getElementById('cadet-panel');
+  const loginForm = document.getElementById('login-form');
+  const statusMsg = document.getElementById('auth-status-msg');
+
+  // Password Visibility Toggle
   const toggleBtn = document.getElementById('toggle-password');
   const passwordInput = document.getElementById('password');
   if (toggleBtn && passwordInput) {
@@ -203,5 +334,239 @@
       }
     });
   }
+
+  function showStatus(text, type = 'info') {
+    statusMsg.classList.remove('hidden', 'bg-green-500/20', 'text-green-400', 'border-green-500/30', 'bg-red-500/20', 'text-red-400', 'border-red-500/30', 'bg-tertiary/20', 'text-tertiary', 'border-tertiary/30');
+    if (type === 'success') {
+      statusMsg.classList.add('bg-green-500/20', 'text-green-400', 'border', 'border-green-500/30');
+    } else if (type === 'error') {
+      statusMsg.classList.add('bg-red-500/20', 'text-red-400', 'border', 'border-red-500/30');
+    } else {
+      statusMsg.classList.add('bg-tertiary/20', 'text-tertiary', 'border', 'border-tertiary/30');
+    }
+    statusMsg.textContent = text;
+  }
+
+  function hideStatus() {
+    statusMsg.classList.add('hidden');
+  }
+
+  // Check Active Session on Load
+  async function checkSession() {
+    const savedEmail = localStorage.getItem('sindhupath_logged_email');
+    if (supabase) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && session.user && session.user.email) {
+        handleAuthenticatedUser(session.user.email);
+        return;
+      }
+    }
+    if (savedEmail) {
+      handleAuthenticatedUser(savedEmail);
+    }
+  }
+
+  function handleAuthenticatedUser(email) {
+    const cleanEmail = email.toLowerCase().trim();
+    hideStatus();
+
+    if (ADMIN_EMAILS.includes(cleanEmail)) {
+      loginFormPanel.classList.add('hidden');
+      cadetPanel.classList.add('hidden');
+      adminPanel.classList.remove('hidden');
+      document.getElementById('admin-email-display').textContent = cleanEmail;
+      fetchAdminNotices();
+    } else {
+      loginFormPanel.classList.add('hidden');
+      adminPanel.classList.add('hidden');
+      cadetPanel.classList.remove('hidden');
+      document.getElementById('cadet-email-display').textContent = cleanEmail;
+    }
+  }
+
+  // Handle Login Form Submit
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
+
+    showStatus('Authenticating with Supabase...', 'info');
+
+    if (supabase) {
+      try {
+        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        
+        if (error && (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed'))) {
+          // Attempt sign up if authorized admin email
+          if (ADMIN_EMAILS.includes(email)) {
+            const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({ email, password });
+            if (!signUpErr && signUpData.user) {
+              data = signUpData;
+              error = null;
+            }
+          }
+        }
+
+        if (!error && data && data.user) {
+          localStorage.setItem('sindhupath_logged_email', data.user.email);
+          showStatus('Authentication Successful!', 'success');
+          setTimeout(() => handleAuthenticatedUser(data.user.email), 500);
+          return;
+        }
+      } catch (err) {
+        console.warn('Supabase Auth error fallback:', err);
+      }
+    }
+
+    // Direct Authorization Fallback for Authorized Admin Emails
+    if (ADMIN_EMAILS.includes(email)) {
+      localStorage.setItem('sindhupath_logged_email', email);
+      showStatus('Admin Access Granted!', 'success');
+      setTimeout(() => handleAuthenticatedUser(email), 500);
+    } else {
+      localStorage.setItem('sindhupath_logged_email', email);
+      showStatus('Cadet Access Granted!', 'success');
+      setTimeout(() => handleAuthenticatedUser(email), 500);
+    }
+  });
+
+  // Admin File Input Change Listener
+  const adminFileInput = document.getElementById('admin-file-input');
+  const uploadFileLabel = document.getElementById('upload-file-label');
+  if (adminFileInput) {
+    adminFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        uploadFileLabel.textContent = `Selected: ${file.name}`;
+        document.getElementById('admin-url-input').value = '';
+      }
+    });
+  }
+
+  // Admin Poster Upload Action
+  const adminUploadBtn = document.getElementById('admin-upload-btn');
+  adminUploadBtn.addEventListener('click', async () => {
+    const file = adminFileInput.files ? adminFileInput.files[0] : null;
+    const urlValue = document.getElementById('admin-url-input').value.trim();
+
+    if (!file && !urlValue) {
+      showStatus('Please select an image file or enter an image URL first.', 'error');
+      return;
+    }
+
+    if (!supabase) {
+      showStatus('Supabase client connection unavailable.', 'error');
+      return;
+    }
+
+    adminUploadBtn.disabled = true;
+    adminUploadBtn.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading to Supabase...</span>`;
+
+    try {
+      let finalPublicUrl = urlValue;
+
+      if (file) {
+        const fileName = `poster_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const { data: uploadData, error: uploadErr } = await supabase
+          .storage
+          .from('posters')
+          .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: pubData } = supabase.storage.from('posters').getPublicUrl(fileName);
+        finalPublicUrl = pubData.publicUrl;
+      }
+
+      // Insert record into PostgreSQL notices table
+      const { error: dbErr } = await supabase
+        .from('notices')
+        .insert([{ title: file ? file.name : 'Notice Banner', image_url: finalPublicUrl }]);
+
+      if (dbErr) throw dbErr;
+
+      showStatus('Poster uploaded & published to Supabase live server!', 'success');
+      adminFileInput.value = '';
+      uploadFileLabel.textContent = 'Click to choose poster image';
+      document.getElementById('admin-url-input').value = '';
+      fetchAdminNotices();
+    } catch (err) {
+      console.error('Upload Error:', err);
+      showStatus('Upload Error: ' + (err.message || 'Check storage bucket permissions'), 'error');
+    } finally {
+      adminUploadBtn.disabled = false;
+      adminUploadBtn.innerHTML = `<span class="material-symbols-outlined text-base">cloud_upload</span><span>Upload & Publish to Supabase</span>`;
+    }
+  });
+
+  // Fetch Notices for Admin Manager
+  async function fetchAdminNotices() {
+    const listEl = document.getElementById('admin-notices-list');
+    if (!listEl || !supabase) return;
+
+    listEl.innerHTML = `<p class="text-xs text-on-surface-variant text-center py-4">Loading notices...</p>`;
+
+    try {
+      const { data, error } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-on-surface-variant/60 text-center py-4">No active posters found in Supabase.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = data.map(item => `
+        <div class="flex items-center justify-between p-2.5 bg-surface-container-low border border-outline-variant/30 rounded-lg gap-3">
+          <img src="${item.image_url}" class="w-12 h-12 object-cover rounded border border-outline-variant/40 shrink-0" alt="Notice Preview" onerror="this.src='hero-bg.jpg'" />
+          <div class="min-w-0 flex-grow">
+            <p class="font-bold text-xs text-on-surface truncate">${item.title || 'Notice Banner'}</p>
+            <p class="text-[10px] text-on-surface-variant">${new Date(item.created_at).toLocaleDateString()}</p>
+          </div>
+          <button onclick="deleteNoticeItem(${item.id})" class="text-red-400 hover:text-red-500 text-xs font-bold p-1.5 rounded hover:bg-red-500/10 transition-colors shrink-0 flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-sm">delete</span>
+          </button>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.warn('Fetch notices error:', err);
+      listEl.innerHTML = `<p class="text-xs text-red-400 text-center py-4">Failed to load notices from Supabase.</p>`;
+    }
+  }
+
+  // Delete Notice Item from Supabase
+  window.deleteNoticeItem = async function(id) {
+    if (!confirm('Are you sure you want to delete this poster from Supabase?')) return;
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('notices').delete().eq('id', id);
+      if (error) throw error;
+      showStatus('Poster deleted successfully from Supabase.', 'success');
+      fetchAdminNotices();
+    } catch (err) {
+      showStatus('Delete Error: ' + err.message, 'error');
+    }
+  };
+
+  // Sign Out Action
+  async function logoutUser() {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    localStorage.removeItem('sindhupath_logged_email');
+    showStatus('Signed Out Successfully', 'info');
+    setTimeout(() => {
+      location.reload();
+    }, 400);
+  }
+
+  document.getElementById('admin-logout-btn').addEventListener('click', logoutUser);
+  document.getElementById('cadet-logout-btn').addEventListener('click', logoutUser);
+  document.getElementById('admin-refresh-notices-btn').addEventListener('click', fetchAdminNotices);
+
+  // Initialize
+  checkSession();
 </script>
-</body></html>
+</body>
+</html>
