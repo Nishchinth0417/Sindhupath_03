@@ -332,6 +332,60 @@
         </div>
       </div>
     </div>
+  <!-- Bulletin and Notice Board Section -->
+  <section id="announcements" class="py-stack-lg bg-white relative overflow-hidden border-t border-deep-sea/5">
+    <div class="nautical-grid absolute inset-0 transition-all duration-1000 opacity-100"></div>
+    <div class="px-margin-mobile md:px-gutter max-w-container-max mx-auto relative z-10 transition-all duration-1000 opacity-100">
+      
+      <!-- Section Header with Admin Control Button -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+        <div>
+          <span class="font-caption text-caption text-maritime-gold tracking-widest uppercase">Notice Board</span>
+          <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-deep-sea mt-2">Bulletins & Notices</h2>
+        </div>
+        <button id="open-admin-btn" onclick="openAdminAuthModal()" class="flex items-center gap-2 border border-maritime-gold/50 text-maritime-gold px-6 py-2.5 uppercase text-xs font-bold tracking-wider hover:bg-maritime-gold hover:text-deep-sea transition-all duration-300 rounded-full active:scale-95 btn-gold-glow">
+          <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+          Admin Control
+        </button>
+      </div>
+
+      <!-- Single Unified Notice Board -->
+      <div class="bg-white rounded-3xl shadow-2xl border-t-[6px] border-maritime-gold border-x border-b border-deep-sea/10 overflow-hidden max-w-4xl mx-auto">
+        
+        <!-- Notice Board Header -->
+        <div class="bg-deep-sea px-6 py-5 md:px-8 md:py-6 text-white flex items-center justify-between border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-maritime-gold text-3xl" style="font-variation-settings: 'FILL' 1;">campaign</span>
+            <div>
+              <h3 class="font-subhead-md text-xl md:text-2xl font-bold tracking-wider uppercase text-white">Academy Notice Board</h3>
+              <p class="text-xs text-white/70">Official Announcements & Latest Bulletins</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="view-poster-btn" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="View Notice Banner">
+              <span class="material-symbols-outlined text-lg">fullscreen</span>
+            </button>
+            <a id="download-poster-btn" href="#" download="sindhupath-notice.png" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Download Notice">
+              <span class="material-symbols-outlined text-lg">download</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Featured Poster Banner Container -->
+        <div id="poster-display-container" class="w-full h-[380px] bg-primary/40 border-b border-deep-sea/10 flex items-center justify-center overflow-hidden">
+          <!-- Default SVG or Image dynamically injected here -->
+        </div>
+
+        <!-- News Bulletins Feed -->
+        <div class="p-6 md:p-8">
+          <div class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar" id="news-feed-container">
+            <!-- News Cards dynamically injected here -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
   </section>
 
   <!-- What We Offer -->
@@ -1210,12 +1264,72 @@
       renderAdminNews();
     };
 
-    // Modal Triggers
-    if (openAdminBtn) {
-      openAdminBtn.addEventListener('click', () => {
+    // Admin Password Verification (Password: ASH@NISH)
+    const ADMIN_PASS = 'ASH@NISH';
+    const adminAuthModal = document.getElementById('admin-auth-modal');
+    const closeAdminAuthModal = document.getElementById('close-admin-auth-modal');
+    const adminAuthForm = document.getElementById('admin-auth-form');
+    const adminPasswordInput = document.getElementById('admin-password-input');
+    const toggleAdminPassBtn = document.getElementById('toggle-admin-pass-btn');
+
+    window.openAdminAuthModal = function() {
+      if (sessionStorage.getItem('sindhupath_admin_auth') === 'true') {
         adminModal.classList.remove('hidden');
         adminModal.classList.add('flex');
         renderAdminNews();
+      } else {
+        adminAuthModal.classList.remove('hidden');
+        adminAuthModal.classList.add('flex');
+        if (adminPasswordInput) {
+          adminPasswordInput.value = '';
+          adminPasswordInput.focus();
+        }
+      }
+    };
+
+    if (closeAdminAuthModal) {
+      closeAdminAuthModal.addEventListener('click', () => {
+        adminAuthModal.classList.add('hidden');
+        adminAuthModal.classList.remove('flex');
+      });
+    }
+
+    if (toggleAdminPassBtn && adminPasswordInput) {
+      toggleAdminPassBtn.addEventListener('click', () => {
+        const icon = toggleAdminPassBtn.querySelector('.material-symbols-outlined');
+        if (adminPasswordInput.type === 'password') {
+          adminPasswordInput.type = 'text';
+          icon.textContent = 'visibility_off';
+        } else {
+          adminPasswordInput.type = 'password';
+          icon.textContent = 'visibility';
+        }
+      });
+    }
+
+    if (adminAuthForm) {
+      adminAuthForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const entered = adminPasswordInput.value.trim();
+        if (entered === ADMIN_PASS) {
+          sessionStorage.setItem('sindhupath_admin_auth', 'true');
+          adminAuthModal.classList.add('hidden');
+          adminAuthModal.classList.remove('flex');
+          adminModal.classList.remove('hidden');
+          adminModal.classList.add('flex');
+          renderAdminNews();
+          if (typeof showToast === 'function') {
+            showToast('Access Granted: Welcome Admin', 'success');
+          }
+        } else {
+          if (typeof showToast === 'function') {
+            showToast('Access Denied: Incorrect Admin Password', 'error');
+          } else {
+            alert('Access Denied: Incorrect Admin Password');
+          }
+          adminPasswordInput.value = '';
+          adminPasswordInput.focus();
+        }
       });
     }
 
@@ -1403,6 +1517,36 @@
     </div>
   </div>
 
+  <!-- Password Protection Auth Modal (Password: ASH@NISH) -->
+  <div id="admin-auth-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 transition-all duration-300">
+    <div class="bg-deep-sea text-white border border-maritime-gold/40 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6 relative">
+      <button id="close-admin-auth-modal" class="absolute top-4 right-4 text-white/60 hover:text-white focus:outline-none">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div class="flex flex-col items-center text-center mb-6">
+        <div class="w-14 h-14 rounded-full bg-maritime-gold/20 border border-maritime-gold/40 flex items-center justify-center mb-3">
+          <span class="material-symbols-outlined text-maritime-gold text-3xl">lock</span>
+        </div>
+        <h3 class="font-headline-lg-mobile text-2xl uppercase tracking-wider text-white">Admin Security Check</h3>
+        <p class="text-xs text-white/70 mt-1">Enter authorized password to access Bulletin Management</p>
+      </div>
+
+      <form id="admin-auth-form" class="space-y-4">
+        <div class="relative group">
+          <input id="admin-password-input" type="password" placeholder="Enter Admin Password" required class="w-full bg-primary/40 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none focus:border-maritime-gold transition-colors pr-10">
+          <button id="toggle-admin-pass-btn" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-lg">visibility</span>
+          </button>
+        </div>
+        <button type="submit" class="w-full bg-maritime-gold text-deep-sea font-bold text-xs uppercase tracking-widest py-3.5 rounded-xl hover:bg-white transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-sm">key</span>
+          Unlock Admin Panel
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Admin Control Modal -->
   <div id="admin-modal" class="fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 transition-all duration-300">
     <div class="bg-deep-sea text-white border border-maritime-gold/30 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
@@ -1428,9 +1572,25 @@
         
         <!-- Tab 1: Manage Poster -->
         <div id="tab-poster-content" class="space-y-6">
+          
+          <!-- Cloud Upload Option B Banner -->
+          <div class="bg-maritime-gold/15 p-5 border border-maritime-gold/30 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-outlined text-maritime-gold text-xl">cloud_upload</span>
+                <h4 class="font-bold text-maritime-gold text-sm uppercase">Option B: Permanent Cloud Upload</h4>
+              </div>
+              <p class="text-xs text-white/80 leading-relaxed">Upload poster photos directly to studio Google Drive & Google Sheet. Images display live for all users worldwide.</p>
+            </div>
+            <a href="https://forms.gle/APffr2umEvHWTKqG9" target="_blank" rel="noopener noreferrer" class="shrink-0 bg-maritime-gold text-deep-sea px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-white transition-all flex items-center gap-1.5 shadow-md">
+              <span>Upload Photo</span>
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </a>
+          </div>
+
           <div class="bg-primary/50 p-4 border border-white/5 rounded-xl">
-            <h4 class="font-bold text-maritime-gold text-sm uppercase mb-2">Update Notice Poster</h4>
-            <p class="text-xs text-white/70 leading-relaxed">Upload a new promotional banner, exam announcement, or information poster. You can upload an image file (PNG/JPG) or paste an image URL.</p>
+            <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-2">Alternative: Quick Local Upload / URL</h4>
+            <p class="text-xs text-white/70 leading-relaxed">You can also upload an image file locally or paste a direct image URL for quick previewing.</p>
           </div>
 
           <!-- Upload File Form -->
