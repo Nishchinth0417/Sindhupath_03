@@ -384,50 +384,62 @@
     }
   }
 
+  const ADMIN_PASS = '1234';
+
   // Handle Login Form Submit
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value.trim().toLowerCase();
-    const password = document.getElementById('password').value;
+    const password = document.getElementById('password').value.trim();
 
-    showStatus('Authenticating with Supabase...', 'info');
+    // Verification for Admin Emails (ashvaishgowda03@gmail.com & nunishchinth@gmail.com)
+    if (ADMIN_EMAILS.includes(email)) {
+      if (password !== ADMIN_PASS) {
+        showStatus('Access Denied: Incorrect Password for Admin Account', 'error');
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+        return;
+      }
 
-    if (supabase) {
-      try {
-        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        
-        if (error && (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed'))) {
-          // Attempt sign up if authorized admin email
-          if (ADMIN_EMAILS.includes(email)) {
+      showStatus('Admin Credentials Verified!', 'info');
+
+      if (supabase) {
+        try {
+          let { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error && (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed'))) {
             const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({ email, password });
             if (!signUpErr && signUpData.user) {
               data = signUpData;
               error = null;
             }
           }
+        } catch (err) {
+          console.warn('Supabase Auth warning:', err);
         }
+      }
 
+      localStorage.setItem('sindhupath_logged_email', email);
+      showStatus('Admin Access Granted! Opening Upload Portal...', 'success');
+      setTimeout(() => handleAuthenticatedUser(email), 500);
+      return;
+    }
+
+    // Standard Cadet Login
+    if (supabase) {
+      try {
+        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (!error && data && data.user) {
           localStorage.setItem('sindhupath_logged_email', data.user.email);
-          showStatus('Authentication Successful!', 'success');
+          showStatus('Cadet Sign In Successful!', 'success');
           setTimeout(() => handleAuthenticatedUser(data.user.email), 500);
           return;
         }
-      } catch (err) {
-        console.warn('Supabase Auth error fallback:', err);
-      }
+      } catch (err) {}
     }
 
-    // Direct Authorization Fallback for Authorized Admin Emails
-    if (ADMIN_EMAILS.includes(email)) {
-      localStorage.setItem('sindhupath_logged_email', email);
-      showStatus('Admin Access Granted!', 'success');
-      setTimeout(() => handleAuthenticatedUser(email), 500);
-    } else {
-      localStorage.setItem('sindhupath_logged_email', email);
-      showStatus('Cadet Access Granted!', 'success');
-      setTimeout(() => handleAuthenticatedUser(email), 500);
-    }
+    localStorage.setItem('sindhupath_logged_email', email);
+    showStatus('Cadet Access Granted!', 'success');
+    setTimeout(() => handleAuthenticatedUser(email), 500);
   });
 
   // Admin File Input Change Listener
