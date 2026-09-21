@@ -1266,9 +1266,7 @@
       if (supabaseClient) {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && ADMIN_EMAILS_IDX.includes(session.user.email)) {
-          adminModal.classList.remove('hidden');
-          adminModal.classList.add('flex');
-          renderAdminNews();
+          window.location.href = 'admin.html';
           return;
         }
       }
@@ -1332,10 +1330,10 @@
 
         adminAuthModal.classList.add('hidden');
         adminAuthModal.classList.remove('flex');
-        adminModal.classList.remove('hidden');
-        adminModal.classList.add('flex');
-        renderAdminNews();
-        if (typeof showToast === 'function') showToast('Access Granted: Welcome Admin', 'success');
+        if (typeof showToast === 'function') showToast('Access Granted: Opening Admin Portal...', 'success');
+        setTimeout(() => {
+          window.location.href = 'admin.html';
+        }, 500);
       });
     }
 

@@ -387,10 +387,10 @@
         document.getElementById('password').focus();
         return;
       }
-      showStatus('Admin verified!', 'success');
-      document.getElementById('admin-email-display').textContent = email;
-      showPanel('admin');
-      fetchAdminNotices();
+      showStatus('Admin verified! Opening Admin Portal...', 'success');
+      setTimeout(() => {
+        window.location.href = 'admin.html';
+      }, 500);
       return;
     }
 
@@ -429,9 +429,7 @@
       const { data: { session } } = await sbClient.auth.getSession();
       const adminEmail = session?.user?.email;
       if (adminEmail && ADMIN_EMAILS.includes(adminEmail)) {
-        document.getElementById('admin-email-display').textContent = adminEmail;
-        showPanel('admin');
-        fetchAdminNotices();
+        window.location.href = 'admin.html';
         return;
       }
     }
