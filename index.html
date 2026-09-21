@@ -12,6 +12,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -965,10 +968,22 @@
     // Render Poster View
     
     // -------------------------------------------------------------
-    // Google Sheets Poster Integration & Dynamic Slideshow Engine
-    // (Pattern from Ananth_Decor: JSONP script-tag + triple URL fallback)
+    // Supabase Live Storage & Database Integration
     // -------------------------------------------------------------
-    const SHEET_ID_POSTERS = '1lRqrTtCn7-185Izv0_sXQC42IDjNqvaxWN9ncoMKQj8';
+    const SUPABASE_URL = 'https://lbdunyobsfdwtmdhuapb.supabase.co';
+    let SUPABASE_ANON_KEY = localStorage.getItem('sindhupath_supabase_anon_key') || 'YOUR_SUPABASE_ANON_KEY';
+    let supabaseClient = null;
+
+    function initSupabaseClient() {
+      if (window.supabase && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+          console.warn('Supabase initialization warning:', e);
+        }
+      }
+    }
+    initSupabaseClient();
 
     let posterImages = []; // each entry: { id, primaryUrl, cdnUrl, backupUrl }
     let currentSlideIndex = 0;
@@ -985,87 +1000,55 @@
         .replace(/'/g, '&#039;');
     }
 
-    // Manual Live Sync Action (Triggered by Sync Live button)
-    window.triggerManualLiveSync = function() {
-      const syncIcon = document.getElementById('sync-icon');
-      if (syncIcon) syncIcon.classList.add('animate-spin');
-      fetchSheetPosters();
-      if (typeof showToast === 'function') {
-        showToast('Syncing live Google Form submissions...', 'info');
+    async function fetchSupabasePosters() {
+      if (!supabaseClient) {
+        const local = localStorage.getItem(POSTER_KEY);
+        if (local) {
+          posterImages = [{ id: 'local_1', primaryUrl: local, cdnUrl: local, backupUrl: local }];
+        } else {
+          posterImages = [];
+        }
+        renderPosterSlideshow();
+        return;
       }
-      setTimeout(() => {
-        if (syncIcon) syncIcon.classList.remove('animate-spin');
-      }, 1200);
-    };
 
-    // Extract ALL Drive file IDs from a cell value — handles multiple comma-separated URLs
-    // Same pattern as Ananth_Decor: splits on whitespace/comma/semicolon, matches each segment
-    function extractDriveFileIds(val) {
-      if (!val) return [];
-      const ids = [];
-      const segments = val.toString().split(/[\s,;]+/);
-      for (const seg of segments) {
-        const match = seg.match(/(?:id=|\/d\/|\/file\/d\/|open\?id=)([a-zA-Z0-9_-]{20,})/);
-        if (match && match[1]) {
-          const cleanId = match[1].replace(/[^a-zA-Z0-9_-]/g, '');
-          if (cleanId && !ids.includes(cleanId)) ids.push(cleanId);
+      try {
+        const { data, error } = await supabaseClient
+          .from('notices')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          posterImages = data.map(item => ({
+            id: item.id,
+            primaryUrl: item.image_url,
+            cdnUrl: item.image_url,
+            backupUrl: item.image_url
+          }));
+        } else {
+          const local = localStorage.getItem(POSTER_KEY);
+          if (local) {
+            posterImages = [{ id: 'local_1', primaryUrl: local, cdnUrl: local, backupUrl: local }];
+          } else {
+            posterImages = [];
+          }
+        }
+      } catch (err) {
+        console.warn('Supabase poster fetch error:', err);
+        const local = localStorage.getItem(POSTER_KEY);
+        if (local) {
+          posterImages = [{ id: 'local_1', primaryUrl: local, cdnUrl: local, backupUrl: local }];
+        } else {
+          posterImages = [];
         }
       }
-      return ids;
-    }
-
-    // Build all three URL variants from a file ID
-    // lh3.googleusercontent.com is used as primaryUrl because it serves direct image binary streams without 302 redirects
-    function buildPosterUrls(fileId) {
-      return {
-        id: fileId,
-        primaryUrl: `https://lh3.googleusercontent.com/d/${fileId}=w1200`,
-        cdnUrl:     `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`,
-        backupUrl:  `https://drive.google.com/uc?export=view&id=${fileId}`
-      };
-    }
-
-    // Called by JSONP script tag (Ananth_Decor pattern — bypasses CORS entirely)
-    window.onSheetPosterData = function(data) {
-      if (!data || !data.table || !data.table.rows) { renderPosterSlideshow(); return; }
-      const rows = data.table.rows;
-      const result = [];
-      rows.forEach(row => {
-        const c = row.c || [];
-        // Column B (index 1) = uploaded poster Drive URL(s) — may be multiple comma-separated
-        const rawVal = c[1] && c[1].v ? String(c[1].v).trim() : '';
-        const fileIds = extractDriveFileIds(rawVal);
-        fileIds.forEach(fid => result.push(buildPosterUrls(fid)));
-      });
-      if (result.length > 0) {
-        posterImages = result;
-      } else if (activePoster) {
-        posterImages = [{ id: '', primaryUrl: activePoster, cdnUrl: activePoster, backupUrl: activePoster }];
-      } else {
-        posterImages = [];
-      }
       renderPosterSlideshow();
-    };
+    }
 
-    function fetchSheetPosters() {
-      const scriptId = 'sindhupath-sheet-poster-script';
-      const old = document.getElementById(scriptId);
-      if (old) old.remove();
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID_POSTERS}/gviz/tq?tqx=responseHandler:window.onSheetPosterData&sheet=Sheet1&t=${Date.now()}`;
-      script.onerror = () => {
-        console.warn('JSONP failed, trying fetch fallback...');
-        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID_POSTERS}/gviz/tq?tqx=out:json&sheet=Sheet1&t=${Date.now()}`)
-          .then(r => r.text())
-          .then(text => {
-            const m = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-            if (m && m[1]) { try { window.onSheetPosterData(JSON.parse(m[1])); } catch(e) { renderPosterSlideshow(); } }
-            else renderPosterSlideshow();
-          })
-          .catch(() => renderPosterSlideshow());
-      };
-      document.body.appendChild(script);
+    function renderPoster() {
+      fetchSupabasePosters();
     }
 
     function renderPosterSlideshow() {
@@ -1408,19 +1391,69 @@
       }
     });
 
-    // Save Poster Action
-    savePosterBtn.addEventListener('click', () => {
+    // Save Poster Action (Direct Cloud Storage to Supabase)
+    savePosterBtn.addEventListener('click', async () => {
       const urlValue = posterUrlInput.value.trim();
-      if (tempPosterData) {
+      const file = posterFileInput.files ? posterFileInput.files[0] : null;
+
+      if (file && supabaseClient) {
+        if (typeof showToast === 'function') showToast('Uploading poster to Supabase Storage...', 'info');
+        try {
+          const fileName = `poster_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          const { data: uploadData, error: uploadErr } = await supabaseClient
+            .storage
+            .from('posters')
+            .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+          if (uploadErr) throw uploadErr;
+
+          const { data: pubData } = supabaseClient
+            .storage
+            .from('posters')
+            .getPublicUrl(fileName);
+
+          const publicUrl = pubData.publicUrl;
+
+          const { error: dbErr } = await supabaseClient
+            .from('notices')
+            .insert([{ title: file.name, image_url: publicUrl }]);
+
+          if (dbErr) throw dbErr;
+
+          activePoster = publicUrl;
+          localStorage.setItem(POSTER_KEY, activePoster);
+          if (typeof showToast === 'function') showToast('Poster uploaded & published to Supabase live server!', 'success');
+        } catch (err) {
+          console.error('Supabase Upload error:', err);
+          if (tempPosterData) {
+            activePoster = tempPosterData;
+            localStorage.setItem(POSTER_KEY, activePoster);
+            if (typeof showToast === 'function') showToast('Saved poster to local fallback!', 'warning');
+          } else {
+            if (typeof showToast === 'function') showToast('Supabase Upload Error: ' + (err.message || 'Check storage bucket'), 'error');
+            return;
+          }
+        }
+      } else if (tempPosterData) {
         activePoster = tempPosterData;
         localStorage.setItem(POSTER_KEY, activePoster);
-        showToast('Poster image uploaded and saved successfully!', 'success');
+        if (supabaseClient) {
+          try {
+            await supabaseClient.from('notices').insert([{ title: 'Notice Poster', image_url: activePoster }]);
+          } catch(e) {}
+        }
+        if (typeof showToast === 'function') showToast('Poster saved successfully!', 'success');
       } else if (urlValue) {
         activePoster = urlValue;
         localStorage.setItem(POSTER_KEY, activePoster);
-        showToast('Poster URL saved successfully!', 'success');
+        if (supabaseClient) {
+          try {
+            await supabaseClient.from('notices').insert([{ title: 'Notice Link', image_url: urlValue }]);
+          } catch(e) {}
+        }
+        if (typeof showToast === 'function') showToast('Poster URL saved successfully!', 'success');
       } else {
-        showToast('Please choose an image file or enter an image URL first.', 'warning');
+        if (typeof showToast === 'function') showToast('Please choose an image file or enter an image URL first.', 'warning');
         return;
       }
       
@@ -1429,12 +1462,12 @@
       fileUploadStatus.classList.add('hidden');
       posterFileInput.value = '';
       posterUrlInput.value = '';
-      renderPoster();
+      fetchSupabasePosters();
       closeAdminModal.click();
     });
 
     // Reset Poster Action
-    resetPosterBtn.addEventListener('click', () => {
+    resetPosterBtn.addEventListener('click', async () => {
       if (confirm('Are you sure you want to reset to the default poster?')) {
         activePoster = null;
         localStorage.removeItem(POSTER_KEY);
@@ -1442,7 +1475,7 @@
         fileUploadStatus.classList.add('hidden');
         posterFileInput.value = '';
         posterUrlInput.value = '';
-        renderPoster();
+        fetchSupabasePosters();
         closeAdminModal.click();
       }
     });
@@ -1494,15 +1527,15 @@
       addNewsForm.reset();
       renderNewsFeed();
       renderAdminNews();
-      showToast('Announcement bulletin item added successfully!', 'success');
+      if (typeof showToast === 'function') showToast('Announcement bulletin item added successfully!', 'success');
     });
 
-    // Initial Bulletins Render & Live Auto-Refresh (Sync with Google Form responses every 60s)
+    // Initial Bulletins Render & Live Auto-Refresh (Sync with Supabase live server every 30s)
     renderPoster();
     renderNewsFeed();
     setInterval(() => {
-      fetchSheetPosters();
-    }, 60000);
+      fetchSupabasePosters();
+    }, 30000);
   </script>
 
   <!-- Fullscreen Poster Modal -->
@@ -1573,52 +1606,46 @@
         <!-- Tab 1: Manage Poster -->
         <div id="tab-poster-content" class="space-y-6">
           
-          <!-- Cloud Upload Option B Banner -->
+          <!-- Supabase Storage Banner -->
           <div class="bg-maritime-gold/15 p-5 border border-maritime-gold/30 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
               <div class="flex items-center gap-2 mb-1">
                 <span class="material-symbols-outlined text-maritime-gold text-xl">cloud_upload</span>
-                <h4 class="font-bold text-maritime-gold text-sm uppercase">Option B: Permanent Cloud Upload</h4>
+                <h4 class="font-bold text-maritime-gold text-sm uppercase">Supabase Direct Cloud Storage</h4>
               </div>
-              <p class="text-xs text-white/80 leading-relaxed">Upload poster photos directly to studio Google Drive & Google Sheet. Images display live for all users worldwide.</p>
+              <p class="text-xs text-white/80 leading-relaxed">Upload poster photos directly to Supabase Storage CDN. Public URLs are permanent, non-expiring, and load instantly on page refresh worldwide.</p>
             </div>
-            <a href="https://forms.gle/APffr2umEvHWTKqG9" target="_blank" rel="noopener noreferrer" class="shrink-0 bg-maritime-gold text-deep-sea px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-white transition-all flex items-center gap-1.5 shadow-md">
-              <span>Upload Photo</span>
-              <span class="material-symbols-outlined text-sm">open_in_new</span>
-            </a>
-          </div>
-
-          <div class="bg-primary/50 p-4 border border-white/5 rounded-xl">
-            <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-2">Alternative: Quick Local Upload / URL</h4>
-            <p class="text-xs text-white/70 leading-relaxed">You can also upload an image file locally or paste a direct image URL for quick previewing.</p>
+            <div id="supabase-status-badge" class="shrink-0 px-3 py-1.5 rounded-full text-xs font-bold bg-green-500/20 text-green-400 border border-green-500/30 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Supabase Storage
+            </div>
           </div>
 
           <!-- Upload File Form -->
           <div class="space-y-4">
-            <label class="block text-xs uppercase font-bold text-white/80 tracking-wider">Method A: Upload Local Image</label>
+            <label class="block text-xs uppercase font-bold text-white/80 tracking-wider">Upload Poster Photo</label>
             <div class="flex items-center justify-center w-full">
               <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 hover:border-maritime-gold/50 rounded-xl cursor-pointer hover:bg-white/[0.02] transition-all">
                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
                   <span class="material-symbols-outlined text-maritime-gold text-3xl mb-2">cloud_upload</span>
-                  <p class="text-sm font-semibold">Click to upload poster image</p>
-                  <p class="text-xs text-white/50 mt-1">PNG, JPG or JPEG (Max 2MB)</p>
+                  <p class="text-sm font-semibold">Click to choose poster photo</p>
+                  <p class="text-xs text-white/50 mt-1">PNG, JPG or JPEG (Direct Cloud Sync)</p>
                 </div>
                 <input type="file" id="poster-file-input" class="hidden" accept="image/*" />
               </label>
             </div>
             <div id="file-upload-status" class="text-xs text-green-400 hidden flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">check_circle</span> Image loaded successfully! Click Save below.
+              <span class="material-symbols-outlined text-sm">check_circle</span> Image selected! Click Upload & Publish to Supabase below.
             </div>
           </div>
 
           <!-- URL Input Form -->
           <div class="space-y-2">
-            <label class="block text-xs uppercase font-bold text-white/80 tracking-wider">Method B: Image URL</label>
+            <label class="block text-xs uppercase font-bold text-white/80 tracking-wider">Alternative: Image URL</label>
             <input type="url" id="poster-url-input" placeholder="https://example.com/poster.jpg" class="w-full bg-primary/40 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-maritime-gold transition-all" />
           </div>
 
           <div class="flex gap-4 pt-4 border-t border-white/5">
-            <button id="save-poster-btn" class="flex-1 bg-maritime-gold text-deep-sea py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-white hover:scale-[1.02] active:scale-95 transition-all">Save Poster</button>
+            <button id="save-poster-btn" class="flex-1 bg-maritime-gold text-deep-sea py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-white hover:scale-[1.02] active:scale-95 transition-all">Upload & Publish to Supabase</button>
             <button id="reset-poster-btn" class="bg-white/15 text-white px-5 py-3 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-white/25 active:scale-95 transition-all">Reset Default</button>
           </div>
         </div>
