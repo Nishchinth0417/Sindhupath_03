@@ -161,7 +161,7 @@
             <span class="material-symbols-outlined text-tertiary text-2xl">campaign</span>
             <div>
               <h2 class="font-bold text-sm uppercase tracking-wider text-white">Add Bulletin News Item</h2>
-              <p class="text-[11px] text-on-surface-variant">Post text announcements and news items to the bulletin feed.</p>
+              <p class="text-[11px] text-on-surface-variant">Post text announcements and news items live to the website feed.</p>
             </div>
           </div>
 
@@ -194,6 +194,16 @@
               <span>Publish Bulletin Item</span>
             </button>
           </form>
+
+          <!-- Live Published Bulletins Manager with Delete Option -->
+          <div class="mt-6 pt-4 border-t border-outline-variant/20 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-xs uppercase tracking-wider text-white">Live Published Bulletins (<span id="bulletin-count">0</span>)</h3>
+            </div>
+            <div id="admin-bulletins-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+              <p class="text-xs text-on-surface-variant text-center py-4">Loading bulletins...</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -348,16 +358,30 @@
     }
 
     // --- Fetch Live Notices ---
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     async function fetchAdminNotices() {
-      const listEl = document.getElementById('admin-notices-list');
+      const postersListEl = document.getElementById('admin-notices-list');
+      const bulletinsListEl = document.getElementById('admin-bulletins-list');
       const countEl = document.getElementById('notice-count');
+      const bulletinCountEl = document.getElementById('bulletin-count');
       const refreshIcon = document.getElementById('refresh-icon');
 
       if (refreshIcon) refreshIcon.classList.add('animate-spin');
-      listEl.innerHTML = '<p class="text-xs text-on-surface-variant text-center py-8">Loading notices from Supabase...</p>';
+      if (postersListEl) postersListEl.innerHTML = '<p class="text-xs text-on-surface-variant text-center py-8">Loading posters...</p>';
+      if (bulletinsListEl) bulletinsListEl.innerHTML = '<p class="text-xs text-on-surface-variant text-center py-4">Loading bulletins...</p>';
 
       if (!sbClient) {
-        listEl.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Supabase connection offline.</p>';
+        if (postersListEl) postersListEl.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Supabase connection offline.</p>';
+        if (bulletinsListEl) bulletinsListEl.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Supabase connection offline.</p>';
         if (refreshIcon) refreshIcon.classList.remove('animate-spin');
         return;
       }
@@ -366,32 +390,81 @@
         const { data, error } = await sbClient.from('notices').select('*').order('created_at', { ascending: false });
         if (error) throw error;
 
-        countEl.textContent = data ? data.length : 0;
+        const posters = [];
+        const bulletins = [];
 
-        if (!data || data.length === 0) {
-          listEl.innerHTML = '<p class="text-xs text-on-surface-variant/60 text-center py-8">No notices uploaded yet. Use the form above to add your first poster!</p>';
-          return;
+        if (data && data.length > 0) {
+          data.forEach(item => {
+            if (item.title && item.title.startsWith('BULLETIN:')) {
+              bulletins.push(item);
+            } else {
+              posters.push(item);
+            }
+          });
         }
 
-        listEl.innerHTML = data.map(item => `
-          <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant/30 rounded-xl gap-4 hover:border-outline-variant/60 transition-colors">
-            <div class="flex items-center gap-3 min-w-0 flex-grow">
-              <img src="${item.image_url}" class="w-14 h-14 object-cover rounded-lg border border-outline-variant/40 shrink-0 bg-surface-container-high" alt="Notice" onerror="this.style.display='none'" />
-              <div class="min-w-0">
-                <p class="font-bold text-xs text-white truncate">${item.title || 'Notice Banner'}</p>
-                <p class="text-[10px] text-on-surface-variant/70 mt-0.5">${new Date(item.created_at).toLocaleString()}</p>
-                <a href="${item.image_url}" target="_blank" class="text-[10px] text-tertiary hover:underline truncate block mt-0.5">${item.image_url}</a>
+        if (countEl) countEl.textContent = posters.length;
+        if (bulletinCountEl) bulletinCountEl.textContent = bulletins.length;
+
+        // Render Poster Banners List
+        if (postersListEl) {
+          if (posters.length === 0) {
+            postersListEl.innerHTML = '<p class="text-xs text-on-surface-variant/60 text-center py-8">No poster banners uploaded yet. Use the form above to upload!</p>';
+          } else {
+            postersListEl.innerHTML = posters.map(item => `
+              <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant/30 rounded-xl gap-4 hover:border-outline-variant/60 transition-colors">
+                <div class="flex items-center gap-3 min-w-0 flex-grow">
+                  <img src="${escapeHTML(item.image_url)}" class="w-14 h-14 object-cover rounded-lg border border-outline-variant/40 shrink-0 bg-surface-container-high" alt="Notice" onerror="this.style.display='none'" />
+                  <div class="min-w-0">
+                    <p class="font-bold text-xs text-white truncate">${escapeHTML(item.title || 'Notice Banner')}</p>
+                    <p class="text-[10px] text-on-surface-variant/70 mt-0.5">${new Date(item.created_at).toLocaleString()}</p>
+                    <a href="${escapeHTML(item.image_url)}" target="_blank" class="text-[10px] text-tertiary hover:underline truncate block mt-0.5">${escapeHTML(item.image_url)}</a>
+                  </div>
+                </div>
+                <button onclick="deleteNoticeItem('${item.id}')" class="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-lg transition-colors shrink-0 flex items-center gap-1 text-xs font-semibold" title="Delete Poster">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                  <span class="hidden sm:inline">Delete Poster</span>
+                </button>
               </div>
-            </div>
-            <button onclick="deleteNoticeItem('${item.id}')" class="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg transition-colors shrink-0 flex items-center gap-1 text-xs" title="Delete Poster">
-              <span class="material-symbols-outlined text-sm">delete</span>
-              <span class="hidden sm:inline">Delete</span>
-            </button>
-          </div>
-        `).join('');
+            `).join('');
+          }
+        }
+
+        // Render News Bulletins List with Delete Option
+        if (bulletinsListEl) {
+          if (bulletins.length === 0) {
+            bulletinsListEl.innerHTML = '<p class="text-xs text-on-surface-variant/60 text-center py-4">No text bulletins published yet.</p>';
+          } else {
+            bulletinsListEl.innerHTML = bulletins.map(item => {
+              let badge = 'Notice';
+              let titleText = item.title.replace('BULLETIN:', '').trim();
+              if (titleText.startsWith('[')) {
+                const parts = titleText.split(']');
+                badge = parts[0].replace('[', '').trim();
+                titleText = parts.slice(1).join(']').trim();
+              }
+              return `
+                <div class="flex items-center justify-between p-3 bg-surface-container-low border border-outline-variant/30 rounded-xl gap-3 hover:border-outline-variant/60 transition-colors">
+                  <div class="min-w-0 flex-grow">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-tertiary/20 text-tertiary border border-tertiary/30">${escapeHTML(badge)}</span>
+                      <span class="text-[10px] text-on-surface-variant/70">${new Date(item.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <p class="font-bold text-xs text-white truncate">${escapeHTML(titleText)}</p>
+                    <p class="text-[11px] text-on-surface-variant/80 truncate mt-0.5">${escapeHTML(item.image_url)}</p>
+                  </div>
+                  <button onclick="deleteNoticeItem('${item.id}')" class="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 p-2 rounded-lg transition-colors shrink-0 flex items-center gap-1 text-xs font-semibold" title="Delete Bulletin">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                    <span>Delete</span>
+                  </button>
+                </div>
+              `;
+            }).join('');
+          }
+        }
 
       } catch (err) {
-        listEl.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Failed to load notices: ' + err.message + '</p>';
+        if (postersListEl) postersListEl.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Failed to load: ' + escapeHTML(err.message) + '</p>';
       } finally {
         if (refreshIcon) refreshIcon.classList.remove('animate-spin');
       }
