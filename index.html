@@ -999,14 +999,40 @@
         .replace(/'/g, '&#039;');
     }
 
+    // Global Carousel Navigation Handlers
+    window.goToSlide = function(index) {
+      if (!posterImages || posterImages.length === 0) return;
+      currentSlideIndex = index;
+      updateActiveSlideControls();
+    };
+
+    window.nextSlide = function() {
+      if (!posterImages || posterImages.length === 0) return;
+      currentSlideIndex = (currentSlideIndex + 1) % posterImages.length;
+      updateActiveSlideControls();
+    };
+
+    window.prevSlide = function() {
+      if (!posterImages || posterImages.length === 0) return;
+      currentSlideIndex = (currentSlideIndex - 1 + posterImages.length) % posterImages.length;
+      updateActiveSlideControls();
+    };
+
     async function fetchSupabasePosters() {
+      if (!posterDisplayContainer) return;
+      
+      // Render animated skeleton loading indicator if no images loaded yet
+      if (posterImages.length === 0) {
+        posterDisplayContainer.innerHTML = `
+          <div class="w-full h-full flex flex-col items-center justify-center bg-deep-sea/5 space-y-3">
+            <span class="material-symbols-outlined text-maritime-gold text-4xl animate-spin">sync</span>
+            <p class="text-xs font-semibold text-deep-sea/70 uppercase tracking-wider">Syncing Notice Board...</p>
+          </div>
+        `;
+      }
+
       if (!supabaseClient) {
-        const local = localStorage.getItem(POSTER_KEY);
-        if (local) {
-          posterImages = [{ id: 'local_1', primaryUrl: local, cdnUrl: local, backupUrl: local }];
-        } else {
-          posterImages = [];
-        }
+        posterImages = [];
         renderPosterSlideshow();
         return;
       }
@@ -1022,26 +1048,15 @@
         if (data && data.length > 0) {
           posterImages = data.map(item => ({
             id: item.id,
-            primaryUrl: item.image_url,
-            cdnUrl: item.image_url,
-            backupUrl: item.image_url
+            title: item.title || 'Notice Banner',
+            primaryUrl: item.image_url
           }));
-        } else {
-          const local = localStorage.getItem(POSTER_KEY);
-          if (local) {
-            posterImages = [{ id: 'local_1', primaryUrl: local, cdnUrl: local, backupUrl: local }];
-          } else {
-            posterImages = [];
-          }
-        }
-      } catch (err) {
-        console.warn('Supabase poster fetch error:', err);
-        const local = localStorage.getItem(POSTER_KEY);
-        if (local) {
-          posterImages = [{ id: 'local_1', primaryUrl: local, cdnUrl: local, backupUrl: local }];
         } else {
           posterImages = [];
         }
+      } catch (err) {
+        console.warn('Supabase poster fetch error:', err);
+        posterImages = [];
       }
       renderPosterSlideshow();
     }
@@ -1064,12 +1079,10 @@
         const p = posterImages[0];
         posterDisplayContainer.innerHTML = `<img
           src="${p.primaryUrl}"
-          data-cdn="${p.cdnUrl}"
-          data-backup="${p.backupUrl}"
           referrerpolicy="no-referrer"
           class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           alt="Notice Banner"
-          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+          onerror="this.onerror=null; this.src='data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);"
         >`;
         if (downloadPosterBtn) downloadPosterBtn.href = p.primaryUrl;
         return;
@@ -1082,18 +1095,16 @@
         <div class="poster-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
           <img
             src="${p.primaryUrl}"
-            data-cdn="${p.cdnUrl}"
-            data-backup="${p.backupUrl}"
             referrerpolicy="no-referrer"
             class="w-full h-full object-cover"
             alt="Notice Poster ${idx+1}"
-            onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);"
           >
         </div>
       `).join('');
 
       let dotsHtml = posterImages.map((_, idx) => `
-        <button onclick="goToSlide(${idx})" class="slide-dot w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-maritime-gold w-6' : 'bg-white/50 hover:bg-white'}"></button>
+        <button onclick="window.goToSlide(${idx})" class="slide-dot w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-maritime-gold w-6' : 'bg-white/50 hover:bg-white'}"></button>
       `).join('');
 
       posterDisplayContainer.innerHTML = `
@@ -1101,10 +1112,10 @@
           ${slidesHtml}
 
           <!-- Nav Controls -->
-          <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+          <button onclick="window.prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+          <button onclick="window.nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
 
@@ -1117,9 +1128,9 @@
 
       updateActiveSlideControls();
 
-      // Start auto-play slideshow every 4 seconds if > 1 images
+      // Start auto-play slideshow every 4 seconds
       slideInterval = setInterval(() => {
-        nextSlide();
+        window.nextSlide();
       }, 4000);
     }
 
@@ -1148,23 +1159,6 @@
       if (posterImages[currentSlideIndex] && downloadPosterBtn) {
         downloadPosterBtn.href = posterImages[currentSlideIndex].primaryUrl;
       }
-    }
-
-    function goToSlide(index) {
-      currentSlideIndex = index;
-      updateActiveSlideControls();
-    }
-
-    function nextSlide() {
-      if (posterImages.length === 0) return;
-      currentSlideIndex = (currentSlideIndex + 1) % posterImages.length;
-      updateActiveSlideControls();
-    }
-
-    function prevSlide() {
-      if (posterImages.length === 0) return;
-      currentSlideIndex = (currentSlideIndex - 1 + posterImages.length) % posterImages.length;
-      updateActiveSlideControls();
     }
 
 // Render News Feed View
@@ -1255,21 +1249,39 @@
       window.location.href = 'login.html';
     };
 
+    if (downloadPosterBtn) {
+      downloadPosterBtn.addEventListener('click', async (e) => {
+        const activeUrl = posterImages[currentSlideIndex]?.primaryUrl;
+        if (!activeUrl) return;
+        e.preventDefault();
+        try {
+          const res = await fetch(activeUrl);
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = `sindhupath-notice-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        } catch(err) {
+          window.open(activeUrl, '_blank');
+        }
+      });
+    }
+
     if (viewPosterBtn) {
       viewPosterBtn.addEventListener('click', () => {
         const p = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : null;
-        const currentUrl = p ? p.primaryUrl : activePoster;
-        const cdnUrl = p ? p.cdnUrl : '';
-        const backupUrl = p ? p.backupUrl : '';
+        const currentUrl = p ? p.primaryUrl : null;
         if (currentUrl) {
           modalPosterContent.innerHTML = `<img
             src="${currentUrl}"
-            data-cdn="${cdnUrl}"
-            data-backup="${backupUrl}"
             referrerpolicy="no-referrer"
             class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
             alt="Notice Poster"
-            onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.cdn;}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src=this.dataset.backup;}"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);"
           >`;
         } else {
           modalPosterContent.innerHTML = defaultPosterSVG;
