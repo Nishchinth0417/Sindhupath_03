@@ -367,6 +367,9 @@
             <a id="download-poster-btn" href="#" download="sindhupath-notice.png" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Download Notice">
               <span class="material-symbols-outlined text-lg">download</span>
             </a>
+            <button id="sync-notice-btn" onclick="syncNoticeBoard()" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Sync Notice Board with Supabase">
+              <span class="material-symbols-outlined text-lg" id="sync-notice-icon">sync</span>
+            </button>
             <button id="open-admin-btn" onclick="openAdminPortal()" class="p-2 rounded-full bg-white/10 hover:bg-maritime-gold hover:text-deep-sea transition-all text-white flex items-center justify-center" title="Admin Panel">
               <span class="material-symbols-outlined text-lg">lock</span>
             </button>
@@ -1016,6 +1019,15 @@
       if (!posterImages || posterImages.length === 0) return;
       currentSlideIndex = (currentSlideIndex - 1 + posterImages.length) % posterImages.length;
       updateActiveSlideControls();
+    };
+
+    // Manual Notice Board Sync Handler
+    window.syncNoticeBoard = async function() {
+      const syncIcon = document.getElementById('sync-notice-icon');
+      if (syncIcon) syncIcon.classList.add('animate-spin');
+      await fetchSupabasePosters();
+      if (syncIcon) syncIcon.classList.remove('animate-spin');
+      if (typeof showToast === 'function') showToast('Notice board synced with Supabase!', 'success');
     };
 
     async function fetchSupabasePosters() {
