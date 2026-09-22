@@ -304,6 +304,14 @@
         return;
       }
 
+      // Check active auth session
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (!session) {
+        showStatus('Admin session expired. Please sign in again.', 'error');
+        setTimeout(() => window.location.href = 'login.html', 1500);
+        return;
+      }
+
       const btn = document.getElementById('admin-upload-btn');
       btn.disabled = true;
       btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading to Supabase...</span>';
