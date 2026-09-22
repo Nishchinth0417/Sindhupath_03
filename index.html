@@ -136,7 +136,7 @@
       box-shadow: 0 10px 30px -10px rgba(11, 35, 69, 0.2);
       transform: translateY(-4px);
     }
-    .card-gold-glow hover:-translate-y-2:hover {
+    .card-gold-glow:hover {
       box-shadow: 0 0 20px rgba(200, 155, 60, 0.25);
       border-color: #ffffff;
     }
@@ -335,6 +335,8 @@
         </div>
       </div>
     </div>
+  </section>
+
   <!-- Bulletin and Notice Board Section -->
   <section id="announcements" class="py-stack-lg bg-white relative overflow-hidden border-t border-deep-sea/5">
     <div class="nautical-grid absolute inset-0 transition-all duration-1000 opacity-100"></div>
@@ -944,30 +946,11 @@
     const posterDisplayContainer = document.getElementById('poster-display-container');
     const newsFeedContainer = document.getElementById('news-feed-container');
     const openAdminBtn = document.getElementById('open-admin-btn');
-    const adminModal = document.getElementById('admin-modal');
-    const closeAdminModal = document.getElementById('close-admin-modal');
     const viewPosterBtn = document.getElementById('view-poster-btn');
     const downloadPosterBtn = document.getElementById('download-poster-btn');
     const posterModal = document.getElementById('poster-modal');
     const closePosterModal = document.getElementById('close-poster-modal');
     const modalPosterContent = document.getElementById('modal-poster-content');
-
-    // Admin Elements
-    const tabPosterBtn = document.getElementById('tab-poster-btn');
-    const tabNewsBtn = document.getElementById('tab-news-btn');
-    const tabPosterContent = document.getElementById('tab-poster-content');
-    const tabNewsContent = document.getElementById('tab-news-content');
-    const posterFileInput = document.getElementById('poster-file-input');
-    const posterUrlInput = document.getElementById('poster-url-input');
-    const fileUploadStatus = document.getElementById('file-upload-status');
-    const savePosterBtn = document.getElementById('save-poster-btn');
-    const resetPosterBtn = document.getElementById('reset-poster-btn');
-    
-    const addNewsForm = document.getElementById('add-news-form');
-    const adminNewsList = document.getElementById('admin-news-list');
-    const resetNewsBtn = document.getElementById('reset-news-btn');
-
-    // Render Poster View
     
     // -------------------------------------------------------------
     // Supabase Live Storage & Database Integration
@@ -1046,6 +1029,7 @@
       if (!supabaseClient) {
         posterImages = [];
         renderPosterSlideshow();
+        renderNewsFeed();
         return;
       }
 
@@ -1057,12 +1041,53 @@
 
         if (error) throw error;
 
+        const livePosters = [];
+        const liveBulletins = [];
+
         if (data && data.length > 0) {
-          posterImages = data.map(item => ({
-            id: item.id,
-            title: item.title || 'Notice Banner',
-            primaryUrl: item.image_url
-          }));
+          data.forEach(item => {
+            const rawTitle = item.title || 'Notice Banner';
+            const rawUrl = item.image_url || '';
+
+            if (rawTitle.startsWith('BULLETIN:') || !rawUrl.startsWith('http')) {
+              // Parse Supabase Bulletin Item
+              let tag = 'Notice';
+              let titleText = rawTitle.replace('BULLETIN:', '').trim();
+              if (titleText.startsWith('[')) {
+                const parts = titleText.split(']');
+                tag = parts[0].replace('[', '').trim();
+                titleText = parts.slice(1).join(']').trim();
+              }
+              
+              let tagColor = 'bg-blue-500/10 text-blue-500 border border-blue-500/20';
+              if (tag.includes('Exam')) tagColor = 'bg-red-500/10 text-red-500 border border-red-500/20';
+              else if (tag.includes('Admission')) tagColor = 'bg-maritime-gold/20 text-maritime-gold border border-maritime-gold/30';
+              else if (tag.includes('Result')) tagColor = 'bg-green-500/10 text-green-500 border border-green-500/20';
+
+              liveBulletins.push({
+                id: item.id,
+                tag: tag,
+                tagColor: tagColor,
+                date: new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+                title: titleText,
+                desc: rawUrl,
+                link: null,
+                linkText: null
+              });
+            } else {
+              // Parse Supabase Poster Photo
+              livePosters.push({
+                id: item.id,
+                title: rawTitle,
+                primaryUrl: rawUrl
+              });
+            }
+          });
+
+          posterImages = livePosters;
+          if (liveBulletins.length > 0) {
+            newsList = liveBulletins;
+          }
         } else {
           posterImages = [];
         }
@@ -1071,6 +1096,7 @@
         posterImages = [];
       }
       renderPosterSlideshow();
+      renderNewsFeed();
     }
 
     function renderPoster() {
@@ -1215,185 +1241,6 @@
           </div>
         `;
       }).join('');
-    }
-
-    // Render News list in Admin panel (for deletion)
-    function renderAdminNews() {
-      if (newsList.length === 0) {
-        adminNewsList.innerHTML = `<p class="text-xs text-white/50 py-4 text-center">No bulletins added yet.</p>`;
-        return;
-      }
-
-      adminNewsList.innerHTML = newsList.map(item => `
-        <div class="flex justify-between items-center py-3 gap-4">
-          <div class="min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="${item.tagColor} text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full">${item.tag}</span>
-              <span class="text-[10px] text-white/40">${item.date}</span>
-            </div>
-            <p class="font-bold text-xs text-white truncate">${item.title}</p>
-          </div>
-          <button onclick="deleteNewsItem(${item.id})" class="text-red-400 hover:text-red-500 font-bold text-xs shrink-0 flex items-center gap-1">
-            <span class="material-symbols-outlined text-sm">delete</span> Delete
-          </button>
-        </div>
-      `).join('');
-    }
-
-    // Delete News Item
-    window.deleteNewsItem = function(id) {
-      newsList = newsList.filter(item => item.id !== id);
-      localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
-      renderNewsFeed();
-      renderAdminNews();
-    };
-
-    // ── Admin Portal Navigation ──────────────────────────────────────────
-    window.openAdminAuthModal = window.openAdminPortal = async function() {
-      const ADMIN_EMAILS_IDX = ['ashvaishgowda03@gmail.com', 'nunishchinth@gmail.com'];
-      if (supabaseClient) {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session && ADMIN_EMAILS_IDX.includes(session.user.email?.toLowerCase())) {
-          window.location.href = 'admin.html';
-          return;
-        }
-      }
-      window.location.href = 'login.html';
-    };
-
-    if (downloadPosterBtn) {
-      downloadPosterBtn.addEventListener('click', async (e) => {
-        const activeUrl = posterImages[currentSlideIndex]?.primaryUrl;
-        if (!activeUrl) return;
-        e.preventDefault();
-        try {
-          const res = await fetch(activeUrl);
-          const blob = await res.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = blobUrl;
-          a.download = `sindhupath-notice-${Date.now()}.png`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-        } catch(err) {
-          window.open(activeUrl, '_blank');
-        }
-      });
-    }
-
-    if (viewPosterBtn) {
-      viewPosterBtn.addEventListener('click', () => {
-        const p = (posterImages && posterImages.length > 0) ? posterImages[currentSlideIndex] : null;
-        const currentUrl = p ? p.primaryUrl : null;
-        if (currentUrl) {
-          modalPosterContent.innerHTML = `<img
-            src="${currentUrl}"
-            referrerpolicy="no-referrer"
-            class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl"
-            alt="Notice Poster"
-            onerror="this.onerror=null; this.src='data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);"
-          >`;
-        } else {
-          modalPosterContent.innerHTML = defaultPosterSVG;
-        }
-        if (posterModal) {
-          posterModal.classList.remove('hidden');
-          posterModal.classList.add('flex');
-        }
-      });
-    }
-
-    if (closePosterModal) {
-      closePosterModal.addEventListener('click', () => {
-        if (posterModal) {
-          posterModal.classList.add('hidden');
-          posterModal.classList.remove('flex');
-        }
-      });
-    }
-
-    window.addEventListener('click', (e) => {
-      if (e.target === posterModal && posterModal) closePosterModal.click();
-    });
-
-    // Add News Item Form Submit
-    addNewsForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const typeEl = document.getElementById('news-type-input') || document.getElementById('news-badge-input');
-      const badge = typeEl ? typeEl.value : 'notice';
-      const title = document.getElementById('news-title-input').value.trim();
-      const descEl = document.getElementById('news-body-input') || document.getElementById('news-desc-input');
-      const desc = descEl ? descEl.value.trim() : '';
-      const linkEl = document.getElementById('news-link-input');
-      const link = linkEl ? linkEl.value.trim() : '';
-      const linkTextEl = document.getElementById('news-btn-text-input');
-      const linkText = linkTextEl ? linkTextEl.value.trim() : '';
-
-      let badgeLabel = '📌 Notice';
-      let tagColor = 'bg-blue-500/10 text-blue-500 border border-blue-500/20';
-      if (badge === 'exam') {
-        badgeLabel = '📝 Exam';
-        tagColor = 'bg-red-500/10 text-red-500 border border-red-500/20';
-      } else if (badge === 'admission' || badge === 'Admissions') {
-        badgeLabel = '🎓 Admission';
-        tagColor = 'bg-maritime-gold/20 text-maritime-gold border border-maritime-gold/30';
-      } else if (badge === 'result') {
-        badgeLabel = '🏆 Result';
-        tagColor = 'bg-green-500/10 text-green-500 border border-green-500/20';
-      } else if (badge === 'Urgent') {
-        badgeLabel = 'Urgent';
-        tagColor = 'bg-red-500/10 text-red-500 border border-red-500/20';
-      } else if (badge === 'New') {
-        badgeLabel = 'New';
-        tagColor = 'bg-green-500/10 text-green-500 border border-green-500/20';
-      }
-
-      const newItem = {
-        id: Date.now(),
-        tag: badgeLabel,
-        tagColor: tagColor,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-        title: title,
-        desc: desc,
-        link: link || null,
-        linkText: linkText || null
-      };
-
-      newsList.unshift(newItem);
-      localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
-      
-      // Reset Form & render
-      addNewsForm.reset();
-      renderNewsFeed();
-      renderAdminNews();
-      if (typeof showToast === 'function') showToast('Announcement bulletin item added successfully!', 'success');
-    });
-
-    // Sync button — manual refresh from Supabase
-    const syncBtn = document.getElementById('sync-notices-btn');
-    if (syncBtn) {
-      syncBtn.addEventListener('click', async () => {
-        const icon = syncBtn.querySelector('.material-symbols-outlined');
-        icon.classList.add('animate-spin');
-        syncBtn.disabled = true;
-        await fetchSupabasePosters();
-        icon.classList.remove('animate-spin');
-        syncBtn.disabled = false;
-        if (typeof showToast === 'function') showToast('Notice board synced!', 'success');
-      });
-    }
-
-    // Admin logout button inside panel
-    const adminLogoutBtn = document.getElementById('admin-logout-btn-idx');
-    if (adminLogoutBtn) {
-      adminLogoutBtn.addEventListener('click', async () => {
-        if (supabaseClient) await supabaseClient.auth.signOut();
-        adminModal.classList.add('hidden');
-        adminModal.classList.remove('flex');
-        if (typeof showToast === 'function') showToast('Signed out.', 'info');
-      });
     }
 
     // Initial render & 30s auto-refresh
@@ -1602,5 +1449,4 @@
     }
   </script>
 </body>
-</html>
 </html>
