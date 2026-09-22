@@ -291,7 +291,7 @@
     <div class="relative z-10 px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full transition-all duration-1000 opacity-100">
       <div class="max-w-3xl">
         <p class="font-subhead-md text-subhead-md text-maritime-gold mb-4 uppercase tracking-widest animate-fade-in">Knowledge • Discipline • Destination</p>
-        <h1 class="font-display-xl text-[64px] md:text-display-xl text-white mb-6 leading-none animate-slide-up">YOUR JOURNEY TO <span id="typed-text" class="text-maritime-gold">THE SEA</span> BEGINS HERE</h1>
+        <h1 class="font-display-xl text-[36px] sm:text-[48px] md:text-display-xl text-white mb-6 leading-none animate-slide-up">YOUR JOURNEY TO <span id="typed-text" class="text-maritime-gold">THE SEA</span> BEGINS HERE</h1>
         <p class="font-body-lg text-body-lg text-white/80 mb-10 border-l-4 border-maritime-gold pl-6">
           SINDHUPATH Merchant Navy Academy provides elite coaching and mentoring for aspiring mariners to conquer competitive exams and secure high-ranking maritime careers.
         </p>
@@ -365,7 +365,7 @@
         </div>
 
         <!-- Featured Poster Banner Container -->
-        <div id="poster-display-container" class="w-full h-[380px] bg-primary/40 border-b border-deep-sea/10 flex items-center justify-center overflow-hidden">
+        <div id="poster-display-container" class="w-full h-[250px] sm:h-[320px] md:h-[400px] bg-primary/40 border-b border-deep-sea/10 flex items-center justify-center overflow-hidden">
           <!-- Default SVG or Image dynamically injected here -->
         </div>
 
@@ -999,6 +999,29 @@
       if (typeof showToast === 'function') showToast('Notice board synced with Supabase!', 'success');
     };
 
+        // Touch Swipe Gestures for Mobile Carousel
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    if (posterDisplayContainer) {
+      posterDisplayContainer.addEventListener('touchstart', (e) => {
+        if (e.changedTouches && e.changedTouches[0]) {
+          touchStartX = e.changedTouches[0].screenX;
+        }
+      }, { passive: true });
+
+      posterDisplayContainer.addEventListener('touchend', (e) => {
+        if (e.changedTouches && e.changedTouches[0]) {
+          touchEndX = e.changedTouches[0].screenX;
+          const diff = touchStartX - touchEndX;
+          if (Math.abs(diff) > 40) {
+            if (diff > 0) window.nextSlide();
+            else window.prevSlide();
+          }
+        }
+      }, { passive: true });
+    }
+
     async function fetchSupabasePosters() {
       if (!posterDisplayContainer) return;
       
@@ -1132,14 +1155,14 @@
       `).join('');
 
       posterDisplayContainer.innerHTML = `
-        <div class="relative w-full h-[380px] overflow-hidden group">
+        <div class="relative w-full h-[250px] sm:h-[320px] md:h-[400px] overflow-hidden group">
           ${slidesHtml}
 
           <!-- Nav Controls -->
-          <button onclick="window.prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+          <button onclick="window.prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:outline-none">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <button onclick="window.nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 focus:outline-none">
+          <button onclick="window.nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/40 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:outline-none">
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
 
