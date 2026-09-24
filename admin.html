@@ -414,7 +414,7 @@
             postersListEl.innerHTML = posters.map(item => `
               <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant/30 rounded-xl gap-4 hover:border-outline-variant/60 transition-colors">
                 <div class="flex items-center gap-3 min-w-0 flex-grow">
-                  <img src="${escapeHTML(item.image_url)}" class="w-14 h-14 object-cover rounded-lg border border-outline-variant/40 shrink-0 bg-surface-container-high" alt="Notice" onerror="this.style.display='none'" />
+                  <img src="${escapeHTML(item.image_url)}" class="w-14 h-14 object-contain rounded-lg border border-outline-variant/40 shrink-0 bg-surface-container-high p-0.5" alt="Notice" onerror="this.style.display='none'" />
                   <div class="min-w-0">
                     <p class="font-bold text-xs text-white truncate">${escapeHTML(item.title || 'Notice Banner')}</p>
                     <p class="text-[10px] text-on-surface-variant/70 mt-0.5">${new Date(item.created_at).toLocaleString()}</p>
