@@ -363,14 +363,17 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
+            <button onclick="window.downloadCurrentPoster(event)" class="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors" title="Download Notice Poster">
+              <span class="material-symbols-outlined text-xl">download</span>
+            </button>
             <button onclick="window.syncNoticeBoard()" class="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors" title="Sync Notice Board">
               <span id="sync-notice-icon" class="material-symbols-outlined text-xl">sync</span>
             </button>
           </div>
         </div>
 
-        <!-- Featured Poster Banner Container (Scaled for A3 Aspect Ratio) -->
-        <div id="poster-display-container" class="w-full h-[420px] sm:h-[560px] md:h-[680px] bg-[#0B192C] border-b border-deep-sea/10 flex items-center justify-center overflow-hidden relative">
+        <!-- Featured Poster Banner Container (Fluid A3 Aspect Ratio for Mobile & Desktop) -->
+        <div id="poster-display-container" class="w-full aspect-[1/1.414] max-h-[82vh] sm:aspect-auto sm:h-[560px] md:h-[680px] bg-[#0B192C] border-b border-deep-sea/10 flex items-center justify-center overflow-hidden relative">
           <!-- Default SVG or Image dynamically injected here -->
         </div>
 
@@ -1031,6 +1034,53 @@
       });
     }
 
+    // Robust Client-Side Poster Download Handler
+    window.downloadCurrentPoster = async function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (!posterImages || posterImages.length === 0) {
+        if (typeof showToast === 'function') showToast('No poster available to download.', 'warning');
+        return;
+      }
+      const currentPoster = posterImages[currentSlideIndex] || posterImages[0];
+      const imageUrl = currentPoster.primaryUrl;
+      if (!imageUrl) return;
+
+      try {
+        if (typeof showToast === 'function') showToast('Downloading poster...', 'info');
+        const response = await fetch(imageUrl, { mode: 'cors' });
+        if (!response.ok) throw new Error('Network response was not ok');
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const tempLink = document.createElement('a');
+        tempLink.href = blobUrl;
+
+        let ext = 'png';
+        if (blob.type.includes('jpeg') || blob.type.includes('jpg')) ext = 'jpg';
+        else if (blob.type.includes('webp')) ext = 'webp';
+
+        tempLink.download = `sindhupath_notice_poster_${Date.now()}.${ext}`;
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
+
+        if (typeof showToast === 'function') showToast('Poster downloaded successfully!', 'success');
+      } catch (err) {
+        console.warn('Blob download failed, falling back to direct link:', err);
+        const tempLink = document.createElement('a');
+        tempLink.href = imageUrl;
+        tempLink.target = '_blank';
+        tempLink.rel = 'noopener noreferrer';
+        tempLink.download = `sindhupath_notice_poster_${Date.now()}`;
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+      }
+    };
+
     // Manual Notice Board Sync Handler
     window.syncNoticeBoard = async function() {
       const syncIcon = document.getElementById('sync-notice-icon');
@@ -1166,7 +1216,7 @@
       if (posterImages.length === 1) {
         const p = posterImages[0];
         posterDisplayContainer.innerHTML = `
-          <div class="relative w-full h-[420px] sm:h-[560px] md:h-[680px] bg-[#0B192C] flex items-center justify-center p-2 group cursor-pointer" onclick="window.openPosterModal('${p.primaryUrl}')">
+          <div class="relative w-full aspect-[1/1.414] max-h-[82vh] sm:aspect-auto sm:h-[560px] md:h-[680px] bg-[#0B192C] flex items-center justify-center p-2 group cursor-pointer" onclick="window.openPosterModal('${p.primaryUrl}')">
             <img
               src="${p.primaryUrl}"
               referrerpolicy="no-referrer"
@@ -1174,10 +1224,9 @@
               alt="A3 Notice Poster"
               onerror="this.onerror=null; this.src='data:image/svg+xml;charset=utf-8,' + encodeURIComponent(defaultPosterSVG);"
             >
-            <div class="absolute top-3 right-3 z-20 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full opacity-80 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 pointer-events-none">
-              <span class="material-symbols-outlined text-sm">zoom_in</span>
-              <span>Click to Expand</span>
-            </div>
+            <button onclick="event.stopPropagation(); window.downloadCurrentPoster(event)" class="absolute top-3 right-3 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-maritime-gold text-white hover:text-deep-sea backdrop-blur-md flex items-center justify-center transition-all shadow-lg focus:outline-none" title="Download Notice Poster" aria-label="Download Notice Poster">
+              <span class="material-symbols-outlined text-base sm:text-lg">download</span>
+            </button>
           </div>
         `;
         if (downloadPosterBtn) downloadPosterBtn.href = p.primaryUrl;
@@ -1204,24 +1253,24 @@
       `).join('');
 
       posterDisplayContainer.innerHTML = `
-        <div class="relative w-full h-[420px] sm:h-[560px] md:h-[680px] bg-[#0B192C] overflow-hidden group">
+        <div class="relative w-full aspect-[1/1.414] max-h-[82vh] sm:aspect-auto sm:h-[560px] md:h-[680px] bg-[#0B192C] overflow-hidden group">
           ${slidesHtml}
 
-          <div class="absolute top-3 right-3 z-20 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full opacity-80 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 pointer-events-none">
-            <span class="material-symbols-outlined text-sm">zoom_in</span>
-            <span>Click to Expand</span>
-          </div>
+          <!-- Download Button -->
+          <button onclick="event.stopPropagation(); window.downloadCurrentPoster(event)" class="absolute top-3 right-3 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-maritime-gold text-white hover:text-deep-sea backdrop-blur-md flex items-center justify-center transition-all shadow-lg focus:outline-none" title="Download Notice Poster" aria-label="Download Notice Poster">
+            <span class="material-symbols-outlined text-base sm:text-lg">download</span>
+          </button>
 
           <!-- Nav Controls -->
-          <button onclick="event.stopPropagation(); window.prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:outline-none shadow-lg">
-            <span class="material-symbols-outlined">chevron_left</span>
+          <button onclick="event.stopPropagation(); window.prevSlide()" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/50 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:outline-none shadow-lg">
+            <span class="material-symbols-outlined text-sm sm:text-base">chevron_left</span>
           </button>
-          <button onclick="event.stopPropagation(); window.nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:outline-none shadow-lg">
-            <span class="material-symbols-outlined">chevron_right</span>
+          <button onclick="event.stopPropagation(); window.nextSlide()" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/50 text-white hover:bg-maritime-gold hover:text-deep-sea transition-all flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:outline-none shadow-lg">
+            <span class="material-symbols-outlined text-sm sm:text-base">chevron_right</span>
           </button>
 
           <!-- Dots Indicators -->
-          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
+          <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
             ${dotsHtml}
           </div>
         </div>
