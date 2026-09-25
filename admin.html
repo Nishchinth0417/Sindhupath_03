@@ -230,7 +230,6 @@
     // Supabase Configuration
     const SUPABASE_URL = 'https://lbdunyobsfdwtmdhuapb.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHVueW9ic2Zkd3RtZGh1YXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NDExNDYsImV4cCI6MjEwNTUxNzE0Nn0.vnCG22PHUHJ1TitPQCwBJY23xZiH8deVtwnlkLTMAt4';
-    const ADMIN_EMAILS = ['ashvaishgowda03@gmail.com', 'nunishchinth@gmail.com'];
     let sbClient = null;
 
     try {
@@ -261,6 +260,11 @@
 
     // --- Check Auth Session on Page Load ---
     (async function checkAdminAuth() {
+      // Clean up legacy session keys
+      localStorage.removeItem('sp_admin_email');
+      localStorage.removeItem('sp_cadet_email');
+      localStorage.removeItem('sindhupath_logged_email');
+
       if (!sbClient) {
         showStatus('Supabase client error. Redirecting to login...', 'error');
         setTimeout(() => window.location.href = 'login.html', 1500);
@@ -268,15 +272,15 @@
       }
 
       const { data: { session } } = await sbClient.auth.getSession();
-      const email = session?.user?.email;
+      const user = session?.user;
 
-      if (!email || !ADMIN_EMAILS.includes(email.toLowerCase())) {
-        // Not authenticated as admin -> Redirect to login.html
+      if (!user || !user.email) {
+        // Not authenticated -> Redirect to login.html
         window.location.href = 'login.html';
         return;
       }
 
-      document.getElementById('admin-email-display').textContent = email;
+      document.getElementById('admin-email-display').textContent = user.email;
       fetchAdminNotices();
     })();
 
@@ -284,6 +288,8 @@
     async function logoutAdmin() {
       if (sbClient) await sbClient.auth.signOut().catch(() => {});
       localStorage.removeItem('sp_admin_email');
+      localStorage.removeItem('sp_cadet_email');
+      localStorage.removeItem('sindhupath_logged_email');
       window.location.href = 'login.html';
     }
 

@@ -190,29 +190,6 @@
 
   </div>
 
-  <!-- Panel 2: Cadet Dashboard Panel -->
-  <div id="cadet-panel" class="hidden space-y-6 text-center py-4">
-    <div class="w-16 h-16 rounded-full bg-secondary-container/30 border border-secondary/40 flex items-center justify-center mx-auto mb-2">
-      <span class="material-symbols-outlined text-secondary text-3xl">school</span>
-    </div>
-    <h2 class="font-headline-lg-mobile text-2xl text-on-surface uppercase">CADET ACADEMY PORTAL</h2>
-    <p class="text-xs text-on-surface-variant">Logged in as: <span id="cadet-email-display" class="font-bold text-on-surface">cadet@sindhupath.com</span></p>
-    
-    <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/30 text-xs text-on-surface-variant leading-relaxed">
-      Welcome Cadet! You are authenticated with Sindhupath Maritime Academy. Access your training materials and live bulletins from the main site.
-    </div>
-
-    <div class="flex gap-3 pt-2">
-      <a href="index.html" class="flex-1 bg-tertiary text-on-tertiary font-bold text-xs py-3 rounded-lg hover:bg-tertiary-fixed transition-all flex items-center justify-center gap-1">
-        <span>Go to Main Site</span>
-        <span class="material-symbols-outlined text-sm">home</span>
-      </a>
-      <button id="cadet-logout-btn" class="bg-surface-container-high border border-outline-variant/40 text-on-surface-variant text-xs px-4 py-3 rounded-lg hover:text-red-400 transition-all">
-        Sign Out
-      </button>
-    </div>
-  </div>
-
 </div>
 </div>
 </main>
@@ -228,22 +205,9 @@
     }
   } catch(e) { console.warn('Supabase init error:', e); }
 
-  const ADMIN_EMAILS = ['ashvaishgowda03@gmail.com', 'nunishchinth@gmail.com'];
-
   // --- UI Helpers ---
-  const loginFormPanel = document.getElementById('login-form-panel');
-  const adminPanel     = document.getElementById('admin-portal-panel');
-  const cadetPanel     = document.getElementById('cadet-panel');
-  const statusMsg      = document.getElementById('auth-status-msg');
-
-  function showPanel(which) {
-    loginFormPanel.classList.add('hidden');
-    adminPanel.classList.add('hidden');
-    cadetPanel.classList.add('hidden');
-    if (which === 'admin') adminPanel.classList.remove('hidden');
-    else if (which === 'cadet') cadetPanel.classList.remove('hidden');
-    else loginFormPanel.classList.remove('hidden');
-  }
+  const statusMsg = document.getElementById('auth-status-msg');
+  const submitBtn = document.getElementById('login-submit-btn');
 
   function showStatus(text, type) {
     statusMsg.classList.remove('hidden',
@@ -278,6 +242,24 @@
     });
   }
 
+  // --- Check existing session on load ---
+  (async function checkExistingSession() {
+    // Purge legacy manual localStorage keys
+    localStorage.removeItem('sp_admin_email');
+    localStorage.removeItem('sp_cadet_email');
+    localStorage.removeItem('sindhupath_logged_email');
+
+    if (!sbClient) return;
+    try {
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (session?.user) {
+        window.location.href = 'admin.html';
+      }
+    } catch(err) {
+      console.warn('Session check error:', err);
+    }
+  })();
+
   // --- Login Form Submit ---
   document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -291,186 +273,40 @@
       return;
     }
 
-    // ---- ADMIN PATH ----
-    if (ADMIN_EMAILS.includes(email)) {
-      if (!sbClient) {
-        showStatus('Auth service unavailable. Please refresh and try again.', 'error');
-        return;
-      }
-      showStatus('Verifying credentials...', 'info');
+    if (!sbClient) {
+      showStatus('Auth service unavailable. Please refresh and try again.', 'error');
+      return;
+    }
+
+    // Set loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>VERIFYING...</span>';
+    showStatus('Verifying credentials with Supabase...', 'info');
+
+    try {
       const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+      
       if (error || !data.session) {
-        showStatus('Access Denied: ' + (error?.message || 'Invalid credentials.'), 'error');
+        showStatus('Access Denied: ' + (error?.message || 'Invalid email or password.'), 'error');
         document.getElementById('password').value = '';
         document.getElementById('password').focus();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-base">login</span><span>LOGIN</span>';
         return;
       }
-      showStatus('Admin verified! Opening Admin Portal...', 'success');
+
+      showStatus('Login successful! Redirecting to Admin Portal...', 'success');
       setTimeout(() => {
         window.location.href = 'admin.html';
       }, 500);
-      return;
-    }
 
-    // ---- CADET PATH ----
-    showStatus('Signing in...', 'info');
-    localStorage.setItem('sp_cadet_email', email);
-    document.getElementById('cadet-email-display').textContent = email;
-    showStatus('Welcome! Redirecting...', 'success');
-    showPanel('cadet');
-  });
-
-  // --- Logout ---
-  function logoutUser() {
-    if (sbClient) sbClient.auth.signOut().catch(() => {});
-    localStorage.removeItem('sp_admin_email');
-    localStorage.removeItem('sp_cadet_email');
-    // DO NOT location.reload() — just reset UI manually
-    document.getElementById('email').value = '';
-    document.getElementById('password').value = '';
-    hideStatus();
-    showPanel('login');
-  }
-
-  document.getElementById('admin-logout-btn').addEventListener('click', logoutUser);
-  document.getElementById('cadet-logout-btn').addEventListener('click', logoutUser);
-
-  // --- Restore session on page load (checks real Supabase session, not just localStorage) ---
-  (async function restoreSession() {
-    // Clean up legacy session keys from old code to prevent loops
-    localStorage.removeItem('sindhupath_logged_email');
-    localStorage.removeItem('sp_admin_email'); // no longer used — real session is the source of truth
-
-    const cadetEmail = localStorage.getItem('sp_cadet_email');
-
-    if (sbClient) {
-      const { data: { session } } = await sbClient.auth.getSession();
-      const adminEmail = session?.user?.email;
-      if (adminEmail && ADMIN_EMAILS.includes(adminEmail)) {
-        window.location.href = 'admin.html';
-        return;
-      }
-    }
-
-    if (cadetEmail) {
-      document.getElementById('cadet-email-display').textContent = cadetEmail;
-      showPanel('cadet');
-    } else {
-      showPanel('login');
-    }
-  })();
-
-  // --- Refresh Notices ---
-  document.getElementById('admin-refresh-notices-btn').addEventListener('click', fetchAdminNotices);
-
-  // --- Admin File Input ---
-  const adminFileInput  = document.getElementById('admin-file-input');
-  const uploadFileLabel = document.getElementById('upload-file-label');
-  if (adminFileInput) {
-    adminFileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        uploadFileLabel.textContent = 'Selected: ' + file.name;
-        document.getElementById('admin-url-input').value = '';
-      }
-    });
-  }
-
-  // --- Upload Poster to Supabase ---
-  document.getElementById('admin-upload-btn').addEventListener('click', async () => {
-    const file     = adminFileInput && adminFileInput.files[0];
-    const urlValue = document.getElementById('admin-url-input').value.trim();
-
-    if (!file && !urlValue) {
-      showStatus('Please choose an image file or enter an image URL.', 'error');
-      return;
-    }
-    if (!sbClient) {
-      showStatus('Supabase connection unavailable.', 'error');
-      return;
-    }
-
-    const btn = document.getElementById('admin-upload-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading...</span>';
-
-    try {
-      let finalUrl = urlValue;
-
-      if (file) {
-        const fileName = 'poster_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        const { error: upErr } = await sbClient.storage.from('posters').upload(fileName, file, { cacheControl: '3600', upsert: true });
-        if (upErr) throw upErr;
-        const { data: pub } = sbClient.storage.from('posters').getPublicUrl(fileName);
-        finalUrl = pub.publicUrl;
-      }
-
-      const { error: dbErr } = await sbClient.from('notices').insert([{ title: file ? file.name : 'Notice Banner', image_url: finalUrl }]);
-      if (dbErr) throw dbErr;
-
-      showStatus('Poster uploaded & published successfully!', 'success');
-      if (adminFileInput) { adminFileInput.value = ''; uploadFileLabel.textContent = 'Click to choose poster image'; }
-      document.getElementById('admin-url-input').value = '';
-      fetchAdminNotices();
     } catch (err) {
       console.error(err);
-      showStatus('Upload Error: ' + (err.message || 'Check bucket permissions'), 'error');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<span class="material-symbols-outlined text-base">cloud_upload</span><span>Upload & Publish to Supabase</span>';
+      showStatus('Authentication error: ' + (err.message || 'Please try again.'), 'error');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-base">login</span><span>LOGIN</span>';
     }
   });
-
-  // --- Fetch Notices List ---
-  async function fetchAdminNotices() {
-    const listEl = document.getElementById('admin-notices-list');
-    if (!listEl) return;
-    listEl.innerHTML = '<p class="text-xs text-on-surface-variant text-center py-4">Loading notices...</p>';
-
-    if (!sbClient) {
-      listEl.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Supabase not connected.</p>';
-      return;
-    }
-
-    try {
-      const { data, error } = await sbClient.from('notices').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        listEl.innerHTML = '<p class="text-xs text-on-surface-variant/60 text-center py-4">No posters yet. Upload your first poster above!</p>';
-        return;
-      }
-
-      listEl.innerHTML = data.map(item => `
-        <div class="flex items-center justify-between p-2.5 bg-surface-container-low border border-outline-variant/30 rounded-lg gap-3">
-          <img src="${item.image_url}" class="w-12 h-12 object-cover rounded border border-outline-variant/40 shrink-0" alt="Notice" onerror="this.style.display='none'" />
-          <div class="min-w-0 flex-grow">
-            <p class="font-bold text-xs text-on-surface truncate">${item.title || 'Notice Banner'}</p>
-            <p class="text-[10px] text-on-surface-variant">${new Date(item.created_at).toLocaleDateString()}</p>
-          </div>
-          <button onclick="deleteNoticeItem(${item.id})" class="text-red-400 hover:text-red-500 p-1.5 rounded hover:bg-red-500/10 transition-colors shrink-0">
-            <span class="material-symbols-outlined text-sm">delete</span>
-          </button>
-        </div>
-      `).join('');
-    } catch (err) {
-      listEl.innerHTML = '<p class="text-xs text-red-400 text-center py-4">Failed to load: ' + err.message + '</p>';
-    }
-  }
-
-  // --- Delete Notice ---
-  window.deleteNoticeItem = async function(id) {
-    if (!confirm('Delete this poster from Supabase?')) return;
-    if (!sbClient) return;
-    try {
-      const { error } = await sbClient.from('notices').delete().eq('id', id);
-      if (error) throw error;
-      showStatus('Poster deleted.', 'success');
-      fetchAdminNotices();
-    } catch (err) {
-      showStatus('Delete Error: ' + err.message, 'error');
-    }
-  };
 </script>
 </body></html>
 
