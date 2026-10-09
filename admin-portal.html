@@ -1,0 +1,2982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SINDHUPATH — Admin Portal</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Toastify -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deep-sea':       '#0B2345',
+            'deep-sea-dark':  '#071830',
+            'deep-sea-light': '#12305e',
+            'gold':           '#C89B3C',
+            'maritime-gold':  '#C89B3C',
+            'gold-light':     '#E5BE66',
+            'gold-dark':      '#9E7624',
+            'bg-base':        '#f7f9fc',
+            'slate':          '#475569',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            sub:     ['Oswald', 'sans-serif'],
+            subhead: ['Oswald', 'sans-serif'],
+            body:    ['Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Base ── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Montserrat', sans-serif; background: #f7f9fc; color: #1e293b; }
+
+    /* ── Material icons ── */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle; line-height: 1;
+    }
+    .icon-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #C89B3C55; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C89B3C; }
+
+    /* ── Layout shell ── */
+    #app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 260px; flex-shrink: 0;
+      background: linear-gradient(180deg, #071830 0%, #0B2345 60%, #0d2d58 100%);
+      display: flex; flex-direction: column;
+      transition: width .3s ease;
+      overflow: hidden; position: relative; z-index: 40;
+      border-right: 1px solid rgba(200,155,60,.15);
+    }
+    #sidebar.collapsed { width: 64px; }
+    #sidebar.collapsed .nav-label,
+    #sidebar.collapsed .sidebar-brand-text,
+    #sidebar.collapsed .admin-info { display: none; }
+    #sidebar.collapsed .nav-item { justify-content: center; }
+    #sidebar.collapsed .admin-avatar-wrap { justify-content: center; }
+
+    .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 22px 16px 16px; border-bottom: 1px solid rgba(200,155,60,.2); }
+    .sidebar-logo { width: 38px; height: 38px; background: linear-gradient(135deg,#C89B3C,#9E7624); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sidebar-logo span { font-family: 'Bebas Neue'; font-size: 20px; color: #fff; }
+    .sidebar-brand-text { font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 2px; color: #C89B3C; white-space: nowrap; }
+
+    .admin-section { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .admin-avatar-wrap { display: flex; align-items: center; gap: 10px; }
+    .admin-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg,#C89B3C,#9E7624); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .admin-info .name { font-family: 'Oswald'; font-size: 14px; font-weight: 600; color: #e2e8f0; white-space: nowrap; }
+    .admin-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 1px 6px; border-radius: 20px; background: rgba(200,155,60,.2); color: #C89B3C; border: 1px solid rgba(200,155,60,.3); font-family: 'Oswald'; }
+
+    .nav-section { flex: 1; overflow-y: auto; padding: 10px 8px; }
+    .nav-section-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: rgba(255,255,255,.65); padding: 10px 10px 4px; text-transform: uppercase; font-family: 'Oswald'; white-space: nowrap; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: 8px; cursor: pointer;
+      color: rgba(255,255,255,.75); font-size: 13px; font-weight: 500;
+      transition: all .2s ease; white-space: nowrap; margin-bottom: 2px;
+      width: 100%; text-align: left; background: transparent; border: none; font-family: inherit;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .nav-item:focus-visible { outline: 2px solid #C89B3C; outline-offset: 2px; }
+    .nav-item.active { background: linear-gradient(90deg, rgba(200,155,60,.25), rgba(200,155,60,.08)); color: #C89B3C; border-left: 3px solid #C89B3C; }
+    .nav-item .nav-icon { font-size: 20px; flex-shrink: 0; }
+
+    .sidebar-toggle {
+      position: absolute; right: -12px; top: 70px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #C89B3C; border: 2px solid #071830;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 50;
+    }
+    .sidebar-toggle:focus-visible { outline: 2px solid #C89B3C; outline-offset: 2px; }
+    .sidebar-toggle span { font-size: 14px; color: #fff; }
+
+    /* ── Main area ── */
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── Top header ── */
+    #topbar {
+      background: #fff; border-bottom: 1px solid #e2e8f0;
+      padding: 0 24px; height: 60px; flex-shrink: 0;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .topbar-title { font-family: 'Bebas Neue'; font-size: 22px; color: #0B2345; letter-spacing: 2px; flex-shrink: 0; }
+    .topbar-search { flex: 1; max-width: 360px; position: relative; }
+    .topbar-search input {
+      width: 100%; padding: 7px 14px 7px 36px; border-radius: 20px;
+      border: 1px solid #e2e8f0; background: #f7f9fc; font-size: 13px;
+      font-family: 'Montserrat'; outline: none; transition: border .2s;
+    }
+    .topbar-search input:focus { border-color: #C89B3C; background: #fff; }
+    .topbar-search .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #475569; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .topbar-icon-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; position: relative; border: none; background: transparent; }
+    .topbar-icon-btn:hover { background: #f1f5f9; }
+    .topbar-icon-btn:focus-visible { outline: 2px solid #C89B3C; outline-offset: 2px; }
+    .notif-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; border: 1.5px solid #fff; }
+    .topbar-user { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background .2s; border: none; background: transparent; text-align: left; }
+    .topbar-user:hover { background: #f1f5f9; }
+    .topbar-user:focus-visible { outline: 2px solid #C89B3C; outline-offset: 2px; }
+    .topbar-user .avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#C89B3C,#9E7624); display: flex; align-items: center; justify-content: center; }
+    .topbar-user-info .uname { font-size: 12px; font-weight: 600; color: #1e293b; }
+    .topbar-user-info .urole { font-size: 10px; color: #475569; }
+
+    /* ── Content ── */
+    #content { flex: 1; overflow-y: auto; padding: 24px; }
+
+    /* ── Tabs ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Page header ── */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-family: 'Bebas Neue'; font-size: 32px; color: #0B2345; letter-spacing: 2px; }
+    .page-subtitle { font-size: 13px; color: #475569; margin-top: 2px; }
+
+    /* ── KPI cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .kpi-card {
+      background: #fff; border-radius: 12px; padding: 18px 20px;
+      border: 1px solid #e2e8f0; position: relative; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+      transition: box-shadow .2s, transform .2s;
+    }
+    .kpi-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.1); transform: translateY(-2px); }
+    .kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .kpi-value { font-family: 'Bebas Neue'; font-size: 34px; color: #0B2345; letter-spacing: 1px; }
+    .kpi-label { font-size: 11px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: .5px; }
+    .kpi-change { font-size: 11px; margin-top: 6px; font-weight: 600; }
+    .kpi-accent { position: absolute; right: 0; top: 0; bottom: 0; width: 4px; border-radius: 0 12px 12px 0; }
+
+    /* ── Section cards ── */
+    .card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,.05); overflow: hidden; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .card-title { font-family: 'Oswald'; font-size: 16px; font-weight: 600; color: #0B2345; }
+    .card-body { padding: 20px; }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'Montserrat'; cursor: pointer; border: none; transition: all .2s; white-space: nowrap; }
+    .btn:focus-visible { outline: 2px solid #C89B3C; outline-offset: 2px; }
+    .btn-gold { background: linear-gradient(135deg,#C89B3C,#9E7624); color: #fff; }
+    .btn-gold:hover { background: linear-gradient(135deg,#E5BE66,#C89B3C); box-shadow: 0 4px 12px rgba(200,155,60,.4); }
+    .btn-outline { background: transparent; color: #0B2345; border: 1.5px solid #0B2345; }
+    .btn-outline:hover { background: #0B2345; color: #fff; }
+    .btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .btn-danger:hover { background: #dc2626; color: #fff; }
+    .btn-success { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+    .btn-success:hover { background: #16a34a; color: #fff; }
+    .btn-ghost { background: transparent; color: #475569; }
+    .btn-ghost:hover { background: #f1f5f9; color: #1e293b; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; min-height: 34px; }
+    .btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 5px; min-height: 30px; }
+
+    /* ── Table ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #475569; background: #f8fafc; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+    .data-table td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    .data-table tr:hover td { background: #f8fafc; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* ── Badges ── */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .badge-green { background: #dcfce7; color: #16a34a; }
+    .badge-yellow { background: #fef9c3; color: #a16207; }
+    .badge-red { background: #fee2e2; color: #dc2626; }
+    .badge-blue { background: #dbeafe; color: #2563eb; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+    .badge-gold { background: rgba(200,155,60,.15); color: #9E7624; }
+    .badge-gold { background: rgba(200,155,60,.15); color: #9E7624; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5);
+      backdrop-filter: blur(4px); z-index: 1000;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 600px;
+      max-height: 90vh; display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+      animation: modalIn .25s ease;
+    }
+    @keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .modal-title { font-family: 'Oswald'; font-size: 20px; font-weight: 600; color: #0B2345; }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+    .modal-close { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #f1f5f9; border: none; }
+    .modal-close:hover { background: #fee2e2; color: #dc2626; }
+
+    /* ── Form elements ── */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .3px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 9px 12px; border-radius: 8px;
+      border: 1.5px solid #e2e8f0; font-size: 13px; font-family: 'Montserrat';
+      outline: none; transition: border .2s, box-shadow .2s; background: #fff;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: #C89B3C; box-shadow: 0 0 0 3px rgba(200,155,60,.1);
+    }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── Search / filter bar ── */
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-input { padding: 7px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: 'Montserrat'; outline: none; transition: border .2s; }
+    .filter-input:focus { border-color: #C89B3C; }
+
+    /* ── Progress / bar charts ── */
+    .progress-bar { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+
+    /* ── Activity feed ── */
+    .activity-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+    .activity-text { font-size: 13px; color: #334155; }
+    .activity-time { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+    /* ── System status ── */
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .status-online { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.2); }
+    .status-offline { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.2); }
+    .status-warn { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
+
+    /* ── Stat grid ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* ── Quick actions ── */
+    .quick-action { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; border-radius: 12px; border: 1.5px dashed #e2e8f0; cursor: pointer; transition: all .2s; text-align: center; }
+    .quick-action:hover { border-color: #C89B3C; background: rgba(200,155,60,.05); }
+    .quick-action .icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .quick-action .label { font-size: 12px; font-weight: 600; color: #374151; }
+
+    /* ── Bar chart CSS ── */
+    .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; padding: 0 4px; }
+    .bar-chart .bar { flex: 1; border-radius: 4px 4px 0 0; transition: height .6s ease; cursor: pointer; position: relative; }
+    .bar-chart .bar:hover::after { content: attr(data-val); position: absolute; top: -22px; left: 50%; transform: translateX(-50%); background: #0B2345; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; white-space: nowrap; }
+
+    /* ── Responsive ── */
+    @media(max-width: 768px) {
+      #sidebar { position: fixed; height: 100%; z-index: 100; transform: translateX(-100%); transition: transform .3s ease, width .3s ease; }
+      #sidebar.mobile-open { transform: translateX(0); }
+      .two-col, .three-col, .form-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      #content { padding: 16px; }
+      .topbar-title { font-size: 17px; }
+    }
+
+    /* ── Auth overlay ── */
+    #auth-overlay { position: fixed; inset: 0; background: #0B2345; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+    #auth-overlay p { color: #C89B3C; font-family: 'Bebas Neue'; font-size: 24px; letter-spacing: 3px; }
+
+    /* ── Gold border top ── */
+    .gold-top { border-top: 3px solid #C89B3C; }
+
+    /* ── Misc ── */
+    .text-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+    .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
+    .empty-state .icon { font-size: 48px; margin-bottom: 10px; opacity: .4; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #dbeafe; color: #1d4ed8; text-transform: uppercase; letter-spacing: .3px; }
+    .tag-gold { background: rgba(200,155,60,.15); color: #9E7624; }
+    .tag-red { background: #fee2e2; color: #dc2626; }
+
+    /* ── Notice card ── */
+    .notice-card { border-radius: 10px; border: 1px solid #e2e8f0; padding: 14px 16px; margin-bottom: 10px; background: #fff; transition: box-shadow .2s; }
+    .notice-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+    .notice-card .nc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .notice-card .nc-title { font-family: 'Oswald'; font-size: 15px; font-weight: 600; color: #0B2345; }
+    .notice-card .nc-body { font-size: 13px; color: #475569; line-height: 1.6; }
+    .glass-panel {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 40px 80px -20px rgba(0, 31, 63, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═════════════════════ AUTH / LOGIN SCREEN ═════════════════════ -->
+<div id="auth-screen" style="display:flex;" class="fixed inset-0 z-[999] flex flex-col md:flex-row w-full min-h-screen bg-[#121414] text-[#e2e2e2] overflow-x-hidden antialiased">
+  <!-- Left Side: Hero Banner -->
+  <div class="hidden md:block md:w-1/2 relative overflow-hidden bg-[#001f3f]">
+    <div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity" style="background-image: url('hero-bg.jpg'); transform: scale(1.1);"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-[#001f3f]/90 via-[#001f3f]/60 to-transparent"></div>
+    <div class="absolute bottom-16 left-16 right-16 z-10">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-8 h-[2px] bg-[#C89B3C]"></span>
+        <span class="text-xs uppercase font-bold tracking-widest text-[#C89B3C]">Merchant Navy Academy</span>
+      </div>
+      <h2 class="font-display text-5xl lg:text-6xl text-white mb-4 leading-tight">NAVIGATE YOUR <br><span class="text-[#C89B3C]">FUTURE.</span></h2>
+      <p class="font-body text-sm text-[#c4c6cf] max-w-md leading-relaxed">Admin Portal access for academy administrators. Manage cadets, faculty, bulletins, notices, and institutional operations with precision.</p>
+    </div>
+  </div>
+
+  <!-- Right Side: Login Form -->
+  <div class="w-full md:w-1/2 flex items-center justify-center p-5 md:p-12 relative z-10 bg-[#121414] md:bg-transparent min-h-screen">
+    <div class="md:hidden absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('hero-bg.jpg');"></div>
+    <div class="md:hidden absolute inset-0 bg-[#121414]/90 backdrop-blur-xl"></div>
+
+    <div class="glass-panel rounded-2xl w-full max-w-lg p-7 md:p-10 relative z-20">
+      <a href="index.html" class="flex items-center gap-1.5 text-[#c4c6cf] hover:text-[#C89B3C] transition-colors text-xs mb-6 group w-fit font-medium">
+        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        Back to Academy Home
+      </a>
+
+      <!-- Status / Alert Message Banner -->
+      <div id="admin-auth-msg" class="hidden mb-4 p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all"></div>
+
+      <div class="flex flex-col items-center mb-6">
+        <div class="w-12 h-12 rounded-xl bg-[#0B2345] border border-[#C89B3C]/40 flex items-center justify-center mb-3 shadow-lg shadow-[#0B2345]/50">
+          <span class="material-symbols-outlined text-[#C89B3C] text-2xl">admin_panel_settings</span>
+        </div>
+        <h1 class="font-display text-3xl md:text-4xl text-white tracking-wider mb-1">ADMINISTRATOR ACCESS</h1>
+        <p class="font-body text-xs text-[#c4c6cf] text-center">Sign in with your administrative credentials to manage Sindhupath portal.</p>
+      </div>
+
+      <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] uppercase font-bold text-[#c4c6cf] tracking-wider mb-1.5" for="admin-email">Admin Email</label>
+          <div class="relative">
+            <input class="w-full bg-[#1a1c1c] border border-[#43474e]/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#C89B3C] focus:ring-1 focus:ring-[#C89B3C] transition-colors" id="admin-email" placeholder="admin@sindhupath.com" type="email" required autocomplete="username">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] uppercase font-bold text-[#c4c6cf] tracking-wider mb-1.5" for="admin-password">Password</label>
+          <div class="relative">
+            <input class="w-full bg-[#1a1c1c] border border-[#43474e]/60 rounded-xl px-4 py-3 pr-11 text-sm text-white focus:outline-none focus:border-[#C89B3C] focus:ring-1 focus:ring-[#C89B3C] transition-colors" id="admin-password" placeholder="••••••••" type="password" required autocomplete="current-password">
+            <button class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#c4c6cf] hover:text-white transition-colors" id="admin-toggle-pwd" type="button" onclick="toggleAdminPassword()">
+              <span class="material-symbols-outlined text-[20px]">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input class="h-4 w-4 text-[#C89B3C] bg-[#1a1c1c] border-[#43474e] rounded focus:ring-[#C89B3C]" type="checkbox" checked>
+            <span class="text-xs text-[#c4c6cf]">Keep signed in</span>
+          </label>
+          <span class="text-xs text-[#C89B3C]/80 hover:text-[#C89B3C] cursor-pointer" onclick="toast('Please contact system administrator to reset master access.','#C89B3C')">Forgot password?</span>
+        </div>
+
+        <button id="admin-login-submit-btn" class="w-full bg-[#C89B3C] text-[#071830] font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl hover:bg-[#E5BE66] transition-all duration-200 hover:shadow-[0_0_20px_rgba(200,155,60,0.4)] hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 mt-4" type="submit">
+          <span class="material-symbols-outlined text-base">login</span>
+          <span>SIGN IN TO PORTAL</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ APP SHELL ═ -->
+<div id="app" style="display:none;">
+
+  <!-- ─────────── SIDEBAR ─────────── -->
+  <aside id="sidebar">
+    <!-- Toggle button -->
+    <button type="button" class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <span class="material-symbols-outlined" style="font-size:14px;">chevron_left</span>
+    </button>
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="sidebar-logo"><span>SP</span></div>
+      <span class="sidebar-brand-text">SINDHUPATH</span>
+    </div>
+
+    <!-- Admin info -->
+    <div class="admin-section">
+      <div class="admin-avatar-wrap">
+        <div class="admin-avatar">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:20px;">person</span>
+        </div>
+        <div class="admin-info">
+          <div class="name" id="sidebar-admin-name">Admin User</div>
+          <div class="admin-badge mt-1">ADMINISTRATOR</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-section">
+      <div class="nav-section-label">Main</div>
+      <button type="button" class="nav-item active" onclick="switchTab('dashboard',this)">
+        <span class="material-symbols-outlined nav-icon icon-fill">dashboard</span>
+        <span class="nav-label">Dashboard</span>
+      </button>
+      <button type="button" class="nav-item" onclick="switchTab('students',this)">
+        <span class="material-symbols-outlined nav-icon">school</span>
+        <span class="nav-label">Students</span>
+      </button>
+      <button type="button" class="nav-item" onclick="switchTab('faculty',this)">
+        <span class="material-symbols-outlined nav-icon">group</span>
+        <span class="nav-label">Faculty</span>
+      </button>
+      <button type="button" class="nav-item" onclick="switchTab('admissions',this)">
+        <span class="material-symbols-outlined nav-icon">assignment_ind</span>
+        <span class="nav-label">Admissions</span>
+      </button>
+      <button type="button" class="nav-item" onclick="switchTab('courses',this)">
+        <span class="material-symbols-outlined nav-icon">menu_book</span>
+        <span class="nav-label">Courses</span>
+      </button>
+      <div class="nav-section-label" style="margin-top:10px;">Management</div>
+      <button type="button" class="nav-item" onclick="switchTab('messages',this)">
+        <span class="material-symbols-outlined nav-icon">forum</span>
+        <span class="nav-label">Messages &amp; Chat</span>
+      </button>
+      <button type="button" class="nav-item" onclick="switchTab('noticeboard',this)">
+        <span class="material-symbols-outlined nav-icon">campaign</span>
+        <span class="nav-label">Notice Board</span>
+      </button>
+      <button type="button" class="nav-item" onclick="switchTab('fees',this)">
+        <span class="material-symbols-outlined nav-icon">payments</span>
+        <span class="nav-label">Fees &amp; Finance</span>
+      </button>
+      <button type="button" class="nav-item" onclick="switchTab('reports',this)">
+        <span class="material-symbols-outlined nav-icon">bar_chart</span>
+        <span class="nav-label">Reports</span>
+      </button>
+      <div class="nav-section-label" style="margin-top:10px;">System</div>
+      <button type="button" class="nav-item" onclick="switchTab('settings',this)">
+        <span class="material-symbols-outlined nav-icon">settings</span>
+        <span class="nav-label">Settings</span>
+      </button>
+      <button type="button" class="nav-item" onclick="doLogout()" style="margin-top:auto;color:#ef4444;">
+        <span class="material-symbols-outlined nav-icon" style="color:#ef4444;">logout</span>
+        <span class="nav-label">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─────────── MAIN ─────────── -->
+  <div id="main">
+
+    <!-- TOP BAR -->
+    <header id="topbar">
+      <button onclick="toggleMobileSidebar()" aria-label="Open mobile menu" class="md:hidden mr-2 p-1 rounded text-gray-500 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-gold">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <span class="topbar-title">SINDHUPATH ADMIN</span>
+      <div class="topbar-search">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input type="text" placeholder="Search students, faculty, notices…" id="globalSearch" oninput="handleGlobalSearch(this.value)">
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="topbar-icon-btn" aria-label="Refresh tab" title="Refresh" onclick="refreshCurrentTab()">
+          <span class="material-symbols-outlined" style="font-size:20px;color:#475569;">refresh</span>
+        </button>
+        <button type="button" class="topbar-icon-btn" aria-label="View notifications" title="Notifications">
+          <span class="material-symbols-outlined" style="font-size:20px;color:#475569;">notifications</span>
+          <div class="notif-dot"></div>
+        </button>
+        <button type="button" class="topbar-user" aria-label="User profile">
+          <div class="avatar-sm">
+            <span class="material-symbols-outlined" style="color:#fff;font-size:16px;">person</span>
+          </div>
+          <div class="topbar-user-info">
+            <div class="uname" id="topbar-admin-name">Admin</div>
+            <div class="urole">Administrator</div>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div id="content">
+
+      <!-- ════════════════════ DASHBOARD TAB ════════════════════ -->
+      <div id="tab-dashboard" class="tab-panel active">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Dashboard</div>
+            <div class="page-subtitle">Welcome back — here's your academy at a glance.</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="switchTab('reports',document.querySelector('[onclick*=reports]'))">
+              <span class="material-symbols-outlined" style="font-size:14px;">download</span> Export Report
+            </button>
+            <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-student')">
+              <span class="material-symbols-outlined" style="font-size:14px;">person_add</span> Add Student
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card gold-top">
+            <div class="kpi-accent" style="background:#C89B3C;"></div>
+            <div class="kpi-icon" style="background:rgba(200,155,60,.12);">
+              <span class="material-symbols-outlined" style="color:#C89B3C;">school</span>
+            </div>
+            <div class="kpi-value" id="kpi-students">284</div>
+            <div class="kpi-label">Total Students</div>
+            <div class="kpi-change" style="color:#16a34a;">↑ 12 this month</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#2563eb;"></div>
+            <div class="kpi-icon" style="background:rgba(37,99,235,.1);">
+              <span class="material-symbols-outlined" style="color:#2563eb;">group</span>
+            </div>
+            <div class="kpi-value" id="kpi-faculty">18</div>
+            <div class="kpi-label">Active Faculty</div>
+            <div class="kpi-change" style="color:#64748b;">2 on leave</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#f59e0b;"></div>
+            <div class="kpi-icon" style="background:rgba(245,158,11,.1);">
+              <span class="material-symbols-outlined" style="color:#f59e0b;">assignment_ind</span>
+            </div>
+            <div class="kpi-value" id="kpi-admissions">37</div>
+            <div class="kpi-label">Pending Admissions</div>
+            <div class="kpi-change" style="color:#f59e0b;">↑ 8 new today</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#16a34a;"></div>
+            <div class="kpi-icon" style="background:rgba(22,163,74,.1);">
+              <span class="material-symbols-outlined" style="color:#16a34a;">payments</span>
+            </div>
+            <div class="kpi-value" id="kpi-revenue">₹8.4L</div>
+            <div class="kpi-label">Revenue This Month</div>
+            <div class="kpi-change" style="color:#16a34a;">↑ 18% vs last month</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#8b5cf6;"></div>
+            <div class="kpi-icon" style="background:rgba(139,92,246,.1);">
+              <span class="material-symbols-outlined" style="color:#8b5cf6;">event</span>
+            </div>
+            <div class="kpi-value">6</div>
+            <div class="kpi-label">Upcoming Exams</div>
+            <div class="kpi-change" style="color:#64748b;">Next: Oct 5</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#06b6d4;"></div>
+            <div class="kpi-icon" style="background:rgba(6,182,212,.1);">
+              <span class="material-symbols-outlined" style="color:#06b6d4;">campaign</span>
+            </div>
+            <div class="kpi-value">11</div>
+            <div class="kpi-label">Open Notices</div>
+            <div class="kpi-change" style="color:#64748b;">3 priority</div>
+          </div>
+        </div>
+
+        <!-- Row 1 -->
+        <div class="two-col" style="margin-bottom:16px;">
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent Activity</span>
+              <span class="badge badge-blue">Live</span>
+            </div>
+            <div class="card-body" style="padding:16px 20px;">
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#C89B3C;"></div>
+                <div>
+                  <div class="activity-text"><strong>New Admission Request</strong> — Arjun Pillai applied for DNS Preparatory</div>
+                  <div class="activity-time">2 min ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#16a34a;"></div>
+                <div>
+                  <div class="activity-text"><strong>Fee Payment</strong> — Kavitha Menon paid ₹45,000 for Batch B-2025</div>
+                  <div class="activity-time">14 min ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#2563eb;"></div>
+                <div>
+                  <div class="activity-text"><strong>Student Registered</strong> — Rahul Sharma enrolled in IMU-CET Batch</div>
+                  <div class="activity-time">1 hr ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#8b5cf6;"></div>
+                <div>
+                  <div class="activity-text"><strong>Notice Posted</strong> — "October Exam Schedule" published</div>
+                  <div class="activity-time">3 hr ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#f59e0b;"></div>
+                <div>
+                  <div class="activity-text"><strong>Faculty Added</strong> — Cmdr. Sanjay Nair joined as Nautical Science faculty</div>
+                  <div class="activity-time">Yesterday</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Quick Actions</span></div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div class="quick-action" onclick="openModal('modal-add-student')">
+                  <div class="icon" style="background:rgba(200,155,60,.12);">
+                    <span class="material-symbols-outlined" style="color:#C89B3C;">person_add</span>
+                  </div>
+                  <div class="label">Add Student</div>
+                </div>
+                <div class="quick-action" onclick="openModal('modal-add-faculty')">
+                  <div class="icon" style="background:rgba(37,99,235,.1);">
+                    <span class="material-symbols-outlined" style="color:#2563eb;">group_add</span>
+                  </div>
+                  <div class="label">Add Faculty</div>
+                </div>
+                <div class="quick-action" onclick="switchTab('noticeboard',document.querySelector('[onclick*=noticeboard]'))">
+                  <div class="icon" style="background:rgba(139,92,246,.1);">
+                    <span class="material-symbols-outlined" style="color:#8b5cf6;">post_add</span>
+                  </div>
+                  <div class="label">Post Notice</div>
+                </div>
+                <div class="quick-action" onclick="switchTab('reports',document.querySelector('[onclick*=reports]'))">
+                  <div class="icon" style="background:rgba(22,163,74,.1);">
+                    <span class="material-symbols-outlined" style="color:#16a34a;">assessment</span>
+                  </div>
+                  <div class="label">View Reports</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="two-col">
+          <!-- Enrollment by Batch -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Enrollment by Batch</span></div>
+            <div class="card-body">
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>IMU-CET A-2025</span><span>72 / 80</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:90%;background:#C89B3C;"></div></div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>DNS Prep B-2025</span><span>58 / 80</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:72%;background:#2563eb;"></div></div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>Sponsorship C-2025</span><span>44 / 60</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:73%;background:#16a34a;"></div></div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>Aptitude D-2025</span><span>68 / 80</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:85%;background:#8b5cf6;"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>Entrance E-2025</span><span>42 / 60</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:70%;background:#f59e0b;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Status + Revenue -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="card">
+              <div class="card-header"><span class="card-title">System Status</span></div>
+              <div class="card-body" style="padding:14px 20px;">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><div class="status-dot status-online"></div>Supabase Database</div>
+                    <span class="badge badge-green">Online</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><div class="status-dot status-online"></div>Authentication</div>
+                    <span class="badge badge-green">Active</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><div class="status-dot status-warn" id="sb-status-dot"></div>Storage</div>
+                    <span class="badge badge-yellow" id="sb-status-badge">Checking…</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><div class="status-dot status-online"></div>Email Service</div>
+                    <span class="badge badge-green">Online</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">Monthly Revenue</span></div>
+              <div class="card-body" style="padding:14px 20px 10px;">
+                <div class="bar-chart" id="rev-chart">
+                  <div class="bar" data-val="₹6.2L" style="height:62%;background:rgba(200,155,60,.4);"></div>
+                  <div class="bar" data-val="₹7.1L" style="height:71%;background:rgba(200,155,60,.5);"></div>
+                  <div class="bar" data-val="₹5.8L" style="height:58%;background:rgba(200,155,60,.4);"></div>
+                  <div class="bar" data-val="₹8.0L" style="height:80%;background:rgba(200,155,60,.6);"></div>
+                  <div class="bar" data-val="₹7.5L" style="height:75%;background:rgba(200,155,60,.55);"></div>
+                  <div class="bar" data-val="₹8.4L" style="height:84%;background:#C89B3C;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-top:4px;padding:0 4px;">
+                  <span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ STUDENTS TAB ════════════════════ -->
+      <div id="tab-students" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Students</div>
+            <div class="page-subtitle">Manage all enrolled students</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV('students')">
+              <span class="material-symbols-outlined" style="font-size:14px;">download</span> Export CSV
+            </button>
+            <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-student')">
+              <span class="material-symbols-outlined" style="font-size:14px;">person_add</span> Add Student
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="flex-wrap:wrap;gap:10px;">
+            <div class="filter-bar" style="margin:0;flex:1;">
+              <input type="text" class="filter-input" placeholder="Search by name, roll no…" id="student-search" oninput="filterStudents()" style="flex:1;min-width:180px;">
+              <select class="filter-input" id="student-filter-course" onchange="filterStudents()">
+                <option value="">All Courses</option>
+                <option>IMU-CET</option>
+                <option>DNS Preparatory</option>
+                <option>Sponsorship Prep</option>
+                <option>Aptitude</option>
+                <option>Entrance Exams</option>
+              </select>
+              <select class="filter-input" id="student-filter-status" onchange="filterStudents()">
+                <option value="">All Fee Status</option>
+                <option>Paid</option>
+                <option>Partial</option>
+                <option>Pending</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="students-table">
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Batch</th>
+                  <th>Attendance</th>
+                  <th>Fees Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="students-tbody"></tbody>
+            </table>
+          </div>
+          <div style="padding:12px 20px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#64748b;">
+            <span id="student-count">Showing 0 students</span>
+            <span>Page 1 of 1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ FACULTY TAB ════════════════════ -->
+      <div id="tab-faculty" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Faculty</div>
+            <div class="page-subtitle">Teaching staff and instructors</div>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-faculty')">
+            <span class="material-symbols-outlined" style="font-size:14px;">person_add</span> Add Faculty
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <input type="text" class="filter-input" placeholder="Search faculty…" id="faculty-search" oninput="filterFaculty()" style="width:260px;">
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="faculty-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Designation</th>
+                  <th>Subject</th>
+                  <th>Qualification</th>
+                  <th>Joined</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="faculty-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ ADMISSIONS TAB ════════════════════ -->
+      <div id="tab-admissions" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Admissions</div>
+            <div class="page-subtitle">Pending and processed admission requests</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <span class="badge badge-yellow" style="font-size:13px;padding:6px 14px;" id="pending-count">Loading…</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="filter-bar" style="margin:0;">
+              <select class="filter-input" id="adm-filter" onchange="filterAdmissions()">
+                <option value="">All Status</option>
+                <option>Pending</option>
+                <option>Approved</option>
+                <option>Rejected</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Applicant Name</th>
+                  <th>Course Applied</th>
+                  <th>Contact</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admissions-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ COURSES TAB ════════════════════ -->
+      <div id="tab-courses" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Courses</div>
+            <div class="page-subtitle">Course catalog management</div>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-course')">
+            <span class="material-symbols-outlined" style="font-size:14px;">add</span> Add Course
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="courses-grid"></div>
+      </div>
+
+      <!-- ════════════════════ MESSAGES TAB ════════════════════ -->
+      <div id="tab-messages" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Academy Messages &amp; Chat</div>
+            <div class="page-subtitle">Live communication hub with students and faculty members</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="resetChatMessages()">
+            <span class="material-symbols-outlined" style="font-size:14px;">restart_alt</span> Reset Chat
+          </button>
+        </div>
+
+        <div class="card" style="height:calc(100vh - 210px);display:flex;flex-direction:row;overflow:hidden;">
+          <!-- Left: Channels Sidebar -->
+          <div style="width:280px;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;background:#f8fafc;flex-shrink:0;">
+            <div style="padding:14px 16px;border-bottom:1px solid #e2e8f0;">
+              <input type="text" class="filter-input" placeholder="Search channels or names…" id="chat-search" oninput="filterChatChannels()" style="width:100%;">
+            </div>
+            <div id="chat-channels-list" style="flex:1;overflow-y:auto;padding:10px 12px;"></div>
+          </div>
+
+          <!-- Right: Chat Area -->
+          <div style="flex:1;display:flex;flex-direction:column;background:#fff;">
+            <!-- Header -->
+            <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:12px;">
+              <div id="chat-header-avatar" style="width:36px;height:36px;border-radius:50%;background:#0B2345;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">
+                <span class="material-symbols-outlined" style="color:#C89B3C;">forum</span>
+              </div>
+              <div>
+                <h3 id="chat-active-title" style="font-family:'Oswald';font-size:16px;font-weight:700;color:#0B2345;">General Discussion</h3>
+                <p id="chat-active-sub" style="font-size:11px;color:#475569;">Academy-wide channel</p>
+              </div>
+            </div>
+
+            <!-- Messages Thread -->
+            <div id="chat-messages-container" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;background:#f8fafc;"></div>
+
+            <!-- Quick Broadcast Chips -->
+            <div style="padding:8px 16px;border-top:1px solid #f1f5f9;background:#fff;display:flex;gap:6px;overflow-x:auto;align-items:center;">
+              <span style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Quick Broadcast:</span>
+              <button type="button" class="btn btn-ghost btn-xs" style="border:1px solid #e2e8f0;min-height:30px;" onclick="sendQuickReply('Reminder: Fee payment deadline is 5th October. Please clear pending dues.')">📢 Fee Deadline</button>
+              <button type="button" class="btn btn-ghost btn-xs" style="border:1px solid #e2e8f0;min-height:30px;" onclick="sendQuickReply('October Exam Schedule has been published. Check Notice Board for details.')">📝 Exam Schedule</button>
+              <button type="button" class="btn btn-ghost btn-xs" style="border:1px solid #e2e8f0;min-height:30px;" onclick="sendQuickReply('Morning Assembly tomorrow at 08:00 AM sharp in Main Auditorium.')">⚓ Assembly Notice</button>
+            </div>
+
+            <!-- Chat Input -->
+            <form onsubmit="handleSendChatMessage(event)" style="padding:12px 16px;border-top:1px solid #e2e8f0;display:flex;gap:10px;background:#fff;">
+              <input type="text" id="chat-input-text" placeholder="Type a message or announcement as Admin…" class="form-input" style="flex:1;border-radius:20px;padding-left:16px;">
+              <button type="submit" class="btn btn-gold" style="border-radius:20px;padding:8px 20px;">
+                <span class="material-symbols-outlined" style="font-size:16px;">send</span> Send
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ NOTICE BOARD TAB ════════════════════ -->
+      <div id="tab-noticeboard" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Notice Board &amp; Bulletin Management</div>
+            <div class="page-subtitle">Directly manage academy notices, poster slideshows, and live bulletins published to the website.</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-gold btn-sm" onclick="fetchAdminNotices()">
+              <span class="material-symbols-outlined" id="refresh-icon" style="font-size:14px;">refresh</span> Sync Notices
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Banner -->
+        <div id="notice-status-banner" style="display:none;margin-bottom:16px;padding:12px 16px;border-radius:10px;font-size:12px;font-weight:600;align-items:center;justify-content:space-between;border:1px solid transparent;">
+          <span id="notice-status-text"></span>
+          <button type="button" onclick="hideNoticeStatus()" style="background:none;border:none;cursor:pointer;opacity:0.7;">
+            <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+          </button>
+        </div>
+
+        <div class="two-col" style="gap:20px;margin-bottom:20px;">
+          <!-- Card 1: Upload Poster Banner -->
+          <div class="card">
+            <div class="card-header" style="display:flex;align-items:center;gap:8px;">
+              <span class="material-symbols-outlined" style="color:#C89B3C;">add_photo_alternate</span>
+              <div>
+                <span class="card-title" style="display:block;">Upload Poster Banner</span>
+                <span style="font-size:11px;color:#64748b;font-weight:400;">Posters appear in the Notice Board slideshow on the landing page.</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label" style="text-transform:uppercase;font-size:11px;font-weight:700;letter-spacing:0.5px;">Choose Image File</label>
+                <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:140px;border:2px dashed #cbd5e1;border-radius:12px;cursor:pointer;background:#f8fafc;transition:all .2s;text-align:center;padding:12px;">
+                  <span class="material-symbols-outlined" style="color:#C89B3C;font-size:32px;margin-bottom:4px;">cloud_upload</span>
+                  <span id="upload-file-label" style="font-size:12px;font-weight:600;color:#0B2345;">Click to select poster image</span>
+                  <span style="font-size:10px;color:#94a3b8;margin-top:2px;">PNG, JPG, WEBP (Max 5MB)</span>
+                  <input type="file" id="admin-file-input" style="display:none;" accept="image/*" onchange="handlePosterFileSelect(this)" />
+                </label>
+              </div>
+
+              <div class="form-group" style="margin-top:12px;">
+                <label class="form-label" style="text-transform:uppercase;font-size:11px;font-weight:700;letter-spacing:0.5px;">Or Image Public URL</label>
+                <input type="url" id="admin-url-input" class="form-input" placeholder="https://example.com/notice-poster.jpg" />
+              </div>
+
+              <button id="admin-upload-btn" onclick="uploadPoster()" class="btn btn-gold" style="width:100%;margin-top:14px;padding:12px;">
+                <span class="material-symbols-outlined" style="font-size:16px;">publish</span>
+                <span>Upload &amp; Publish to Supabase</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Add Bulletin News Item -->
+          <div class="card">
+            <div class="card-header" style="display:flex;align-items:center;gap:8px;">
+              <span class="material-symbols-outlined" style="color:#C89B3C;">campaign</span>
+              <div>
+                <span class="card-title" style="display:block;">Add Bulletin News Item</span>
+                <span style="font-size:11px;color:#64748b;font-weight:400;">Post text announcements and news feeds live to the website.</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="add-news-form" onsubmit="handleAddNews(event)" style="display:flex;flex-direction:column;gap:12px;">
+                <div class="form-group">
+                  <label class="form-label" style="text-transform:uppercase;font-size:11px;font-weight:700;letter-spacing:0.5px;">Category Badge</label>
+                  <select id="news-badge-input" class="form-select">
+                    <option value="📌 Notice">📌 Notice</option>
+                    <option value="📝 Exam">📝 Exam</option>
+                    <option value="🎓 Admission">🎓 Admission</option>
+                    <option value="🏆 Result">🏆 Result</option>
+                    <option value="🚨 Urgent">🚨 Urgent</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" style="text-transform:uppercase;font-size:11px;font-weight:700;letter-spacing:0.5px;">Headline / Title *</label>
+                  <input type="text" id="news-title-input" class="form-input" placeholder="e.g. IMU-CET 2027 Registration Dates Announced" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" style="text-transform:uppercase;font-size:11px;font-weight:700;letter-spacing:0.5px;">Announcement Body *</label>
+                  <textarea id="news-desc-input" class="form-textarea" rows="3" placeholder="Enter full announcement detail..." required></textarea>
+                </div>
+
+                <button type="submit" id="admin-news-btn" class="btn btn-gold" style="width:100%;padding:12px;">
+                  <span class="material-symbols-outlined" style="font-size:16px;">post_add</span>
+                  <span>Publish Bulletin Item</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Live Published Bulletins & Live Posters Gallery -->
+        <div class="two-col" style="gap:20px;">
+          <!-- Card 3: Live Published Bulletins -->
+          <div class="card">
+            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined" style="color:#C89B3C;">feed</span>
+                <span class="card-title">Live Published Bulletins (<span id="bulletin-count">0</span>)</span>
+              </div>
+              <span class="badge badge-gold">Website Feed</span>
+            </div>
+            <div class="card-body" style="padding:14px;">
+              <div id="admin-bulletins-list" style="display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto;padding-right:4px;">
+                <p style="font-size:12px;color:#94a3b8;text-align:center;padding:24px 0;">Loading bulletins from Supabase...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Live Posters & Notices -->
+          <div class="card">
+            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined" style="color:#C89B3C;">collections</span>
+                <span class="card-title">Live Posters &amp; Banners (<span id="notice-count">0</span>)</span>
+              </div>
+              <span class="badge badge-blue">Slideshow Gallery</span>
+            </div>
+            <div class="card-body" style="padding:14px;">
+              <div id="admin-notices-list" style="display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto;padding-right:4px;">
+                <p style="font-size:12px;color:#94a3b8;text-align:center;padding:24px 0;">Loading notices from Supabase...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ FEES & FINANCE TAB ════════════════════ -->
+      <div id="tab-fees" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Fees &amp; Finance</div>
+            <div class="page-subtitle">Fee collection and financial overview</div>
+          </div>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="three-col" style="margin-bottom:20px;">
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#16a34a;"></div>
+            <div class="kpi-icon" style="background:rgba(22,163,74,.1);"><span class="material-symbols-outlined" style="color:#16a34a;">payments</span></div>
+            <div class="kpi-value">₹42.6L</div>
+            <div class="kpi-label">Total Collected</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#f59e0b;"></div>
+            <div class="kpi-icon" style="background:rgba(245,158,11,.1);"><span class="material-symbols-outlined" style="color:#f59e0b;">schedule</span></div>
+            <div class="kpi-value">₹12.3L</div>
+            <div class="kpi-label">Pending</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-accent" style="background:#dc2626;"></div>
+            <div class="kpi-icon" style="background:rgba(220,38,38,.1);"><span class="material-symbols-outlined" style="color:#dc2626;">warning</span></div>
+            <div class="kpi-value">₹3.8L</div>
+            <div class="kpi-label">Overdue</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Student Fee Status</span>
+              <input type="text" class="filter-input" placeholder="Search…" id="fee-search" oninput="filterFees()" style="width:180px;">
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Total Fee</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Due Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="fees-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Monthly Collection</span></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>April 2025</span><span>₹6.2L</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:62%;background:#C89B3C;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>May 2025</span><span>₹7.1L</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:71%;background:#C89B3C;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>June 2025</span><span>₹5.8L</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:58%;background:#C89B3C;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>July 2025</span><span>₹8.0L</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:80%;background:#C89B3C;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>August 2025</span><span>₹7.5L</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:75%;background:#C89B3C;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:4px;"><span>September 2025</span><span>₹8.4L</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:84%;background:#16a34a;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ REPORTS TAB ════════════════════ -->
+      <div id="tab-reports" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Reports</div>
+            <div class="page-subtitle">Performance analytics and insights</div>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="toast('Report exported successfully!','#16a34a')">
+            <span class="material-symbols-outlined" style="font-size:14px;">download</span> Export PDF
+          </button>
+        </div>
+
+        <div class="two-col" style="margin-bottom:16px;">
+          <!-- Batch Performance -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Batch Performance</span></div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Batch</th>
+                    <th>Students</th>
+                    <th>Avg Attendance</th>
+                    <th>Avg Score</th>
+                    <th>Pass Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="tag tag-gold">IMU-CET A-25</span></td>
+                    <td>72</td>
+                    <td><span style="color:#16a34a;font-weight:600;">88%</span></td>
+                    <td>76.4</td>
+                    <td><div class="progress-bar" style="width:100px;display:inline-block;"><div class="progress-fill" style="width:91%;background:#16a34a;"></div></div> 91%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tag">DNS B-25</span></td>
+                    <td>58</td>
+                    <td><span style="color:#C89B3C;font-weight:600;">81%</span></td>
+                    <td>72.1</td>
+                    <td><div class="progress-bar" style="width:100px;display:inline-block;"><div class="progress-fill" style="width:85%;background:#C89B3C;"></div></div> 85%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tag" style="background:#dcfce7;color:#16a34a;">SPON C-25</span></td>
+                    <td>44</td>
+                    <td><span style="color:#16a34a;font-weight:600;">90%</span></td>
+                    <td>80.2</td>
+                    <td><div class="progress-bar" style="width:100px;display:inline-block;"><div class="progress-fill" style="width:95%;background:#16a34a;"></div></div> 95%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tag" style="background:#f3e8ff;color:#7c3aed;">APT D-25</span></td>
+                    <td>68</td>
+                    <td><span style="color:#f59e0b;font-weight:600;">77%</span></td>
+                    <td>68.9</td>
+                    <td><div class="progress-bar" style="width:100px;display:inline-block;"><div class="progress-fill" style="width:79%;background:#8b5cf6;"></div></div> 79%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="tag" style="background:#fee2e2;color:#dc2626;">ENT E-25</span></td>
+                    <td>42</td>
+                    <td><span style="color:#dc2626;font-weight:600;">74%</span></td>
+                    <td>65.3</td>
+                    <td><div class="progress-bar" style="width:100px;display:inline-block;"><div class="progress-fill" style="width:72%;background:#f59e0b;"></div></div> 72%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Enrollment trend -->
+          <div class="card">
+            <div class="card-header"><span class="card-title">Enrollment Trend (2025)</span></div>
+            <div class="card-body">
+              <div class="bar-chart" style="height:100px;">
+                <div class="bar" data-val="42" style="height:42%;background:#0B2345;"></div>
+                <div class="bar" data-val="68" style="height:68%;background:#0B2345;"></div>
+                <div class="bar" data-val="55" style="height:55%;background:#0B2345;"></div>
+                <div class="bar" data-val="80" style="height:80%;background:#C89B3C;"></div>
+                <div class="bar" data-val="95" style="height:95%;background:#C89B3C;"></div>
+                <div class="bar" data-val="72" style="height:72%;background:#0B2345;"></div>
+                <div class="bar" data-val="88" style="height:88%;background:#C89B3C;"></div>
+                <div class="bar" data-val="110" style="height:100%;background:#16a34a;"></div>
+                <div class="bar" data-val="98" style="height:89%;background:#0B2345;"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-top:4px;">
+                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span>
+              </div>
+              <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="text-align:center;padding:10px;background:#f8fafc;border-radius:8px;">
+                  <div style="font-family:'Bebas Neue';font-size:28px;color:#0B2345;">708</div>
+                  <div style="font-size:11px;color:#64748b;font-weight:600;">Total Enrolled (YTD)</div>
+                </div>
+                <div style="text-align:center;padding:10px;background:#f8fafc;border-radius:8px;">
+                  <div style="font-family:'Bebas Neue';font-size:28px;color:#16a34a;">+23%</div>
+                  <div style="font-size:11px;color:#64748b;font-weight:600;">YoY Growth</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue breakdown -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Revenue Breakdown by Course</span></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:100px;font-size:12px;color:#374151;font-weight:600;">IMU-CET</div>
+                <div style="flex:1;"><div class="progress-bar"><div class="progress-fill" style="width:78%;background:#C89B3C;"></div></div></div>
+                <div style="font-size:13px;font-weight:600;color:#0B2345;width:60px;text-align:right;">₹15.8L</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:100px;font-size:12px;color:#374151;font-weight:600;">DNS Prep</div>
+                <div style="flex:1;"><div class="progress-bar"><div class="progress-fill" style="width:55%;background:#2563eb;"></div></div></div>
+                <div style="font-size:13px;font-weight:600;color:#0B2345;width:60px;text-align:right;">₹11.2L</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:100px;font-size:12px;color:#374151;font-weight:600;">Sponsorship</div>
+                <div style="flex:1;"><div class="progress-bar"><div class="progress-fill" style="width:42%;background:#16a34a;"></div></div></div>
+                <div style="font-size:13px;font-weight:600;color:#0B2345;width:60px;text-align:right;">₹8.6L</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:100px;font-size:12px;color:#374151;font-weight:600;">Aptitude</div>
+                <div style="flex:1;"><div class="progress-bar"><div class="progress-fill" style="width:30%;background:#8b5cf6;"></div></div></div>
+                <div style="font-size:13px;font-weight:600;color:#0B2345;width:60px;text-align:right;">₹6.1L</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:100px;font-size:12px;color:#374151;font-weight:600;">Entrance</div>
+                <div style="flex:1;"><div class="progress-bar"><div class="progress-fill" style="width:20%;background:#f59e0b;"></div></div></div>
+                <div style="font-size:13px;font-weight:600;color:#0B2345;width:60px;text-align:right;">₹4.1L</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════ SETTINGS TAB ════════════════════ -->
+      <div id="tab-settings" class="tab-panel">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Settings</div>
+            <div class="page-subtitle">Academy configuration and admin profile</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- Academy Info -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="card">
+              <div class="card-header"><span class="card-title">Academy Information</span></div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Academy Name</label>
+                  <input class="form-input" value="SINDHUPATH Merchant Navy Academy">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Address</label>
+                  <textarea class="form-textarea" rows="2">Marine House, Kochi — 682 001, Kerala, India</textarea>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Contact Number</label>
+                    <input class="form-input" value="+91 98765 43210">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" type="email" value="admin@sindhupath.edu.in">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Website</label>
+                  <input class="form-input" value="https://sindhupath.edu.in">
+                </div>
+                <button class="btn btn-gold" onclick="toast('Academy info saved!','#16a34a')">Save Changes</button>
+              </div>
+            </div>
+
+            <!-- Batch Management -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Batch Management</span>
+                <button class="btn btn-gold btn-sm" onclick="toast('Add batch modal — coming soon','#C89B3C')">+ New Batch</button>
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="data-table">
+                  <thead><tr><th>Batch ID</th><th>Name</th><th>Course</th><th>Start</th><th>Capacity</th><th>Status</th><th>Action</th></tr></thead>
+                  <tbody>
+                    <tr><td>B-A25</td><td>IMU-CET A-2025</td><td>IMU-CET</td><td>Jan 2025</td><td>80</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-ghost btn-xs">Edit</button></td></tr>
+                    <tr><td>B-B25</td><td>DNS Prep B-2025</td><td>DNS</td><td>Feb 2025</td><td>80</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-ghost btn-xs">Edit</button></td></tr>
+                    <tr><td>B-C25</td><td>SPON C-2025</td><td>Sponsorship</td><td>Mar 2025</td><td>60</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-ghost btn-xs">Edit</button></td></tr>
+                    <tr><td>B-D25</td><td>Aptitude D-2025</td><td>Aptitude</td><td>Mar 2025</td><td>80</td><td><span class="badge badge-yellow">Closing</span></td><td><button class="btn btn-ghost btn-xs">Edit</button></td></tr>
+                    <tr><td>B-E25</td><td>Entrance E-2025</td><td>Entrance</td><td>Apr 2025</td><td>60</td><td><span class="badge badge-green">Active</span></td><td><button class="btn btn-ghost btn-xs">Edit</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Profile + Connection Status -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="card">
+              <div class="card-header"><span class="card-title">Admin Profile</span></div>
+              <div class="card-body">
+                <div style="display:flex;justify-content:center;margin-bottom:20px;">
+                  <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#C89B3C,#9E7624);display:flex;align-items:center;justify-content:center;">
+                    <span class="material-symbols-outlined" style="color:#fff;font-size:36px;">person</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Display Name</label>
+                  <input class="form-input" id="settings-name" value="Academy Administrator">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input class="form-input" id="settings-email" type="email" placeholder="admin@sindhupath.edu.in">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">New Password</label>
+                  <input class="form-input" type="password" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Confirm Password</label>
+                  <input class="form-input" type="password" placeholder="Confirm new password">
+                </div>
+                <button class="btn btn-gold" onclick="saveAdminProfile()">Update Profile</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><span class="card-title">Supabase Connection</span></div>
+              <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:13px;color:#374151;">Project URL</span>
+                    <span style="font-size:12px;color:#64748b;font-family:monospace;">lbdunyobsfdwtmdhuapb</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:13px;color:#374151;">Connection Status</span>
+                    <span class="badge badge-green" id="settings-sb-status">Connected</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:13px;color:#374151;">Auth Status</span>
+                    <span class="badge badge-green" id="settings-auth-status">Authenticated</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:13px;color:#374151;">SDK Version</span>
+                    <span style="font-size:12px;color:#64748b;">@supabase/supabase-js@2</span>
+                  </div>
+                </div>
+                <button class="btn btn-outline btn-sm" style="margin-top:14px;width:100%;" onclick="checkSupabaseConn()">
+                  <span class="material-symbols-outlined" style="font-size:14px;">sync</span> Test Connection
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═════════════════════ MODALS ═════════════════════ -->
+
+<!-- ═════════════════════ MODALS ═════════════════════ -->
+
+<!-- Add Student Modal -->
+<div class="modal-overlay" id="modal-add-student" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-student" onclick="if(event.target===this) closeModal('modal-add-student')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-add-student">Add New Student</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-add-student')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input class="form-input" id="s-fname" placeholder="Arjun">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input class="form-input" id="s-lname" placeholder="Sharma">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Roll Number *</label>
+          <input class="form-input" id="s-roll" placeholder="SP-2025-001">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input class="form-input" id="s-dob" type="date">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Course *</label>
+          <select class="form-select" id="s-course">
+            <option>IMU-CET</option>
+            <option>DNS Preparatory</option>
+            <option>Sponsorship Prep</option>
+            <option>Aptitude</option>
+            <option>Entrance Exams</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Batch *</label>
+          <select class="form-select" id="s-batch">
+            <option>A-2025</option><option>B-2025</option><option>C-2025</option><option>D-2025</option><option>E-2025</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Mobile</label>
+          <input class="form-input" id="s-mobile" type="tel" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="s-email" type="email" placeholder="student@email.com">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Fee Status</label>
+          <select class="form-select" id="s-feestatus">
+            <option>Paid</option><option>Partial</option><option>Pending</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Attendance %</label>
+          <input class="form-input" id="s-attendance" type="number" min="0" max="100" placeholder="85">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <textarea class="form-textarea" id="s-address" rows="2" placeholder="Full address…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-student')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveStudent()">
+        <span class="material-symbols-outlined" style="font-size:16px;">save</span> Save Student
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Faculty Modal -->
+<div class="modal-overlay" id="modal-add-faculty" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-faculty" onclick="if(event.target===this) closeModal('modal-add-faculty')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-add-faculty">Add Faculty Member</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-add-faculty')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-input" id="f-name" placeholder="Cmdr. Ravi Kumar">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Employee ID</label>
+          <input class="form-input" id="f-id" placeholder="FAC-2025-001">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Designation *</label>
+          <select class="form-select" id="f-designation">
+            <option>Chief Instructor</option><option>Senior Instructor</option><option>Instructor</option><option>Guest Faculty</option><option>Lab Assistant</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject *</label>
+          <input class="form-input" id="f-subject" placeholder="Nautical Science">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Qualification</label>
+          <input class="form-input" id="f-qual" placeholder="M.Sc Marine Engineering">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Experience (yrs)</label>
+          <input class="form-input" id="f-exp" type="number" placeholder="10">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Mobile</label>
+          <input class="form-input" id="f-mobile" type="tel" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="f-email" type="email" placeholder="faculty@sindhupath.edu.in">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="f-status">
+          <option>Active</option><option>Inactive</option><option>On Leave</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-faculty')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveFaculty()">
+        <span class="material-symbols-outlined" style="font-size:16px;">save</span> Save Faculty
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Course Modal -->
+<div class="modal-overlay" id="modal-add-course" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-course" onclick="if(event.target===this) closeModal('modal-add-course')">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-add-course">Add / Edit Course</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-add-course')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Course Name *</label>
+        <input class="form-input" id="c-name" placeholder="e.g. IMU-CET Preparatory">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <input class="form-input" id="c-duration" placeholder="6 Months">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fee (₹)</label>
+          <input class="form-input" id="c-fee" type="number" placeholder="55000">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Active Batches</label>
+          <input class="form-input" id="c-batches" type="number" placeholder="2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="c-status">
+            <option>Active</option><option>Upcoming</option><option>Discontinued</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="c-desc" rows="3" placeholder="Brief course description…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-course')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveCourse()">Save Course</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Notice Modal -->
+<div class="modal-overlay" id="modal-add-notice" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-notice" onclick="if(event.target===this) closeModal('modal-add-notice')">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-add-notice">Post Notice</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-add-notice')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input class="form-input" id="n-title" placeholder="Notice title…">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="n-cat">
+            <option>General</option><option>Academic</option><option>Exam</option><option>Fee</option><option>Holiday</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-select" id="n-priority">
+            <option>Normal</option><option>High</option><option>Urgent</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Content *</label>
+        <textarea class="form-textarea" id="n-content" rows="4" placeholder="Notice content…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-notice')">Cancel</button>
+      <button class="btn btn-gold" onclick="postNoticeModal()">Publish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Record Payment Modal -->
+<div class="modal-overlay" id="modal-payment" role="dialog" aria-modal="true" aria-labelledby="modal-title-payment" onclick="if(event.target===this) closeModal('modal-payment')">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-payment">Record Payment</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-payment')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Student</label>
+        <input class="form-input" id="pay-student" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input class="form-input" id="pay-amount" type="number" placeholder="10000">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Payment Mode</label>
+          <select class="form-select" id="pay-mode">
+            <option>Cash</option><option>UPI</option><option>NEFT</option><option>Cheque</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-input" id="pay-date" type="date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reference / Receipt No</label>
+        <input class="form-input" id="pay-ref" placeholder="TXN-XXXXXXXX">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-payment')">Cancel</button>
+      <button class="btn btn-gold" onclick="recordPayment()">Record Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile sidebar overlay -->
+<div id="mobile-overlay" onclick="toggleMobileSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;"></div>
+
+<!-- ═════════════════════ SCRIPTS ═════════════════════ -->
+<script>
+'use strict';
+
+// ─── Supabase Configuration & Client Initialization ───
+const SUPABASE_URL = 'https://jqmivbtedttaczkuyxcn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxbWl2YnRlZHR0YWN6a3V5eGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNjM5NTgsImV4cCI6MjEwNjczOTk1OH0.4-5cZBFziRMcaeVEgTTrtwAz99N1EdJpolv2dp3zwzw';
+let sbClient = null;
+
+try {
+  if (window.supabase) {
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (e) {
+  console.warn('Supabase initialization warning:', e);
+}
+
+// ─── Hardcoded fallback data ───
+const FALLBACK_STUDENTS = [
+  { id:1, roll:'SP-2025-001', name:'Arjun Sharma',    course:'IMU-CET',          batch:'A-2025', attendance:88, fees_status:'Paid',    joined:'2025-01-10' },
+  { id:2, roll:'SP-2025-002', name:'Kavitha Menon',   course:'DNS Preparatory',  batch:'B-2025', attendance:92, fees_status:'Paid',    joined:'2025-02-05' },
+  { id:3, roll:'SP-2025-003', name:'Rahul Pillai',    course:'Sponsorship Prep', batch:'C-2025', attendance:76, fees_status:'Partial', joined:'2025-03-01' },
+  { id:4, roll:'SP-2025-004', name:'Sneha Iyer',      course:'Aptitude',         batch:'D-2025', attendance:95, fees_status:'Paid',    joined:'2025-03-15' },
+  { id:5, roll:'SP-2025-005', name:'Vishnu Krishnan', course:'Entrance Exams',   batch:'E-2025', attendance:71, fees_status:'Pending', joined:'2025-04-01' },
+  { id:6, roll:'SP-2025-006', name:'Priya Nair',      course:'IMU-CET',          batch:'A-2025', attendance:89, fees_status:'Paid',    joined:'2025-01-12' },
+  { id:7, roll:'SP-2025-007', name:'Arun Menon',      course:'DNS Preparatory',  batch:'B-2025', attendance:68, fees_status:'Partial', joined:'2025-02-08' },
+  { id:8, roll:'SP-2025-008', name:'Deepa Thomas',    course:'Sponsorship Prep', batch:'C-2025', attendance:84, fees_status:'Paid',    joined:'2025-03-04' },
+  { id:9, roll:'SP-2025-009', name:'Sanjay Varma',    course:'IMU-CET',          batch:'A-2025', attendance:79, fees_status:'Paid',    joined:'2025-01-15' },
+  { id:10,roll:'SP-2025-010', name:'Anjali Singh',    course:'Aptitude',         batch:'D-2025', attendance:91, fees_status:'Paid',    joined:'2025-03-20' },
+  { id:11,roll:'SP-2025-011', name:'Kiran Kumar',     course:'Entrance Exams',   batch:'E-2025', attendance:65, fees_status:'Pending', joined:'2025-04-10' },
+  { id:12,roll:'SP-2025-012', name:'Meera Pillai',    course:'DNS Preparatory',  batch:'B-2025', attendance:86, fees_status:'Paid',    joined:'2025-02-12' },
+];
+
+const FALLBACK_FACULTY = [
+  { id:'FAC-001', name:'Cmdr. Ravi Kumar',   designation:'Chief Instructor', subject:'Nautical Science',    qualification:'M.Sc Nautical Studies', joined:'2020-06-01', status:'Active' },
+  { id:'FAC-002', name:'Capt. Anita Shenoy', designation:'Senior Instructor',subject:'Marine Engineering',  qualification:'B.E Marine Engg',       joined:'2019-03-15', status:'Active' },
+  { id:'FAC-003', name:'Lt. Suresh Pillai',  designation:'Instructor',       subject:'Physics & Maths',     qualification:'M.Sc Physics',          joined:'2021-07-01', status:'Active' },
+  { id:'FAC-004', name:'Dr. Priya Nambiar',  designation:'Instructor',       subject:'English Communication',qualification:'Ph.D English',         joined:'2022-01-10', status:'Active' },
+  { id:'FAC-005', name:'Cmdr. Sanjay Nair',  designation:'Guest Faculty',    subject:'Ship Stability',      qualification:'CoC Unlimited',         joined:'2025-09-01', status:'Active' },
+  { id:'FAC-006', name:'Ms. Rekha Varma',    designation:'Lab Assistant',    subject:'Computer Science',    qualification:'MCA',                   joined:'2023-04-01', status:'On Leave' },
+];
+
+const FALLBACK_ADMISSIONS = [
+  { id:'ADM-001', name:'Arjun Pillai',     course:'DNS Preparatory',  contact:'9876543210', date:'2025-09-25', status:'Pending' },
+  { id:'ADM-002', name:'Swathi Krishnan',  course:'IMU-CET',          contact:'9876543211', date:'2025-09-24', status:'Pending' },
+  { id:'ADM-003', name:'Rohit Sharma',     course:'Sponsorship Prep', contact:'9876543212', date:'2025-09-23', status:'Approved' },
+  { id:'ADM-004', name:'Nisha Thomas',     course:'Aptitude',         contact:'9876543213', date:'2025-09-22', status:'Rejected' },
+  { id:'ADM-005', name:'Aditya Menon',     course:'Entrance Exams',   contact:'9876543214', date:'2025-09-21', status:'Pending' },
+  { id:'ADM-006', name:'Lakshmi Iyer',     course:'IMU-CET',          contact:'9876543215', date:'2025-09-20', status:'Pending' },
+  { id:'ADM-007', name:'Manoj Varma',      course:'DNS Preparatory',  contact:'9876543216', date:'2025-09-19', status:'Approved' },
+  { id:'ADM-008', name:'Divya Rajesh',     course:'Sponsorship Prep', contact:'9876543217', date:'2025-09-18', status:'Pending' },
+];
+
+const FALLBACK_COURSES = [
+  { id:1, name:'IMU-CET Preparatory', duration:'6 Months',  fee:55000, batches:2, enrolled:72, status:'Active',   desc:'Comprehensive preparation for the Indian Maritime University Common Entrance Test covering Maths, Physics, Chemistry, English and General Knowledge.' },
+  { id:2, name:'DNS Preparatory',     duration:'8 Months',  fee:65000, batches:2, enrolled:58, status:'Active',   desc:'Diploma in Nautical Science preparatory course with full syllabus coverage, mock tests, and personal mentorship.' },
+  { id:3, name:'Sponsorship Prep',    duration:'4 Months',  fee:40000, batches:1, enrolled:44, status:'Active',   desc:'Tailored coaching for students targeting shipping company sponsorships. Covers aptitude, group discussions, and interview skills.' },
+  { id:4, name:'Aptitude Training',   duration:'3 Months',  fee:25000, batches:1, enrolled:68, status:'Active',   desc:'Intensive aptitude and reasoning training for maritime entrance exams. Daily practice sessions and performance analytics.' },
+  { id:5, name:'Entrance Exam Crash', duration:'45 Days',   fee:15000, batches:1, enrolled:42, status:'Upcoming', desc:'Fast-track crash course for students appearing in upcoming maritime entrance examinations.' },
+];
+
+const FALLBACK_NOTICES = [
+  { id:1, title:'October 2025 Exam Schedule',     category:'Exam',     priority:'High',   audience:'All',      content:'The October 2025 internal assessment schedule has been published. All students must carry their hall tickets.',  date:'2025-09-27', author:'Admin' },
+  { id:2, title:'Fee Payment Deadline Extended',  category:'Fee',      priority:'Urgent', audience:'Students', content:'Fee payment deadline extended to 5th October 2025. Students with pending fees must clear dues immediately to avoid attendance hold.', date:'2025-09-26', author:'Admin' },
+  { id:3, title:'Nautical Day Celebration',        category:'General',  priority:'Normal', audience:'All',      content:'SINDHUPATH will celebrate Nautical Day on 17th October 2025. All students and faculty are invited. Dress code: Formal.', date:'2025-09-24', author:'Admin' },
+  { id:4, title:'New Batch Registration Open',     category:'Academic', priority:'High',   audience:'All',      content:'Registrations for the January 2026 batch of IMU-CET and DNS Preparatory courses are now open. Apply before 30th October.', date:'2025-09-22', author:'Admin' },
+  { id:5, title:'Library Timings Revised',         category:'General',  priority:'Normal', audience:'All',      content:'Library will now be open from 7:00 AM to 9:00 PM on all working days and 9:00 AM to 5:00 PM on Saturdays.', date:'2025-09-20', author:'Admin' },
+];
+
+const FALLBACK_FEES = [
+  { id:1, student:'Arjun Sharma',    course:'IMU-CET',          total:55000, paid:55000, due_date:'2025-05-01' },
+  { id:2, student:'Kavitha Menon',   course:'DNS Preparatory',  total:65000, paid:65000, due_date:'2025-05-01' },
+  { id:3, student:'Rahul Pillai',    course:'Sponsorship Prep', total:40000, paid:20000, due_date:'2025-09-30' },
+  { id:4, student:'Sneha Iyer',      course:'Aptitude',         total:25000, paid:25000, due_date:'2025-06-01' },
+  { id:5, student:'Vishnu Krishnan', course:'Entrance Exams',   total:15000, paid:0,     due_date:'2025-10-01' },
+  { id:6, student:'Priya Nair',      course:'IMU-CET',          total:55000, paid:55000, due_date:'2025-05-01' },
+  { id:7, student:'Arun Menon',      course:'DNS Preparatory',  total:65000, paid:32500, due_date:'2025-09-30' },
+  { id:8, student:'Deepa Thomas',    course:'Sponsorship Prep', total:40000, paid:40000, due_date:'2025-06-15' },
+];
+
+// ─── App state ───
+let appStudents    = [...FALLBACK_STUDENTS];
+let appFaculty     = [...FALLBACK_FACULTY];
+let appAdmissions  = [...FALLBACK_ADMISSIONS];
+let appCourses     = [...FALLBACK_COURSES];
+let appNotices     = [...FALLBACK_NOTICES];
+let appFees        = [...FALLBACK_FEES];
+let currentAdminEmail = '';
+let currentPayStudent = '';
+let sidebarCollapsed = false;
+
+// ─── Utility: toast ───
+function toast(msg, bg = '#0B2345', dur = 3500) {
+  Toastify({ text: msg, duration: dur, gravity: 'top', position: 'right',
+    style: { background: bg, fontFamily: 'Montserrat', fontSize: '13px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,.2)' }
+  }).showToast();
+}
+
+// ─── Modal helpers ───
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+// ─── Sidebar ───
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  const sb = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebarToggle');
+  sb.classList.toggle('collapsed', sidebarCollapsed);
+  btn.querySelector('span').textContent = sidebarCollapsed ? 'chevron_right' : 'chevron_left';
+}
+function toggleMobileSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('mobile-overlay');
+  const open = sb.classList.toggle('mobile-open');
+  ov.style.display = open ? 'block' : 'none';
+}
+
+// ─── Tab switching ───
+function switchTab(tab, navEl) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  // Lazy-load data
+  if (tab === 'students')    renderStudents();
+  if (tab === 'faculty')     renderFaculty();
+  if (tab === 'admissions')  renderAdmissions();
+  if (tab === 'courses')     renderCourses();
+  if (tab === 'noticeboard') fetchAdminNotices();
+  if (tab === 'fees')        renderFees();
+  if (tab === 'messages')    { loadChatMessages(); selectChatChannel('general'); }
+}
+
+// ─── Admin Auth & Screen Management ───
+function showLogin() {
+  const authScreen = document.getElementById('auth-screen');
+  const app = document.getElementById('app');
+  if (authScreen) authScreen.style.display = 'flex';
+  if (app) app.style.display = 'none';
+  const pwd = document.getElementById('admin-password');
+  if (pwd) pwd.value = '';
+}
+
+function showApp(user) {
+  const authScreen = document.getElementById('auth-screen');
+  const app = document.getElementById('app');
+  if (authScreen) authScreen.style.display = 'none';
+  if (app) app.style.display = 'flex';
+
+  const email = user?.email || currentAdminEmail || 'admin@sindhupath.com';
+  currentAdminEmail = email;
+  const username = email.split('@')[0] || 'Administrator';
+
+  const sidebarName = document.getElementById('sidebar-admin-name');
+  if (sidebarName) sidebarName.textContent = username;
+  const topbarName = document.getElementById('topbar-admin-name');
+  if (topbarName) topbarName.textContent = username;
+  const inputName = document.getElementById('settings-name');
+  if (inputName && !inputName.value) inputName.value = username;
+
+  initApp();
+  fetchAdminNotices();
+}
+
+function showAdminAuthMsg(text, type) {
+  const msg = document.getElementById('admin-auth-msg');
+  if (!msg) return;
+  msg.className = 'mb-4 p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all border ';
+  if (type === 'success') {
+    msg.classList.add('bg-green-500/15', 'text-green-400', 'border-green-500/30');
+  } else if (type === 'error') {
+    msg.classList.add('bg-red-500/15', 'text-red-400', 'border-red-500/30');
+  } else {
+    msg.classList.add('bg-[#C89B3C]/15', 'text-[#C89B3C]', 'border-[#C89B3C]/30');
+  }
+  msg.textContent = text;
+  msg.classList.remove('hidden');
+}
+
+function toggleAdminPassword() {
+  const pwdInput = document.getElementById('admin-password');
+  const btn = document.getElementById('admin-toggle-pwd');
+  if (!pwdInput || !btn) return;
+  const icon = btn.querySelector('.material-symbols-outlined');
+  if (pwdInput.type === 'password') {
+    pwdInput.type = 'text';
+    if (icon) icon.textContent = 'visibility_off';
+  } else {
+    pwdInput.type = 'password';
+    if (icon) icon.textContent = 'visibility';
+  }
+}
+
+async function handleAdminLogin(e) {
+  if (e) e.preventDefault();
+  const emailInput = document.getElementById('admin-email');
+  const passwordInput = document.getElementById('admin-password');
+  const btn = document.getElementById('admin-login-submit-btn');
+
+  const email = emailInput?.value.trim().toLowerCase();
+  const password = passwordInput?.value;
+
+  if (!email || !password) {
+    showAdminAuthMsg('Please enter both email and password.', 'error');
+    return;
+  }
+
+  if (!sbClient) {
+    showAdminAuthMsg('Auth service unavailable. Please refresh and try again.', 'error');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>VERIFYING...</span>';
+  }
+  showAdminAuthMsg('Verifying admin credentials...', 'info');
+
+  try {
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+    if (error || !data?.session) {
+      showAdminAuthMsg('Access Denied: ' + (error?.message || 'Invalid email or password.'), 'error');
+      if (passwordInput) { passwordInput.value = ''; passwordInput.focus(); }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-base">login</span><span>SIGN IN TO PORTAL</span>';
+      }
+      return;
+    }
+
+    showAdminAuthMsg('✓ Access Granted! Entering portal...', 'success');
+    showApp(data.session.user);
+    toast('✓ Welcome to Admin Portal', '#16a34a');
+  } catch (err) {
+    console.error(err);
+    showAdminAuthMsg('Authentication error: ' + (err.message || 'Please try again.'), 'error');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-base">login</span><span>SIGN IN TO PORTAL</span>';
+    }
+  }
+}
+
+async function doLogout() {
+  if (sbClient) {
+    try {
+      await sbClient.auth.signOut();
+    } catch(e) {
+      console.warn('Logout signOut error:', e);
+    }
+  }
+  localStorage.removeItem('sp_admin_email');
+  localStorage.removeItem('sp_cadet_email');
+  localStorage.removeItem('sindhupath_logged_email');
+  showLogin();
+  toast('Signed out from Admin Portal.', '#0B2345');
+}
+
+// ─── Admin Profile Persistence ───
+function saveAdminProfile() {
+  const name = document.getElementById('settings-name')?.value.trim() || 'Administrator';
+  localStorage.setItem('sp_admin_name', name);
+  document.getElementById('sidebar-admin-name').textContent = name;
+  document.getElementById('topbar-admin-name').textContent  = name;
+  toast('Admin profile updated!', '#16a34a');
+}
+
+// ─── Static init (no auth — backend will be wired later) ───
+function initApp() {
+  const savedName = localStorage.getItem('sp_admin_name') || 'Administrator';
+  document.getElementById('sidebar-admin-name').textContent = savedName;
+  document.getElementById('topbar-admin-name').textContent  = savedName;
+  const inputName = document.getElementById('settings-name');
+  if (inputName) inputName.value = savedName;
+  loadAllData();
+  loadChatMessages();
+}
+
+// ─── Load data from Supabase (with fallback) ───
+async function loadAllData() {
+  await Promise.all([
+    loadStudents(), loadFaculty(), loadAdmissions()
+  ]);
+  renderStudents();
+  renderFaculty();
+  renderAdmissions();
+  renderCourses();
+  fetchAdminNotices();
+  renderFees();
+  checkSupabaseConn();
+}
+
+// ─── Data loaders (static — backend will be wired later) ───
+function loadStudents()   { /* uses FALLBACK_STUDENTS */ }
+function loadFaculty()    { /* uses FALLBACK_FACULTY  */ }
+function loadAdmissions() { /* uses FALLBACK_ADMISSIONS */ }
+function loadNotices()    {
+  fetchAdminNotices();
+}
+
+// ─── Supabase connection test ───
+async function checkSupabaseConn() {
+  const dot   = document.getElementById('sb-status-dot');
+  const badge = document.getElementById('sb-status-badge');
+  if (!sbClient) {
+    if (dot)   dot.className   = 'status-dot status-warn';
+    if (badge) { badge.className = 'badge badge-yellow'; badge.textContent = 'Not connected'; }
+    return;
+  }
+  try {
+    const { error } = await sbClient.from('notices').select('id').limit(1);
+    if (!error) {
+      if (dot)   dot.className   = 'status-dot status-online';
+      if (badge) { badge.className = 'badge badge-green'; badge.textContent = 'Connected'; }
+    } else {
+      if (dot)   dot.className   = 'status-dot status-warn';
+      if (badge) { badge.className = 'badge badge-yellow'; badge.textContent = 'Connection Error'; }
+    }
+  } catch(e) {
+    if (dot)   dot.className   = 'status-dot status-warn';
+    if (badge) { badge.className = 'badge badge-yellow'; badge.textContent = 'Offline'; }
+  }
+}
+
+// ─── STUDENTS ───
+function renderStudents(list = null) {
+  const data = list || applyStudentFilters();
+  const tbody = document.getElementById('students-tbody');
+  document.getElementById('student-count').textContent = `Showing ${data.length} students`;
+  tbody.innerHTML = data.length === 0
+    ? '<tr><td colspan="8"><div class="empty-state"><div class="icon">🎓</div><div>No students found.</div></div></td></tr>'
+    : data.map(s => `
+      <tr>
+        <td><span style="font-family:monospace;font-size:12px;color:#64748b;">${s.roll || s.roll_number || '—'}</span></td>
+        <td><strong>${s.name || s.full_name || '—'}</strong></td>
+        <td><span class="tag">${s.course || '—'}</span></td>
+        <td>${s.batch || '—'}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div class="progress-bar" style="width:60px;display:inline-block;">
+              <div class="progress-fill" style="width:${s.attendance||0}%;background:${attColor(s.attendance)};"></div>
+            </div>
+            <span style="font-size:12px;color:${attColor(s.attendance)};">${s.attendance||0}%</span>
+          </div>
+        </td>
+        <td>${feesBadge(s.fees_status || s.fee_status || 'Unknown')}</td>
+        <td style="font-size:12px;color:#94a3b8;">${fmtDate(s.joined || s.created_at)}</td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-ghost btn-xs" onclick="editStudent(${s.id})">Edit</button>
+            <button class="btn btn-danger btn-xs" onclick="deleteStudent(${s.id})">Del</button>
+          </div>
+        </td>
+      </tr>`).join('');
+}
+
+function applyStudentFilters() {
+  const q  = (document.getElementById('student-search')?.value || '').toLowerCase();
+  const c  = document.getElementById('student-filter-course')?.value || '';
+  const fs = document.getElementById('student-filter-status')?.value || '';
+  return appStudents.filter(s => {
+    const name = (s.name || s.full_name || '').toLowerCase();
+    const roll = (s.roll || s.roll_number || '').toLowerCase();
+    if (q && !name.includes(q) && !roll.includes(q)) return false;
+    if (c && s.course !== c) return false;
+    if (fs && (s.fees_status || s.fee_status) !== fs) return false;
+    return true;
+  });
+}
+function filterStudents() { renderStudents(); }
+
+function attColor(a) {
+  if (!a) return '#94a3b8';
+  if (a >= 85) return '#16a34a';
+  if (a >= 70) return '#f59e0b';
+  return '#dc2626';
+}
+function feesBadge(s) {
+  const m = { Paid:'badge-green', Partial:'badge-yellow', Pending:'badge-red' };
+  return `<span class="badge ${m[s]||'badge-gray'}">${s}</span>`;
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+  catch{ return d; }
+}
+
+async function saveStudent() {
+  const fname = document.getElementById('s-fname').value.trim();
+  const lname = document.getElementById('s-lname').value.trim();
+  if (!fname || !lname) { toast('Please fill required fields','#dc2626'); return; }
+  const newStudent = {
+    id: Date.now(),
+    roll: document.getElementById('s-roll').value.trim() || `SP-2025-${String(appStudents.length+1).padStart(3,'0')}`,
+    name: `${fname} ${lname}`,
+    course: document.getElementById('s-course').value,
+    batch: document.getElementById('s-batch').value,
+    attendance: parseInt(document.getElementById('s-attendance').value) || 80,
+    fees_status: document.getElementById('s-feestatus').value,
+    joined: new Date().toISOString().split('T')[0],
+  };
+  // (Supabase insert will be added when backend is ready)
+  appStudents.unshift(newStudent);
+  renderStudents();
+  closeModal('modal-add-student');
+  toast(`✓ Student "${newStudent.name}" added!`, '#16a34a');
+  // Reset form
+  ['s-fname','s-lname','s-roll','s-attendance','s-mobile','s-email','s-address'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+}
+
+function editStudent(id) {
+  toast('Edit mode — open student detail view', '#C89B3C');
+}
+function deleteStudent(id) {
+  if (!confirm('Delete this student record?')) return;
+  appStudents = appStudents.filter(s => s.id !== id);
+  renderStudents();
+  toast('Student removed', '#dc2626');
+}
+
+function exportCSV(type) {
+  let rows, headers;
+  if (type === 'students') {
+    headers = ['Roll No','Name','Course','Batch','Attendance %','Fee Status','Joined'];
+    rows = appStudents.map(s => [s.roll||s.roll_number,s.name||s.full_name,s.course,s.batch,s.attendance,s.fees_status||s.fee_status,s.joined||s.created_at]);
+  }
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `sindhupath_${type}_${Date.now()}.csv`;
+  a.click();
+  toast('CSV exported!', '#16a34a');
+}
+
+// ─── FACULTY ───
+function renderFaculty(list = null) {
+  const data = list || applyFacultyFilters();
+  const tbody = document.getElementById('faculty-tbody');
+  tbody.innerHTML = data.length === 0
+    ? '<tr><td colspan="8"><div class="empty-state"><div class="icon">👥</div><div>No faculty found.</div></div></td></tr>'
+    : data.map(f => `
+      <tr>
+        <td><span style="font-family:monospace;font-size:12px;color:#64748b;">${f.id||'—'}</span></td>
+        <td><strong>${f.name||f.full_name||'—'}</strong></td>
+        <td>${f.designation||'—'}</td>
+        <td><span class="tag tag-gold">${f.subject||'—'}</span></td>
+        <td style="font-size:12px;color:#64748b;">${f.qualification||'—'}</td>
+        <td style="font-size:12px;color:#94a3b8;">${fmtDate(f.joined||f.created_at)}</td>
+        <td>${facultyStatusBadge(f.status)}</td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-ghost btn-xs" onclick="toast('Edit faculty — coming soon','#C89B3C')">Edit</button>
+            <button class="btn btn-danger btn-xs" onclick="deleteFaculty(${JSON.stringify(f.id)})">Del</button>
+          </div>
+        </td>
+      </tr>`).join('');
+}
+function applyFacultyFilters() {
+  const q = (document.getElementById('faculty-search')?.value||'').toLowerCase();
+  if (!q) return appFaculty;
+  return appFaculty.filter(f => (f.name||f.full_name||'').toLowerCase().includes(q) || (f.subject||'').toLowerCase().includes(q));
+}
+function filterFaculty() { renderFaculty(); }
+function facultyStatusBadge(s) {
+  const m = { Active:'badge-green','On Leave':'badge-yellow', Inactive:'badge-gray' };
+  return `<span class="badge ${m[s]||'badge-gray'}">${s||'Unknown'}</span>`;
+}
+function deleteFaculty(id) {
+  if (!confirm('Remove this faculty member?')) return;
+  appFaculty = appFaculty.filter(f => f.id !== id);
+  renderFaculty();
+  toast('Faculty removed', '#dc2626');
+}
+
+async function saveFaculty() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('Please enter faculty name','#dc2626'); return; }
+  const newF = {
+    id: `FAC-${String(Date.now()).slice(-4)}`,
+    name,
+    designation: document.getElementById('f-designation').value,
+    subject:     document.getElementById('f-subject').value,
+    qualification: document.getElementById('f-qual').value,
+    joined:      new Date().toISOString().split('T')[0],
+    status:      document.getElementById('f-status').value,
+  };
+  appFaculty.unshift(newF);
+  renderFaculty();
+  closeModal('modal-add-faculty');
+  toast(`✓ Faculty "${name}" added!`,'#16a34a');
+}
+
+// ─── ADMISSIONS ───
+function renderAdmissions(list = null) {
+  const data = list || applyAdmFilter();
+  document.getElementById('pending-count').textContent = `${data.filter(a=>a.status==='Pending').length} Pending`;
+  const tbody = document.getElementById('admissions-tbody');
+  tbody.innerHTML = data.length === 0
+    ? '<tr><td colspan="7"><div class="empty-state"><div class="icon">📋</div><div>No admissions found.</div></div></td></tr>'
+    : data.map(a => `
+      <tr>
+        <td><span style="font-family:monospace;font-size:12px;color:#64748b;">${a.id||'—'}</span></td>
+        <td><strong>${a.name||a.full_name||'—'}</strong></td>
+        <td><span class="tag">${a.course||a.course_applied||'—'}</span></td>
+        <td style="font-size:12px;">${a.contact||a.mobile||'—'}</td>
+        <td style="font-size:12px;color:#94a3b8;">${fmtDate(a.date||a.created_at)}</td>
+        <td>${admStatusBadge(a.status)}</td>
+        <td>
+          <div style="display:flex;gap:4px;">
+            ${a.status==='Pending' ? `
+              <button class="btn btn-success btn-xs" onclick="updateAdmission(${JSON.stringify(a.id)},'Approved')">Approve</button>
+              <button class="btn btn-danger btn-xs"  onclick="updateAdmission(${JSON.stringify(a.id)},'Rejected')">Reject</button>
+            ` : `<span style="font-size:12px;color:#94a3b8;">${a.status}</span>`}
+          </div>
+        </td>
+      </tr>`).join('');
+}
+function applyAdmFilter() {
+  const f = document.getElementById('adm-filter')?.value||'';
+  return f ? appAdmissions.filter(a=>a.status===f) : appAdmissions;
+}
+function filterAdmissions() { renderAdmissions(); }
+function admStatusBadge(s) {
+  const m = { Pending:'badge-yellow', Approved:'badge-green', Rejected:'badge-red' };
+  return `<span class="badge ${m[s]||'badge-gray'}">${s||'—'}</span>`;
+}
+async function updateAdmission(id, status) {
+  appAdmissions = appAdmissions.map(a => a.id===id ? {...a,status} : a);
+  // (Supabase update will be added when backend is ready)
+  renderAdmissions();
+  toast(`Admission ${status.toLowerCase()}!`, status==='Approved'?'#16a34a':'#dc2626');
+}
+
+// ─── COURSES ───
+function renderCourses() {
+  const grid = document.getElementById('courses-grid');
+  grid.innerHTML = appCourses.map(c => `
+    <div class="card" style="overflow:visible;">
+      <div style="padding:20px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+          <div>
+            <div style="font-family:'Oswald';font-size:17px;font-weight:600;color:#0B2345;">${c.name}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px;">${c.duration} · ${c.batches} Active Batch${c.batches>1?'es':''}</div>
+          </div>
+          <span class="badge ${c.status==='Active'?'badge-green':c.status==='Upcoming'?'badge-yellow':'badge-gray'}">${c.status}</span>
+        </div>
+        <div style="font-size:13px;color:#475569;line-height:1.6;margin-bottom:14px;">${c.desc}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:#f8fafc;border-radius:8px;margin-bottom:12px;">
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue';font-size:22px;color:#C89B3C;">₹${(c.fee/1000).toFixed(0)}K</div>
+            <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;">Course Fee</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue';font-size:22px;color:#0B2345;">${c.enrolled||0}</div>
+            <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;">Enrolled</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue';font-size:22px;color:#0B2345;">${c.batches}</div>
+            <div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;">Batches</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-gold btn-sm" style="flex:1;" onclick="editCourse(${c.id})">Edit Course</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})">
+            <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function editCourse(id) {
+  const c = appCourses.find(x=>x.id===id);
+  if (!c) return;
+  document.getElementById('c-name').value = c.name;
+  document.getElementById('c-duration').value = c.duration;
+  document.getElementById('c-fee').value = c.fee;
+  document.getElementById('c-batches').value = c.batches;
+  document.getElementById('c-desc').value = c.desc;
+  openModal('modal-add-course');
+}
+function saveCourse() {
+  const name = document.getElementById('c-name').value.trim();
+  if (!name) { toast('Course name required','#dc2626'); return; }
+  const existing = appCourses.find(c=>c.name===name);
+  if (existing) {
+    existing.duration = document.getElementById('c-duration').value;
+    existing.fee      = parseInt(document.getElementById('c-fee').value)||0;
+    existing.batches  = parseInt(document.getElementById('c-batches').value)||1;
+    existing.desc     = document.getElementById('c-desc').value;
+    existing.status   = document.getElementById('c-status').value;
+    toast('Course updated!','#16a34a');
+  } else {
+    appCourses.push({ id:Date.now(), name, duration:document.getElementById('c-duration').value, fee:parseInt(document.getElementById('c-fee').value)||0, batches:parseInt(document.getElementById('c-batches').value)||1, enrolled:0, status:document.getElementById('c-status').value, desc:document.getElementById('c-desc').value });
+    toast('Course added!','#16a34a');
+  }
+  renderCourses();
+  closeModal('modal-add-course');
+}
+function deleteCourse(id) {
+  if (!confirm('Delete this course?')) return;
+  appCourses = appCourses.filter(c=>c.id!==id);
+  renderCourses();
+  toast('Course deleted','#dc2626');
+}
+
+// ─── NOTICE BOARD & BULLETIN MANAGER (SUPABASE INTEGRATED) ───
+function showNoticeStatus(text, type) {
+  const banner = document.getElementById('notice-status-banner');
+  const textEl = document.getElementById('notice-status-text');
+  if (!banner || !textEl) {
+    toast(text, type === 'error' ? '#dc2626' : (type === 'success' ? '#16a34a' : '#0B2345'));
+    return;
+  }
+  banner.style.display = 'flex';
+  banner.className = 'mb-4 p-3 rounded-lg text-xs font-semibold flex items-center justify-between border ';
+  if (type === 'success') {
+    banner.style.background = '#dcfce7';
+    banner.style.color = '#15803d';
+    banner.style.borderColor = '#86efac';
+  } else if (type === 'error') {
+    banner.style.background = '#fee2e2';
+    banner.style.color = '#b91c1c';
+    banner.style.borderColor = '#fca5a5';
+  } else {
+    banner.style.background = '#fef9c3';
+    banner.style.color = '#854d0e';
+    banner.style.borderColor = '#fde047';
+  }
+  textEl.textContent = text;
+}
+
+function hideNoticeStatus() {
+  const banner = document.getElementById('notice-status-banner');
+  if (banner) banner.style.display = 'none';
+}
+
+function handlePosterFileSelect(input) {
+  const file = input && input.files && input.files[0];
+  const label = document.getElementById('upload-file-label');
+  if (file && label) {
+    label.textContent = 'Selected: ' + file.name;
+    const urlInput = document.getElementById('admin-url-input');
+    if (urlInput) urlInput.value = '';
+  }
+}
+
+async function uploadPoster() {
+  const fileInput = document.getElementById('admin-file-input');
+  const file = fileInput && fileInput.files && fileInput.files[0];
+  const urlInput = document.getElementById('admin-url-input');
+  const urlValue = urlInput ? urlInput.value.trim() : '';
+  const uploadLabel = document.getElementById('upload-file-label');
+
+  if (!file && !urlValue) {
+    showNoticeStatus('Please select an image file or enter an image URL.', 'error');
+    return;
+  }
+  if (!sbClient) {
+    showNoticeStatus('Supabase connection unavailable.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('admin-upload-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading to Supabase...</span>';
+  }
+
+  try {
+    let finalUrl = urlValue;
+
+    if (file) {
+      const fileName = 'poster_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const { error: upErr } = await sbClient.storage.from('posters').upload(fileName, file, { cacheControl: '3600', upsert: true });
+      if (upErr) throw upErr;
+      const { data: pub } = sbClient.storage.from('posters').getPublicUrl(fileName);
+      finalUrl = pub.publicUrl;
+    }
+
+    const { error: dbErr } = await sbClient.from('notices').insert([{
+      title: file ? file.name : 'Notice Banner',
+      image_url: finalUrl
+    }]);
+
+    if (dbErr) throw dbErr;
+
+    showNoticeStatus('Poster uploaded & published live to website!', 'success');
+    toast('✓ Poster uploaded & published live!', '#16a34a');
+    if (fileInput) fileInput.value = '';
+    if (uploadLabel) uploadLabel.textContent = 'Click to select poster image';
+    if (urlInput) urlInput.value = '';
+    fetchAdminNotices();
+  } catch (err) {
+    console.error(err);
+    showNoticeStatus('Upload Error: ' + (err.message || 'Check Supabase permissions'), 'error');
+    toast('Upload Error: ' + (err.message || 'Failed'), '#dc2626');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-base">publish</span><span>Upload &amp; Publish to Supabase</span>';
+    }
+  }
+}
+
+async function handleAddNews(e) {
+  if (e) e.preventDefault();
+  const badge = document.getElementById('news-badge-input')?.value || '📌 Notice';
+  const title = document.getElementById('news-title-input')?.value.trim();
+  const desc = document.getElementById('news-desc-input')?.value.trim();
+
+  if (!title || !desc) {
+    showNoticeStatus('Please fill in headline and body.', 'error');
+    return;
+  }
+
+  if (!sbClient) {
+    showNoticeStatus('Supabase connection unavailable.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('admin-news-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Publishing...</span>';
+  }
+
+  try {
+    const bulletinTitle = 'BULLETIN: [' + badge + '] ' + title;
+    const { error } = await sbClient.from('notices').insert([{
+      title: bulletinTitle,
+      image_url: desc
+    }]);
+
+    if (error) throw error;
+
+    document.getElementById('add-news-form')?.reset();
+    showNoticeStatus('Bulletin news item published live to Supabase!', 'success');
+    toast('✓ Bulletin news published live!', '#16a34a');
+    fetchAdminNotices();
+  } catch(err) {
+    console.error(err);
+    showNoticeStatus('Bulletin Publish Error: ' + err.message, 'error');
+    toast('Publish Error: ' + err.message, '#dc2626');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-base">post_add</span><span>Publish Bulletin Item</span>';
+    }
+  }
+}
+
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+async function fetchAdminNotices() {
+  const postersListEl = document.getElementById('admin-notices-list');
+  const bulletinsListEl = document.getElementById('admin-bulletins-list');
+  const countEl = document.getElementById('notice-count');
+  const bulletinCountEl = document.getElementById('bulletin-count');
+  const refreshIcon = document.getElementById('refresh-icon');
+
+  if (refreshIcon) refreshIcon.classList.add('animate-spin');
+  if (postersListEl) postersListEl.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:24px 0;">Loading posters from Supabase...</p>';
+  if (bulletinsListEl) bulletinsListEl.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:24px 0;">Loading bulletins from Supabase...</p>';
+
+  if (!sbClient) {
+    if (postersListEl) postersListEl.innerHTML = '<p style="font-size:12px;color:#dc2626;text-align:center;padding:16px 0;">Supabase connection offline.</p>';
+    if (bulletinsListEl) bulletinsListEl.innerHTML = '<p style="font-size:12px;color:#dc2626;text-align:center;padding:16px 0;">Supabase connection offline.</p>';
+    if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+    return;
+  }
+
+  try {
+    const { data, error } = await sbClient.from('notices').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+
+    const posters = [];
+    const bulletins = [];
+
+    if (data && data.length > 0) {
+      data.forEach(item => {
+        if (item.title && item.title.startsWith('BULLETIN:')) {
+          bulletins.push(item);
+        } else {
+          posters.push(item);
+        }
+      });
+    }
+
+    if (countEl) countEl.textContent = posters.length;
+    if (bulletinCountEl) bulletinCountEl.textContent = bulletins.length;
+
+    // Render Poster Banners List
+    if (postersListEl) {
+      if (posters.length === 0) {
+        postersListEl.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:24px 0;">No poster banners uploaded yet. Use the upload card above!</p>';
+      } else {
+        postersListEl.innerHTML = posters.map(item => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;min-width:0;flex-grow:1;">
+              <img src="${escapeHTML(item.image_url)}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1;background:#fff;flex-shrink:0;" alt="Poster" onerror="this.src='https://placehold.co/48x48?text=Image';" />
+              <div style="min-width:0;">
+                <p style="font-size:12px;font-weight:700;color:#0B2345;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(item.title || 'Notice Banner')}</p>
+                <p style="font-size:10px;color:#64748b;margin:2px 0 0;">${new Date(item.created_at).toLocaleString()}</p>
+                <a href="${escapeHTML(item.image_url)}" target="_blank" style="font-size:10px;color:#C89B3C;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">View Image ↗</a>
+              </div>
+            </div>
+            <button onclick="deleteNoticeItem('${item.id}')" class="btn btn-danger btn-xs" style="flex-shrink:0;" title="Delete Poster">
+              <span class="material-symbols-outlined" style="font-size:13px;">delete</span> Delete
+            </button>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Render News Bulletins List
+    if (bulletinsListEl) {
+      if (bulletins.length === 0) {
+        bulletinsListEl.innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:24px 0;">No text bulletins published yet.</p>';
+      } else {
+        bulletinsListEl.innerHTML = bulletins.map(item => {
+          let badge = 'Notice';
+          let titleText = item.title.replace('BULLETIN:', '').trim();
+          if (titleText.startsWith('[')) {
+            const parts = titleText.split(']');
+            badge = parts[0].replace('[', '').trim();
+            titleText = parts.slice(1).join(']').trim();
+          }
+          return `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;gap:12px;">
+              <div style="min-width:0;flex-grow:1;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                  <span class="tag tag-gold" style="font-size:9px;">${escapeHTML(badge)}</span>
+                  <span style="font-size:10px;color:#64748b;">${new Date(item.created_at).toLocaleDateString()}</span>
+                </div>
+                <p style="font-size:12px;font-weight:700;color:#0B2345;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(titleText)}</p>
+                <p style="font-size:11px;color:#475569;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(item.image_url)}</p>
+              </div>
+              <button onclick="deleteNoticeItem('${item.id}')" class="btn btn-danger btn-xs" style="flex-shrink:0;" title="Delete Bulletin">
+                <span class="material-symbols-outlined" style="font-size:13px;">delete</span> Delete
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+  } catch (err) {
+    console.error('Fetch notices error:', err);
+    if (postersListEl) postersListEl.innerHTML = '<p style="font-size:12px;color:#dc2626;text-align:center;padding:16px 0;">Failed to load: ' + escapeHTML(err.message) + '</p>';
+  } finally {
+    if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+  }
+}
+
+async function deleteNoticeItem(id) {
+  if (!confirm('Are you sure you want to delete this notice/bulletin from the website?')) return;
+  if (!sbClient) {
+    toast('Supabase not connected', '#dc2626');
+    return;
+  }
+
+  try {
+    const { data: item } = await sbClient.from('notices').select('image_url').eq('id', id).single();
+    if (item && item.image_url && item.image_url.includes('/storage/v1/object/public/posters/')) {
+      const fileName = decodeURIComponent(item.image_url.split('/storage/v1/object/public/posters/')[1]);
+      if (fileName) {
+        await sbClient.storage.from('posters').remove([fileName]).catch(e => console.warn('Storage cleanup:', e));
+      }
+    }
+
+    const { error } = await sbClient.from('notices').delete().eq('id', id);
+    if (error) throw error;
+    showNoticeStatus('Notice deleted successfully from database & storage.', 'success');
+    toast('✓ Notice deleted successfully', '#16a34a');
+    fetchAdminNotices();
+  } catch (err) {
+    console.error('Delete notice error:', err);
+    showNoticeStatus('Delete Error: ' + err.message, 'error');
+    toast('Delete Error: ' + err.message, '#dc2626');
+  }
+}
+
+async function postNoticeModal() {
+  const title = document.getElementById('n-title').value.trim();
+  const content = document.getElementById('n-content').value.trim();
+  if (!title || !content) { toast('Title and content are required', '#dc2626'); return; }
+  const cat = document.getElementById('n-cat').value;
+
+  if (sbClient) {
+    try {
+      const { error } = await sbClient.from('notices').insert([{
+        title: 'BULLETIN: [📌 ' + cat + '] ' + title,
+        image_url: content
+      }]);
+      if (error) throw error;
+      toast('✓ Notice published live to Supabase!', '#16a34a');
+      closeModal('modal-add-notice');
+      fetchAdminNotices();
+      return;
+    } catch(err) {
+      console.warn('Modal notice insert error:', err);
+    }
+  }
+
+  // Fallback
+  const n = { id:Date.now(), title, content, category:cat, priority:document.getElementById('n-priority').value, audience:'All', date:new Date().toISOString().split('T')[0], author:'Admin' };
+  appNotices.unshift(n);
+  closeModal('modal-add-notice');
+  toast('✓ Notice published!', '#16a34a');
+}
+
+function priorityTag(p) {
+  if (p==='Urgent') return `<span class="tag tag-red">URGENT</span>`;
+  if (p==='High')   return `<span class="tag" style="background:#fef9c3;color:#a16207;">HIGH</span>`;
+  return '';
+}
+
+// ─── ADMIN LIVE CHAT MODULE ───
+const LS_CHAT_MESSAGES = 'sp_portal_chat_messages_v1';
+let activeChatChannelId = 'general';
+let chatSearchFilter = '';
+
+const CHANNELS_LIST = [
+  { id: 'general', name: 'General Discussion', type: 'channel', icon: 'forum', badge: 'Academy All', desc: 'Academy-wide chat for all cadets, faculty & admin' },
+  { id: 'batch-a', name: 'Batch A (IMU-CET)', type: 'channel', icon: 'groups', badge: 'Batch A', desc: 'Discussion for Batch A cadets & faculty' },
+  { id: 'batch-b', name: 'Batch B (DNS Prep)', type: 'channel', icon: 'groups', badge: 'Batch B', desc: 'Discussion for Batch B cadets & faculty' },
+  { id: 'batch-c', name: 'Batch C (Sponsorship)', type: 'channel', icon: 'groups', badge: 'Batch C', desc: 'Discussion for Batch C cadets & faculty' },
+  { id: 'dm-sharma', name: 'Capt. R. Sharma', type: 'dm', icon: 'person', role: 'Faculty', title: 'Senior Lecturer · Math/Physics', online: true },
+  { id: 'dm-pillai', name: 'Capt. Arun Pillai', type: 'dm', icon: 'person', role: 'Faculty', title: 'Master Mariner · Seamanship', online: true },
+  { id: 'dm-arjun', name: 'Arjun Sharma', type: 'dm', icon: 'person', role: 'Cadet', title: 'Batch A Student', online: true },
+  { id: 'dm-kavitha', name: 'Kavitha Menon', type: 'dm', icon: 'person', role: 'Cadet', title: 'Batch B Student', online: true }
+];
+
+const SEED_CHAT_MESSAGES = [
+  {
+    id: 1,
+    channelId: 'general',
+    senderName: 'Capt. R. Sharma',
+    senderRole: 'Faculty',
+    avatarBg: '#0B2345',
+    text: 'Welcome Cadets to the Sindhupath Live Chat! Feel free to ask your doubts or queries here.',
+    timestamp: '09:00 AM'
+  },
+  {
+    id: 2,
+    channelId: 'general',
+    senderName: 'Arjun Sharma',
+    senderRole: 'Cadet',
+    avatarBg: '#C89B3C',
+    text: 'Good morning Captain! Will the mock test series 5 syllabus include Spherical Trigonometry?',
+    timestamp: '09:05 AM'
+  },
+  {
+    id: 3,
+    channelId: 'general',
+    senderName: 'Administrator',
+    senderRole: 'Admin',
+    avatarBg: '#0B2345',
+    text: 'Notice: Morning assembly is scheduled for tomorrow 0800 hrs. All students must attend.',
+    timestamp: '09:12 AM'
+  }
+];
+
+let appChatMessages = [];
+
+function loadChatMessages() {
+  try {
+    const raw = localStorage.getItem(LS_CHAT_MESSAGES);
+    if (raw) {
+      appChatMessages = JSON.parse(raw);
+    } else {
+      appChatMessages = [...SEED_CHAT_MESSAGES];
+      localStorage.setItem(LS_CHAT_MESSAGES, JSON.stringify(appChatMessages));
+    }
+  } catch(e) {
+    appChatMessages = [...SEED_CHAT_MESSAGES];
+  }
+}
+
+window.addEventListener('storage', (e) => {
+  if (e.key === LS_CHAT_MESSAGES) {
+    loadChatMessages();
+    renderChatMessages();
+    renderChatChannelsList();
+  }
+  if (e.key === 'sp_notices') {
+    loadNotices();
+    renderNotices();
+  }
+});
+
+function selectChatChannel(id) {
+  activeChatChannelId = id;
+  const channel = CHANNELS_LIST.find(c => c.id === id) || CHANNELS_LIST[0];
+  const titleEl = document.getElementById('chat-active-title');
+  const subEl   = document.getElementById('chat-active-sub');
+  const avatarEl = document.getElementById('chat-header-avatar');
+  if (titleEl) titleEl.textContent = channel.name;
+  if (subEl)   subEl.textContent = channel.desc || (channel.role ? channel.role + ' · ' + channel.title : 'Active Channel');
+  if (avatarEl) {
+    if (channel.type === 'dm') {
+      avatarEl.innerHTML = `<span style="font-weight:700;color:#fff;">${channel.name.charAt(0)}</span>`;
+      avatarEl.style.background = channel.role === 'Faculty' ? '#0B2345' : '#C89B3C';
+    } else {
+      avatarEl.innerHTML = `<span class="material-symbols-outlined" style="color:#C89B3C;">${channel.icon || 'forum'}</span>`;
+      avatarEl.style.background = '#0B2345';
+    }
+  }
+  renderChatChannelsList();
+  renderChatMessages();
+}
+
+function filterChatChannels() {
+  chatSearchFilter = (document.getElementById('chat-search')?.value || '').toLowerCase();
+  renderChatChannelsList();
+}
+
+function renderChatChannelsList() {
+  const container = document.getElementById('chat-channels-list');
+  if (!container) return;
+  const filtered = CHANNELS_LIST.filter(c => !chatSearchFilter || c.name.toLowerCase().includes(chatSearchFilter) || (c.title && c.title.toLowerCase().includes(chatSearchFilter)));
+  let html = '';
+  const channels = filtered.filter(c => c.type === 'channel');
+  if (channels.length > 0) {
+    html += `<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;padding:8px 8px 4px;">Group Channels</div>`;
+    channels.forEach(c => {
+      const active = c.id === activeChatChannelId;
+      html += `
+        <div onclick="selectChatChannel('${c.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;background:${active?'#0B2345':'transparent'};color:${active?'#fff':'#334155'};">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+            <span class="material-symbols-outlined" style="font-size:18px;color:${active?'#C89B3C':'#64748b'};">${c.icon}</span>
+            <span style="font-size:12px;font-weight:${active?'700':'500'};">${c.name}</span>
+          </div>
+          ${c.badge ? `<span class="badge ${active?'badge-gold':'badge-gray'}">${c.badge}</span>` : ''}
+        </div>`;
+    });
+  }
+  const dms = filtered.filter(c => c.type === 'dm');
+  if (dms.length > 0) {
+    html += `<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;padding:12px 8px 4px;">Direct Messages</div>`;
+    dms.forEach(c => {
+      const active = c.id === activeChatChannelId;
+      const badgeColor = c.role === 'Faculty' ? 'badge-blue' : 'badge-gold';
+      html += `
+        <div onclick="selectChatChannel('${c.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;background:${active?'#0B2345':'transparent'};color:${active?'#fff':'#334155'};">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+            <div style="width:24px;height:24px;border-radius:50%;background:${c.role==='Faculty'?'#0B2345':'#C89B3C'};color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${c.name.charAt(0)}</div>
+            <div style="min-width:0;">
+              <div style="font-size:12px;font-weight:${active?'700':'500'};">${c.name}</div>
+            </div>
+          </div>
+          <span class="badge ${badgeColor}">${c.role}</span>
+        </div>`;
+    });
+  }
+  container.innerHTML = html || `<p style="font-size:12px;color:#64748b;padding:10px;">No channels found.</p>`;
+}
+
+function renderChatMessages() {
+  const container = document.getElementById('chat-messages-container');
+  if (!container) return;
+  const currentUserName = localStorage.getItem('sp_admin_name') || 'Administrator';
+  const channelMessages = appChatMessages.filter(m => m.channelId === activeChatChannelId);
+  if (channelMessages.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:#64748b;font-size:13px;">No messages in this channel yet. Type below to start conversation!</div>`;
+    return;
+  }
+  container.innerHTML = channelMessages.map(m => {
+    const isMe = m.senderName === currentUserName || m.senderRole === 'Admin';
+    const roleBadge = m.senderRole === 'Admin' ? 'badge-red' : (m.senderRole === 'Faculty' ? 'badge-blue' : 'badge-gold');
+    return `
+      <div style="display:flex;gap:10px;align-items:flex-start;${isMe?'flex-direction:row-reverse':''}">
+        <div style="width:32px;height:32px;border-radius:50%;background:${m.senderRole==='Admin'?'#0B2345':(m.senderRole==='Faculty'?'#0B2345':'#C89B3C')};color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          ${m.senderName.charAt(0)}
+        </div>
+        <div style="max-width:70%;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;${isMe?'justify-content:flex-end':''}">
+            <span style="font-size:11px;font-weight:700;color:#0B2345;">${m.senderName}</span>
+            <span class="badge ${roleBadge}" style="font-size:9px;">${m.senderRole}</span>
+            <span style="font-size:10px;color:#64748b;">${m.timestamp}</span>
+          </div>
+          <div style="padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;${isMe?'background:#0B2345;color:#fff;border-top-right-radius:2px;':'background:#fff;color:#1e293b;border:1px solid #e2e8f0;border-top-left-radius:2px;'}">
+            ${m.text}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function handleSendChatMessage(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('chat-input-text');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  const currentUserName = localStorage.getItem('sp_admin_name') || 'Administrator';
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const newMsg = {
+    id: Date.now(),
+    channelId: activeChatChannelId,
+    senderName: currentUserName,
+    senderRole: 'Admin',
+    text: text,
+    timestamp: timeStr
+  };
+  appChatMessages.push(newMsg);
+  try { localStorage.setItem(LS_CHAT_MESSAGES, JSON.stringify(appChatMessages)); } catch(err){}
+  input.value = '';
+  renderChatMessages();
+  toast('Message sent!', '#16a34a');
+}
+
+function sendQuickReply(txt) {
+  const input = document.getElementById('chat-input-text');
+  if (input) {
+    input.value = txt;
+    handleSendChatMessage();
+  }
+}
+
+function resetChatMessages() {
+  if (!confirm('Reset chat to sample messages?')) return;
+  appChatMessages = [...SEED_CHAT_MESSAGES];
+  try { localStorage.setItem(LS_CHAT_MESSAGES, JSON.stringify(appChatMessages)); } catch(err){}
+  renderChatMessages();
+  toast('Chat reset.', '#C89B3C');
+}
+
+// ─── FEES ───
+function renderFees(list = null) {
+  const data = list || applyFeeFilter();
+  const tbody = document.getElementById('fees-tbody');
+  tbody.innerHTML = data.length === 0
+    ? '<tr><td colspan="7"><div class="empty-state"><div class="icon">💳</div><div>No fee records.</div></div></td></tr>'
+    : data.map(f => {
+        const balance = f.total - f.paid;
+        const isOverdue = balance > 0 && new Date(f.due_date) < new Date();
+        return `
+        <tr>
+          <td><strong>${f.student}</strong></td>
+          <td><span class="tag">${f.course}</span></td>
+          <td>₹${f.total.toLocaleString()}</td>
+          <td style="color:#16a34a;font-weight:600;">₹${f.paid.toLocaleString()}</td>
+          <td style="color:${balance>0?(isOverdue?'#dc2626':'#f59e0b'):'#16a34a'};font-weight:600;">₹${balance.toLocaleString()}</td>
+          <td style="font-size:12px;color:${isOverdue?'#dc2626':'#64748b'};">${fmtDate(f.due_date)}${isOverdue?' ⚠':''}</td>
+          <td>
+            ${balance > 0
+              ? `<button class="btn btn-gold btn-xs" onclick="openPayment('${f.student}')">Pay</button>`
+              : `<span class="badge badge-green">Cleared</span>`}
+          </td>
+        </tr>`;
+      }).join('');
+}
+function applyFeeFilter() {
+  const q = (document.getElementById('fee-search')?.value||'').toLowerCase();
+  if (!q) return appFees;
+  return appFees.filter(f=>f.student.toLowerCase().includes(q)||f.course.toLowerCase().includes(q));
+}
+function filterFees() { renderFees(); }
+function openPayment(studentName) {
+  currentPayStudent = studentName;
+  document.getElementById('pay-student').value = studentName;
+  document.getElementById('pay-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-ref').value = '';
+  openModal('modal-payment');
+}
+function recordPayment() {
+  const amount = parseInt(document.getElementById('pay-amount').value)||0;
+  if (!amount) { toast('Enter a valid amount','#dc2626'); return; }
+  appFees = appFees.map(f => {
+    if (f.student === currentPayStudent) {
+      return { ...f, paid: Math.min(f.paid + amount, f.total) };
+    }
+    return f;
+  });
+  renderFees();
+  closeModal('modal-payment');
+  toast(`✓ Payment of ₹${amount.toLocaleString()} recorded for ${currentPayStudent}`, '#16a34a');
+}
+
+// ─── Global search ───
+function handleGlobalSearch(q) {
+  if (!q) return;
+  q = q.toLowerCase();
+  // Just navigate to students tab and search
+  const tab = document.querySelector('[onclick*="students"]');
+  switchTab('students', tab);
+  document.getElementById('student-search').value = q;
+  filterStudents();
+}
+
+// ─── Refresh ───
+function refreshCurrentTab() {
+  const active = document.querySelector('.tab-panel.active');
+  if (!active) return;
+  const id = active.id.replace('tab-','');
+  toast('Refreshing data…','#C89B3C',1500);
+  setTimeout(()=>{
+    if(id==='students') renderStudents();
+    if(id==='faculty') renderFaculty();
+    if(id==='admissions') renderAdmissions();
+    if(id==='noticeboard') fetchAdminNotices();
+    if(id==='fees') renderFees();
+  },400);
+}
+
+// ─── Init ───
+window.addEventListener('DOMContentLoaded', async () => {
+  // Set today's date on payment modal
+  const payDate = document.getElementById('pay-date');
+  if (payDate) payDate.value = new Date().toISOString().split('T')[0];
+
+  // Clean legacy session keys
+  localStorage.removeItem('sp_admin_email');
+  localStorage.removeItem('sp_cadet_email');
+  localStorage.removeItem('sindhupath_logged_email');
+
+  // Verify active Supabase auth session
+  if (sbClient) {
+    try {
+      const { data: { session }, error } = await sbClient.auth.getSession();
+      if (!error && session?.user) {
+        showApp(session.user);
+      } else {
+        showLogin();
+      }
+    } catch (e) {
+      console.warn('Session verification error:', e);
+      showLogin();
+    }
+  } else {
+    showLogin();
+  }
+});
+</script>
+</body>
+</html>

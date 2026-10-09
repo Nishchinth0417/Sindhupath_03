@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Portal — Sindhupath Maritime Academy</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <!-- Toastify -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deep-sea':      '#0B2345',
+            'navy-mid':      '#0F2E5A',
+            'navy-card':     '#132842',
+            'navy-border':   '#1C3C6A',
+            'gold':          '#C89B3C',
+            'maritime-gold': '#C89B3C',
+            'gold-light':    '#E5BE66',
+            'gold-dark':     '#9E7624',
+            'teal':          '#0D9488',
+            'slate':         '#475569',
+            'canvas':        '#F4F6FA',
+          },
+          fontFamily: {
+            display: ['Bebas Neue', 'sans-serif'],
+            sub:     ['Oswald', 'sans-serif'],
+            body:    ['Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+    .fill-icon { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+    body { font-family:'Montserrat',sans-serif; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 50;
+      background: linear-gradient(180deg,#071322 0%,#0B2345 100%);
+      display: flex; flex-direction: column; transition: transform .3s ease;
+    }
+    #sidebar.collapsed { transform: translateX(-260px); }
+    #sidebar-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40;
+    }
+    #sidebar-overlay.show { display: block; }
+
+    /* ── Nav item buttons ── */
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+      margin: 2px 10px; border-radius: 12px; cursor: pointer; color: #CBD5E1;
+      font-family:'Oswald',sans-serif; font-size:14px; font-weight:500; letter-spacing:.3px;
+      transition: all .2s ease; user-select: none; width: calc(100% - 20px); text-align: left;
+      border: none; background: transparent; outline-offset: 2px;
+    }
+    .nav-item:hover, .nav-item:focus-visible { background: rgba(255,255,255,.1); color: #fff; outline: 2px solid #C89B3C; }
+    .nav-item.active { background: rgba(200,155,60,.18); color: #C89B3C; border-left: 3px solid #C89B3C; padding-left: 13px; }
+    .nav-item .material-symbols-outlined { font-size: 20px; }
+
+    /* ── Main area ── */
+    #main { margin-left: 260px; min-height: 100vh; background: #F4F6FA; transition: margin .3s; }
+
+    /* ── Mobile Dock Button ── */
+    .mobile-dock-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; flex: 1; min-height: 48px; border: none; background: transparent;
+      color: #64748B; font-size: 10px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; touch-action: manipulation; user-select: none;
+    }
+    .mobile-dock-btn.active { color: #0D9488; }
+    .mobile-dock-btn.active .material-symbols-outlined { color: #0D9488; font-variation-settings: 'FILL' 1; }
+
+    /* ── Filter & Day Pills ── */
+    .filter-pill {
+      font-size: 12px; padding: 6px 16px; border-radius: 999px;
+      border: 1px solid #D0D8E8; cursor: pointer; font-weight: 600;
+      transition: all 0.15s; color: #44474E; background: #fff;
+      min-height: 38px; display: inline-flex; items-center: center; justify-content: center;
+      touch-action: manipulation;
+    }
+    .filter-pill.active { background: #0B2345; color: #fff; border-color: #0B2345; }
+    .filter-pill:active { transform: scale(0.96); }
+
+    /* ── Media Queries ── */
+    @media (max-width: 767px) {
+      #sidebar { transform: translateX(-260px); width: 260px; }
+      #sidebar.open { transform: translateX(0); }
+      #main { margin-left: 0 !important; padding-bottom: 5rem !important; }
+      .tab-content { padding: 16px !important; }
+      .modal-backdrop { padding: 0 !important; }
+      .modal-box { max-height: 100vh !important; height: 100% !important; border-radius: 0 !important; }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+      #sidebar { width: 64px !important; transform: translateX(0) !important; }
+      #sidebar .nav-item { justify-content: center !important; padding: 10px !important; width: calc(100% - 16px) !important; margin: 2px 8px !important; font-size: 0 !important; }
+      #sidebar .nav-item .material-symbols-outlined { font-size: 22px !important; }
+      #sidebar .badge, #sidebar p, #sidebar span:not(.material-symbols-outlined) { display: none !important; }
+      #main { margin-left: 64px !important; }
+    }
+
+    /* ── Header ── */
+    #topbar { background:#fff; border-bottom:1px solid #E2E8F0; padding:0 24px; height:60px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:30; }
+
+    /* ── Tab sections ── */
+    .tab-content { display: none; padding: 24px; }
+    .tab-content.active { display: block; }
+
+    /* ── Cards ── */
+    .stat-card { background:#fff; border:1px solid #E2E8F0; border-radius:16px; padding:18px 20px; transition: box-shadow .2s; }
+    .stat-card:hover { box-shadow: 0 4px 16px rgba(11,35,69,.08); }
+    .card { background:#fff; border:1px solid #E2E8F0; border-radius:16px; padding:20px; }
+
+    /* ── Badge ── */
+    .badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600; font-family:'Oswald',sans-serif; letter-spacing:.4px; text-transform:uppercase; }
+
+    /* ── Buttons ── */
+    .btn-primary { background:#0B2345; color:#fff; padding:10px 18px; border-radius:12px; font-size:13px; font-weight:700; font-family:'Oswald',sans-serif; letter-spacing:.5px; cursor:pointer; transition:background .2s; border:none; min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-primary:hover { background:#0F2E5A; }
+    .btn-gold { background:#C89B3C; color:#fff; padding:10px 18px; border-radius:12px; font-size:13px; font-weight:700; font-family:'Oswald',sans-serif; letter-spacing:.5px; cursor:pointer; transition:background .2s; border:none; min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-gold:hover { background:#9E7624; }
+    .btn-outline { background:transparent; color:#0B2345; padding:9px 16px; border-radius:12px; font-size:12px; font-weight:600; font-family:'Oswald',sans-serif; cursor:pointer; transition:all .2s; border:1px solid #CBD5E1; min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-outline:hover { border-color:#C89B3C; color:#C89B3C; }
+    .btn-danger { background:#DC2626; color:#fff; padding:8px 14px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; border:none; transition:background .2s; min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-danger:hover { background:#B91C1C; }
+
+    /* ── Form inputs ── */
+    .form-input { width:100%; border:1px solid #CBD5E1; border-radius:12px; padding:10px 14px; font-size:13px; font-family:'Montserrat',sans-serif; outline:none; transition:border .2s, box-shadow .2s; min-height:44px; }
+    .form-input:focus { border-color:#C89B3C; box-shadow:0 0 0 3px rgba(200,155,60,.15); }
+    .form-label { display:block; font-size:11px; font-weight:600; font-family:'Oswald',sans-serif; color:#64748B; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+
+    /* ── Table ── */
+    .data-table { width:100%; border-collapse:collapse; }
+    .data-table th { background:#F8FAFC; padding:10px 14px; text-align:left; font-size:11px; font-weight:700; font-family:'Oswald',sans-serif; color:#64748B; text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid #E2E8F0; }
+    .data-table td { padding:12px 14px; font-size:13px; border-bottom:1px solid #F1F5F9; color:#374151; vertical-align:middle; }
+    .data-table tr:hover td { background:#FAFBFF; }
+    .data-table tr:last-child td { border-bottom:none; }
+
+    /* ── Modal ── */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(7,19,34,.7); z-index:200; display:none; align-items:center; justify-content:center; padding:16px; }
+    .modal-backdrop.open { display:flex; }
+    .modal-box { background:#fff; border-radius:20px; width:100%; max-width:540px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+    .modal-header { padding:20px 24px 16px; border-bottom:1px solid #F1F5F9; display:flex; align-items:center; justify-content:space-between; }
+    .modal-body { padding:20px 24px; }
+    .modal-footer { padding:16px 24px 20px; border-top:1px solid #F1F5F9; display:flex; justify-content:flex-end; gap:10px; }
+
+    /* ── Timetable ── */
+    .tt-cell { min-height:52px; border-radius:8px; padding:5px 7px; font-size:11px; display:flex; flex-direction:column; justify-content:center; }
+    .class-slot { background:linear-gradient(135deg,#0B2345,#0F2E5A); color:#fff; }
+    .today-col { background:linear-gradient(135deg,#C89B3C,#9E7624) !important; color:#fff !important; }
+
+    /* ── Attendance ── */
+    .att-row { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:14px; border:1px solid #E2E8F0; min-height:54px; }
+    .att-toggle { display:flex; border-radius:10px; overflow:hidden; border:1px solid #E2E8F0; }
+    .att-toggle button { padding:8px 18px; font-size:12px; font-weight:700; font-family:'Oswald',sans-serif; cursor:pointer; border:none; transition:all .15s; min-height:44px; min-w:[48px]; }
+    .att-btn-present.active  { background:#16A34A; color:#fff; }
+    .att-btn-present:not(.active) { background:#F0FDF4; color:#16A34A; }
+    .att-btn-absent.active  { background:#DC2626; color:#fff; }
+    .att-btn-absent:not(.active) { background:#FEF2F2; color:#DC2626; }
+
+    /* ── Progress bar ── */
+    .prog-wrap { background:#F1F5F9; border-radius:99px; height:7px; }
+    .prog-fill { height:7px; border-radius:99px; background:linear-gradient(90deg,#0B2345,#C89B3C); transition:width .4s; }
+
+    /* ── Spin animation ── */
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation: spin .8s linear infinite; display:inline-block; }
+
+    /* ── Material upload list ── */
+    .mat-row { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; border:1px solid #E2E8F0; }
+    .mat-icon-wrap { width:38px; height:38px; border-radius:10px; background:#0B2345; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+    /* ── Notice card ── */
+    .notice-card { background:#fff; border:1px solid #E2E8F0; border-radius:14px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px; transition:box-shadow .2s; }
+    .notice-card:hover { box-shadow:0 2px 12px rgba(11,35,69,.07); }
+  </style>
+</head>
+<body class="bg-canvas text-gray-800 antialiased overflow-x-hidden">
+
+<!-- Sidebar overlay -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<aside id="sidebar">
+  <!-- Logo -->
+  <div class="flex items-center gap-3 px-5 pt-5 pb-3">
+    <div class="w-9 h-9 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined fill-icon text-gold text-xl">anchor</span>
+    </div>
+    <div>
+      <p class="font-display text-white text-lg leading-none tracking-widest">SINDHUPATH</p>
+      <p class="text-gold/70 text-[9px] font-sub tracking-widest uppercase">Maritime Academy</p>
+    </div>
+  </div>
+
+  <!-- Faculty Info -->
+  <div class="mx-4 mt-3 mb-2 p-3 rounded-xl bg-white/5 border border-white/8 flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-colors" onclick="switchTab('profile')" title="Edit Profile">
+    <div id="sb-avatar-wrap" class="w-10 h-10 rounded-full bg-teal/20 border-2 border-teal/40 flex items-center justify-center shrink-0 overflow-hidden">
+      <span class="material-symbols-outlined fill-icon text-teal text-xl" id="sb-avatar-icon">person</span>
+    </div>
+    <div class="overflow-hidden flex-1 min-w-0">
+      <p id="sb-faculty-name" class="text-white text-sm font-semibold truncate">Faculty</p>
+      <span class="badge bg-teal/20 text-teal border border-teal/30">Faculty</span>
+    </div>
+    <span class="material-symbols-outlined text-white/30 text-base shrink-0">edit</span>
+  </div>
+
+  <!-- Nav Items -->
+  <nav class="flex-1 py-2 overflow-y-auto">
+    <button type="button" class="nav-item active" onclick="switchTab('dashboard')">
+      <span class="material-symbols-outlined">dashboard</span> Dashboard
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('classes')">
+      <span class="material-symbols-outlined">class</span> My Classes
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('students')">
+      <span class="material-symbols-outlined">groups</span> Students
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('materials')">
+      <span class="material-symbols-outlined">upload_file</span> Upload Materials
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('notice')">
+      <span class="material-symbols-outlined">campaign</span> Post Notice
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('attendance')">
+      <span class="material-symbols-outlined">fact_check</span> Attendance
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('mocktests')">
+      <span class="material-symbols-outlined">quiz</span> Mock Tests
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('schedule')">
+      <span class="material-symbols-outlined">calendar_month</span> Schedule
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('chat')">
+      <span class="material-symbols-outlined">forum</span> Messages &amp; Chat
+      <span id="chat-unread-dot" class="ml-auto badge bg-teal text-white font-bold text-[9px] px-1.5 py-0.5">Live</span>
+    </button>
+    <button type="button" class="nav-item" onclick="switchTab('profile')">
+      <span class="material-symbols-outlined">manage_accounts</span> Profile
+    </button>
+  </nav>
+
+  <!-- Logout -->
+  <div class="px-4 pb-5">
+    <div class="nav-item text-red-400 hover:text-red-300 hover:bg-red-500/10" onclick="doLogout()">
+      <span class="material-symbols-outlined">logout</span> Logout
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<div id="main">
+
+  <!-- Top Bar -->
+  <div id="topbar">
+    <button class="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors" onclick="openSidebar()">
+      <span class="material-symbols-outlined text-deep-sea">menu</span>
+    </button>
+    <div class="flex-1 min-w-0">
+      <h1 id="page-title" class="font-sub text-deep-sea text-lg uppercase tracking-wide leading-none">Dashboard</h1>
+      <p id="page-subtitle" class="text-slate text-xs mt-0.5">Welcome back</p>
+    </div>
+    <div class="flex items-center gap-3 shrink-0">
+      <button class="relative p-2 rounded-xl hover:bg-gray-100 transition-colors">
+        <span class="material-symbols-outlined text-slate">notifications</span>
+      </button>
+      <div class="hidden sm:flex items-center gap-2 bg-canvas border border-gray-200 rounded-xl px-3 py-1.5">
+        <div class="w-6 h-6 rounded-full bg-teal/20 border border-teal/30 flex items-center justify-center overflow-hidden" id="header-avatar-wrap">
+          <span class="material-symbols-outlined fill-icon text-teal text-sm" id="header-avatar-icon">person</span>
+        </div>
+        <span id="header-name" class="text-deep-sea text-xs font-semibold">Faculty</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB: DASHBOARD ════════ -->
+  <section id="tab-dashboard" class="tab-content active">
+    <!-- Welcome Banner -->
+    <div class="bg-gradient-to-r from-deep-sea to-navy-mid rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div class="w-14 h-14 rounded-xl bg-teal/20 border border-teal/30 flex items-center justify-center shrink-0 overflow-hidden" id="dash-avatar">
+        <span class="material-symbols-outlined fill-icon text-teal text-3xl" id="dash-avatar-icon">person</span>
+      </div>
+      <div class="flex-1">
+        <p class="text-gold/80 text-xs font-sub uppercase tracking-widest">Good day</p>
+        <h2 class="font-sub text-3xl font-bold text-white tracking-wide mt-0.5"><span id="dash-welcome-name">FACULTY</span></h2>
+        <p class="text-white/50 text-xs mt-1">Merchant Navy Academy · Kochi Campus</p>
+      </div>
+      <div class="shrink-0">
+        <button onclick="switchTab('attendance')" class="btn-gold text-xs flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">fact_check</span> Mark Attendance
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">groups</span>
+          <span class="badge bg-blue-50 text-blue-700">Active</span>
+        </div>
+        <p class="text-3xl font-display text-deep-sea">86</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Total Students</p>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">class</span>
+          <span class="badge bg-teal/10 text-teal">This week</span>
+        </div>
+        <p class="text-3xl font-display text-deep-sea">12</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Classes Scheduled</p>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">upload_file</span>
+          <span class="badge bg-emerald-50 text-emerald-700">Uploaded</span>
+        </div>
+        <p class="text-3xl font-display text-deep-sea">24</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Study Materials</p>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-2">
+          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">pending_actions</span>
+          <span class="badge bg-amber-50 text-amber-700">Pending</span>
+        </div>
+        <p class="text-3xl font-display text-gold">3</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Tests to Review</p>
+      </div>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <!-- Today's Schedule -->
+      <div class="card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined fill-icon text-gold text-lg">today</span> Today's Classes
+        </h3>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
+            <div class="w-10 h-10 rounded-xl bg-deep-sea flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined fill-icon text-gold text-lg">calculate</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-deep-sea">Mathematics — Trigonometry</p>
+              <p class="text-xs text-slate">Batch A · Room 101 · 07:30 AM</p>
+            </div>
+            <span class="badge bg-emerald-100 text-emerald-700">Upcoming</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
+            <div class="w-10 h-10 rounded-xl bg-deep-sea flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined fill-icon text-gold text-lg">biotech</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-deep-sea">Physics — Optics</p>
+              <p class="text-xs text-slate">Batch B · Room 203 · 10:00 AM</p>
+            </div>
+            <span class="badge bg-blue-100 text-blue-700">In 2h</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
+            <div class="w-10 h-10 rounded-xl bg-teal/20 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined fill-icon text-teal text-lg">quiz</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-deep-sea">Mock Test — Full Syllabus</p>
+              <p class="text-xs text-slate">Batch A + B · Hall 1 · 02:00 PM</p>
+            </div>
+            <span class="badge bg-amber-100 text-amber-700">Exam</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
+            <div class="w-10 h-10 rounded-xl bg-deep-sea flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined fill-icon text-gold text-lg">help_outline</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-deep-sea">Doubt Session — Open Q&amp;A</p>
+              <p class="text-xs text-slate">All Batches · Room 101 · 04:30 PM</p>
+            </div>
+            <span class="badge bg-purple-100 text-purple-700">Open</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions + Recent Notices -->
+      <div class="space-y-5">
+        <!-- Quick Actions -->
+        <div class="card">
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-3">Quick Actions</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="switchTab('attendance')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
+              <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">fact_check</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Mark Attendance</span>
+            </button>
+            <button onclick="switchTab('notice')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
+              <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">campaign</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Post Notice</span>
+            </button>
+            <button onclick="switchTab('materials')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
+              <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">upload_file</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Upload Material</span>
+            </button>
+            <button onclick="switchTab('mocktests')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
+              <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">add_task</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Create Test</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Avg Attendance Overview -->
+        <div class="card">
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Batch Attendance Overview</h3>
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch A — IMU-CET</span><span class="font-bold text-emerald-600">87%</span></div>
+              <div class="prog-wrap"><div class="prog-fill" style="width:87%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch B — DNS Prep</span><span class="font-bold text-gold">74%</span></div>
+              <div class="prog-wrap"><div class="prog-fill" style="width:74%;background:linear-gradient(90deg,#0B2345,#C89B3C)"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch C — Sponsorship</span><span class="font-bold text-deep-sea">91%</span></div>
+              <div class="prog-wrap"><div class="prog-fill" style="width:91%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: MY CLASSES ════════ -->
+  <section id="tab-classes" class="tab-content">
+    <div class="mb-6">
+      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">My Classes</h2>
+      <p class="text-sm text-slate mt-1">All classes assigned to you this semester.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5" id="classes-grid">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: STUDENTS ════════ -->
+  <section id="tab-students" class="tab-content">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Student Roster</h2>
+        <p class="text-sm text-slate mt-1">All students across your assigned batches.</p>
+      </div>
+      <div class="flex gap-2">
+        <select id="student-batch-filter" onchange="filterStudents()" class="form-input text-xs w-36">
+          <option value="all">All Batches</option>
+          <option value="A">Batch A</option>
+          <option value="B">Batch B</option>
+          <option value="C">Batch C</option>
+        </select>
+        <input id="student-search" type="text" placeholder="Search..." onkeyup="filterStudents()" class="form-input text-xs w-40">
+      </div>
+    </div>
+    <div class="card overflow-x-auto">
+      <table class="data-table" id="students-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Roll No.</th>
+            <th>Course</th>
+            <th>Batch</th>
+            <th>Attendance</th>
+            <th>Last Score</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="students-tbody"><!-- JS --></tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: UPLOAD MATERIALS ════════ -->
+  <section id="tab-materials" class="tab-content">
+    <div class="mb-6">
+      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Upload Study Materials</h2>
+      <p class="text-sm text-slate mt-1">Share notes, PDFs, and reference documents with students.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <!-- Upload Form -->
+      <div class="card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Add New Material</h3>
+        <form onsubmit="uploadMaterial(event)" class="space-y-4">
+          <div>
+            <label class="form-label">Title *</label>
+            <input id="m-title" type="text" placeholder="e.g. Trigonometry Complete Notes" class="form-input" required>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Subject *</label>
+              <select id="m-subject" class="form-input" required>
+                <option value="">Select Subject</option>
+                <option>Mathematics</option>
+                <option>Physics</option>
+                <option>English</option>
+                <option>General Knowledge</option>
+                <option>DNS / Nautical</option>
+                <option>Aptitude</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Type</label>
+              <select id="m-type" class="form-input">
+                <option>PDF</option>
+                <option>Notes</option>
+                <option>Worksheet</option>
+                <option>Reference</option>
+                <option>Video Link</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Target Batch</label>
+            <select id="m-batch" class="form-input">
+              <option value="All">All Batches</option>
+              <option value="A">Batch A</option>
+              <option value="B">Batch B</option>
+              <option value="C">Batch C</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Description</label>
+            <textarea id="m-desc" rows="2" placeholder="Brief description of the material..." class="form-input resize-none"></textarea>
+          </div>
+          <div>
+            <label class="form-label">File (Simulated)</label>
+            <div class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center hover:border-gold/40 transition-colors cursor-pointer" onclick="document.getElementById('m-file').click()">
+              <span class="material-symbols-outlined text-slate text-3xl block mb-1">cloud_upload</span>
+              <p class="text-xs text-slate">Click to select file <span class="text-deep-sea font-semibold">or drag & drop</span></p>
+              <p class="text-[10px] text-slate/70 mt-1">PDF, DOC, PPTX — up to 20 MB</p>
+              <input type="file" id="m-file" class="hidden">
+            </div>
+          </div>
+          <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">upload</span> Upload Material
+          </button>
+        </form>
+      </div>
+
+      <!-- Uploaded List -->
+      <div class="card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">My Uploaded Materials</h3>
+        <div class="space-y-3" id="materials-list"><!-- JS --></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: POST NOTICE ════════ -->
+  <section id="tab-notice" class="tab-content">
+    <div class="mb-6">
+      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Post Notice</h2>
+      <p class="text-sm text-slate mt-1">Publish announcements visible to your students.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <!-- Form -->
+      <div class="card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">New Notice</h3>
+        <form onsubmit="postNotice(event)" class="space-y-4">
+          <div>
+            <label class="form-label">Title *</label>
+            <input id="n-title" type="text" placeholder="Notice title" class="form-input" required>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Category</label>
+              <select id="n-category" class="form-input">
+                <option>General</option>
+                <option>Exam</option>
+                <option>Holiday</option>
+                <option>Urgent</option>
+                <option>Academic</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Target</label>
+              <select id="n-target" class="form-input">
+                <option value="All Students">All Students</option>
+                <option value="Batch A">Batch A</option>
+                <option value="Batch B">Batch B</option>
+                <option value="Batch C">Batch C</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Content *</label>
+            <textarea id="n-content" rows="5" placeholder="Write notice content here..." class="form-input resize-none" required></textarea>
+          </div>
+          <div id="notice-preview-box" class="hidden p-4 rounded-xl bg-canvas border border-gold/30">
+            <p class="text-[10px] font-bold text-gold uppercase tracking-widest mb-2">Preview</p>
+            <p id="np-title" class="text-sm font-bold text-deep-sea"></p>
+            <p id="np-content" class="text-xs text-slate mt-1"></p>
+          </div>
+          <div class="flex gap-3">
+            <button type="button" onclick="previewNotice()" class="btn-outline flex-1">Preview</button>
+            <button type="submit" class="btn-gold flex-1 flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-sm">send</span> Publish
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Posted Notices -->
+      <div class="card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Published Notices</h3>
+        <div class="space-y-3" id="notices-list"><!-- JS --></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: ATTENDANCE ════════ -->
+  <section id="tab-attendance" class="tab-content">
+    <div class="mb-6">
+      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Attendance</h2>
+      <p class="text-sm text-slate mt-1">Mark and review student attendance per class.</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="card mb-5">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="form-label">Select Class</label>
+          <select id="att-class" class="form-input" onchange="loadAttendanceRoster()">
+            <option value="math-a">Mathematics — Batch A</option>
+            <option value="physics-b">Physics — Batch B</option>
+            <option value="dns-c">DNS Nautical — Batch C</option>
+            <option value="gk-all">General Knowledge — All</option>
+            <option value="doubt-all">Doubt Session — All</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Date</label>
+          <input id="att-date" type="date" class="form-input">
+        </div>
+        <div class="flex items-end gap-2">
+          <button onclick="markAll('P')" class="btn-outline flex-1 text-xs">✓ All Present</button>
+          <button onclick="markAll('A')" class="btn-danger flex-1 text-xs">✗ All Absent</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roster -->
+    <div class="card mb-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Student Roster</h3>
+        <span id="att-count" class="text-xs text-slate">0 marked</span>
+      </div>
+      <div class="space-y-2" id="att-roster"><!-- JS --></div>
+      <div class="mt-5 flex justify-end">
+        <button onclick="submitAttendance()" class="btn-gold flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">save</span> Submit Attendance
+        </button>
+      </div>
+    </div>
+
+    <!-- Past Records -->
+    <div class="card">
+      <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Recent Attendance Records</h3>
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr><th>Date</th><th>Class</th><th>Batch</th><th>Present</th><th>Absent</th><th>%</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>28 Sep 2026</td><td>Mathematics</td><td>Batch A</td><td>28</td><td>4</td><td><span class="badge bg-emerald-100 text-emerald-700">87.5%</span></td></tr>
+            <tr><td>27 Sep 2026</td><td>Physics</td><td>Batch B</td><td>22</td><td>6</td><td><span class="badge bg-amber-100 text-amber-700">78.6%</span></td></tr>
+            <tr><td>26 Sep 2026</td><td>DNS Nautical</td><td>Batch C</td><td>18</td><td>2</td><td><span class="badge bg-emerald-100 text-emerald-700">90%</span></td></tr>
+            <tr><td>25 Sep 2026</td><td>GK / Maritime</td><td>All</td><td>60</td><td>14</td><td><span class="badge bg-amber-100 text-amber-700">81%</span></td></tr>
+            <tr><td>24 Sep 2026</td><td>Doubt Session</td><td>All</td><td>45</td><td>29</td><td><span class="badge bg-red-100 text-red-600">60.8%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: MOCK TESTS ════════ -->
+  <section id="tab-mocktests" class="tab-content">
+    <div class="mb-6">
+      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Mock Tests</h2>
+      <p class="text-sm text-slate mt-1">Create, manage, and review mock tests for your students.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <!-- Create Test Form -->
+      <div class="card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Create New Test</h3>
+        <form onsubmit="createTest(event)" class="space-y-4">
+          <div>
+            <label class="form-label">Test Title *</label>
+            <input id="t-title" type="text" placeholder="e.g. IMU-CET Full Mock — Series 6" class="form-input" required>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Subject</label>
+              <select id="t-subject" class="form-input">
+                <option>Full Syllabus</option>
+                <option>Mathematics</option>
+                <option>Physics</option>
+                <option>English</option>
+                <option>General Knowledge</option>
+                <option>DNS / Nautical</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Target Batch</label>
+              <select id="t-batch" class="form-input">
+                <option>All Batches</option>
+                <option>Batch A</option>
+                <option>Batch B</option>
+                <option>Batch C</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">Duration (minutes)</label>
+              <input id="t-duration" type="number" value="90" min="10" class="form-input">
+            </div>
+            <div>
+              <label class="form-label">Total Marks</label>
+              <input id="t-marks" type="number" value="100" min="10" class="form-input">
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Schedule Date</label>
+            <input id="t-date" type="date" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Instructions</label>
+            <textarea id="t-instructions" rows="2" placeholder="Enter test instructions..." class="form-input resize-none"></textarea>
+          </div>
+          <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">add_circle</span> Create Test
+          </button>
+        </form>
+      </div>
+
+      <!-- Test List -->
+      <div class="card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Existing Tests</h3>
+        <div class="space-y-3" id="tests-list"><!-- JS --></div>
+      </div>
+    </div>
+
+    <!-- Test Results -->
+    <div class="card mt-5">
+      <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Recent Test Results</h3>
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr><th>Student</th><th>Test</th><th>Score</th><th>%</th><th>Rank</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Arjun Sharma</td><td>IMU-CET Mock 5</td><td>82/100</td><td>82%</td><td>#3</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
+            <tr><td>Kavitha Menon</td><td>IMU-CET Mock 5</td><td>91/100</td><td>91%</td><td>#1</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
+            <tr><td>Rahul Pillai</td><td>Physics Sprint</td><td>38/50</td><td>76%</td><td>#5</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
+            <tr><td>Sneha Iyer</td><td>Math Calculus</td><td>28/50</td><td>56%</td><td>#12</td><td><span class="badge bg-red-100 text-red-600">Below Avg</span></td></tr>
+            <tr><td>Vishnu Krishnan</td><td>English Grammar</td><td>44/50</td><td>88%</td><td>#2</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: SCHEDULE ════════ -->
+  <section id="tab-schedule" class="tab-content">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Schedule &amp; Calendar</h2>
+        <p class="text-sm text-slate mt-1">Click any date in the calendar below or use the button to schedule an Online Class or Exam.</p>
+      </div>
+      <button onclick="openScheduleModal()" class="btn-gold text-xs flex items-center gap-1.5 shrink-0">
+        <span class="material-symbols-outlined text-sm">add_circle</span> Schedule Class / Exam
+      </button>
+    </div>
+
+    <!-- Interactive Calendar Grid Card -->
+    <div class="card mb-6">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-gold text-xl">calendar_month</span>
+          <h3 id="cal-month-title" class="font-sub text-lg font-bold text-deep-sea uppercase tracking-wider">October 2026</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="changeMonth(-1)" class="p-1.5 rounded-lg border border-gray-200 text-slate hover:text-deep-sea hover:border-gold transition-colors" title="Previous Month">
+            <span class="material-symbols-outlined text-sm">chevron_left</span>
+          </button>
+          <button onclick="goToCurrentMonth()" class="btn-outline text-[11px] py-1 px-2.5">Today</button>
+          <button onclick="changeMonth(1)" class="p-1.5 rounded-lg border border-gray-200 text-slate hover:text-deep-sea hover:border-gold transition-colors" title="Next Month">
+            <span class="material-symbols-outlined text-sm">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Days of Week Header -->
+      <div class="grid grid-cols-7 text-center font-sub text-xs font-bold text-slate uppercase tracking-wider mb-2">
+        <div class="py-1 text-red-500">Sun</div>
+        <div class="py-1">Mon</div>
+        <div class="py-1">Tue</div>
+        <div class="py-1">Wed</div>
+        <div class="py-1">Thu</div>
+        <div class="py-1">Fri</div>
+        <div class="py-1">Sat</div>
+      </div>
+
+      <!-- Calendar Month Grid (Populated by JS) -->
+      <div id="calendar-grid" class="grid grid-cols-7 gap-1.5"></div>
+      
+      <p class="text-[11px] text-slate mt-3 text-right flex items-center justify-end gap-1">
+        <span class="material-symbols-outlined text-xs text-gold">info</span> Click any date above to schedule an online class or exam.
+      </p>
+    </div>
+
+    <!-- Scheduled Events & Online Classes List Card -->
+    <div class="card mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide flex items-center gap-2">
+          <span class="material-symbols-outlined text-teal text-lg">devices</span> Scheduled Online Classes &amp; Exams
+        </h3>
+        <span id="scheduled-events-count" class="badge bg-teal/10 text-teal">0 Scheduled</span>
+      </div>
+      <div id="scheduled-events-list" class="space-y-3">
+        <!-- JS Populated -->
+      </div>
+    </div>
+
+    <!-- View Switcher & Day Selector Pills -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Weekly Timetable</h3>
+      <div class="flex items-center gap-2 bg-white p-1 rounded-xl border border-gray-200 self-start sm:self-auto shadow-sm">
+        <button id="btn-sched-dayview" onclick="toggleScheduleView('day')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-deep-sea text-white transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">view_day</span> Day View
+        </button>
+        <button id="btn-sched-gridview" onclick="toggleScheduleView('grid')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">calendar_view_week</span> Full Grid
+        </button>
+      </div>
+    </div>
+
+    <!-- Day Selector Pill Bar for Mobile/Tablet -->
+    <div id="sched-day-pills" class="flex overflow-x-auto gap-2 mb-5 pb-1 no-scrollbar">
+      <button class="sched-pill filter-pill" data-day="mon" onclick="selectScheduleDay('mon')">Mon</button>
+      <button class="sched-pill filter-pill" data-day="tue" onclick="selectScheduleDay('tue')">Tue</button>
+      <button class="sched-pill filter-pill active" data-day="wed" onclick="selectScheduleDay('wed')">Wed ★ Today</button>
+      <button class="sched-pill filter-pill" data-day="thu" onclick="selectScheduleDay('thu')">Thu</button>
+      <button class="sched-pill filter-pill" data-day="fri" onclick="selectScheduleDay('fri')">Fri</button>
+      <button class="sched-pill filter-pill" data-day="sat" onclick="selectScheduleDay('sat')">Sat</button>
+    </div>
+
+    <!-- Mobile/Tablet Timeline Cards View -->
+    <div id="schedule-day-container" class="space-y-3 mb-6">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Full Table Grid Container (hidden by default on mobile) -->
+    <div id="schedule-grid-container" class="hidden card overflow-x-auto">
+      <table class="min-w-[700px] w-full border-collapse">
+        <thead>
+          <tr>
+            <th class="p-3 text-left text-xs font-sub text-slate uppercase tracking-wide w-24 bg-canvas">Time</th>
+            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Mon</th>
+            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Tue</th>
+            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide bg-gold/5 border-x border-gold/20">Wed<br><span class="text-[9px] text-gold">(Today)</span></th>
+            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Thu</th>
+            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Fri</th>
+            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Sat</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr class="divide-x divide-gray-100">
+            <td class="p-2 font-bold text-deep-sea text-center text-xs">07:30 AM</td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Mathematics</p><p class="text-white/60 text-[10px]">Batch A · R101</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Mathematics</p><p class="text-[10px] opacity-70">Batch A · R101</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Mathematics</p><p class="text-white/60 text-[10px]">Batch A · R101</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Mathematics</p><p class="text-white/60 text-[10px]">Batch A · R101</p></div></td>
+          </tr>
+          <tr class="divide-x divide-gray-100">
+            <td class="p-2 font-bold text-deep-sea text-center text-xs">10:00 AM</td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Physics</p><p class="text-white/60 text-[10px]">Batch B · R203</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Physics</p><p class="text-white/60 text-[10px]">Batch B · R203</p></div></td>
+            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Physics</p><p class="text-[10px] opacity-70">Batch B · R203</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Physics</p><p class="text-white/60 text-[10px]">Batch B · R203</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+          </tr>
+          <tr class="divide-x divide-gray-100">
+            <td class="p-2 font-bold text-deep-sea text-center text-xs">12:00 PM</td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
+            <td class="p-1.5 bg-gold/5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
+          </tr>
+          <tr class="divide-x divide-gray-100">
+            <td class="p-2 font-bold text-deep-sea text-center text-xs">02:00 PM</td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">DNS Nautical</p><p class="text-white/60 text-[10px]">Batch C · R305</p></div></td>
+            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Mock Test</p><p class="text-[10px] opacity-70">All Batches · Hall 1</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">DNS Nautical</p><p class="text-white/60 text-[10px]">Batch C · R305</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">GK Maritime</p><p class="text-white/60 text-[10px]">All · Hall 2</p></div></td>
+          </tr>
+          <tr class="divide-x divide-gray-100">
+            <td class="p-2 font-bold text-deep-sea text-center text-xs">04:30 PM</td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Doubt Session</p><p class="text-white/60 text-[10px]">Open Q&A</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Doubt Session</p><p class="text-[10px] opacity-70">Open Q&A</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Doubt Session</p><p class="text-white/60 text-[10px]">Physics Focus</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-4 text-xs">
+      <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-deep-sea"></div><span class="text-slate">Regular Class</span></div>
+      <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-gold"></div><span class="text-slate">Today's Classes</span></div>
+      <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-gray-100 border"></div><span class="text-slate">Free / Break</span></div>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: CHAT ════════ -->
+  <section id="tab-chat" class="tab-content">
+    <div class="mb-4">
+      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Faculty &amp; Student Live Chat</h2>
+      <p class="text-sm text-slate mt-1">Direct messaging and group discussions with cadets and fellow faculty members.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-12 h-[calc(100vh-220px)] min-h-[500px] max-h-[750px]">
+      
+      <!-- Left Channel & Contact Sidebar -->
+      <div id="chat-channels-col" class="lg:col-span-4 border-r border-gray-200 flex flex-col bg-canvas/60 w-full h-full">
+        <!-- Search -->
+        <div class="p-3.5 border-b border-gray-200 bg-white">
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate text-lg">search</span>
+            <input type="text" id="chat-search" onkeyup="filterChatChannels()" placeholder="Search channels or cadets..." class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-gold/40">
+          </div>
+        </div>
+
+        <!-- Channels & DMs List -->
+        <div class="flex-1 overflow-y-auto p-2 space-y-1" id="chat-channels-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Right Active Chat Window -->
+      <div id="chat-messages-col" class="lg:col-span-8 flex flex-col h-full bg-white hidden lg:flex w-full">
+        
+        <!-- Chat Window Header -->
+        <div class="p-3.5 px-4 sm:px-5 border-b border-gray-200 flex items-center justify-between bg-white shrink-0">
+          <div class="flex items-center gap-3">
+            <!-- Mobile back button -->
+            <button onclick="showMobileChatChannels()" class="lg:hidden p-1.5 rounded-xl border border-gray-200 text-deep-sea hover:bg-canvas transition-colors flex items-center gap-1 text-xs font-bold" title="Back to Channels">
+              <span class="material-symbols-outlined text-lg">arrow_back</span>
+              <span class="hidden sm:inline">Channels</span>
+            </button>
+            <div class="w-10 h-10 rounded-full bg-deep-sea flex items-center justify-center text-gold font-bold text-sm shrink-0 overflow-hidden" id="chat-header-avatar">
+              <span class="material-symbols-outlined text-gold">forum</span>
+            </div>
+            <div>
+              <h3 id="chat-active-title" class="font-bold text-sm text-deep-sea leading-tight">General Academy Discussion</h3>
+              <p id="chat-active-sub" class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active Channel · All Cadets &amp; Faculty
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="resetChatMessages()" class="p-2 rounded-xl border border-gray-200 text-slate hover:text-red-600 hover:border-red-200 transition-colors text-xs" title="Reset Chat Messages">
+              <span class="material-symbols-outlined text-base">cleaning_services</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages Stream Window -->
+        <div id="chat-messages-container" class="flex-1 p-5 overflow-y-auto space-y-4 bg-canvas/30 min-h-[380px]">
+          <!-- Message bubbles populated by JS -->
+        </div>
+
+        <!-- Quick Template Chips for Faculty -->
+        <div class="px-4 py-2 bg-gray-50 border-t border-gray-100 flex items-center gap-2 overflow-x-auto shrink-0">
+          <span class="text-[10px] font-bold text-slate uppercase tracking-wider shrink-0">Quick Response:</span>
+          <button onclick="sendQuickReply('Welcome to class cadets!')" class="text-xs px-3.5 py-2 min-h-[44px] rounded-xl bg-white border border-gray-200 text-gray-700 hover:border-gold hover:text-deep-sea transition-all shrink-0 flex items-center">👋 Welcome cadets!</button>
+          <button onclick="sendQuickReply('Please submit your assignment in Study Materials.')" class="text-xs px-3.5 py-2 min-h-[44px] rounded-xl bg-white border border-gray-200 text-gray-700 hover:border-gold hover:text-deep-sea transition-all shrink-0 flex items-center">📂 Submit assignment</button>
+          <button onclick="sendQuickReply('Online meeting link is posted in the Schedule tab.')" class="text-xs px-3.5 py-2 min-h-[44px] rounded-xl bg-white border border-gray-200 text-gray-700 hover:border-gold hover:text-deep-sea transition-all shrink-0 flex items-center">🔗 Check meeting link</button>
+          <button onclick="sendQuickReply('Great work in today\'s mock test!')" class="text-xs px-3.5 py-2 min-h-[44px] rounded-xl bg-white border border-gray-200 text-gray-700 hover:border-gold hover:text-deep-sea transition-all shrink-0 flex items-center">👏 Great work!</button>
+        </div>
+
+        <!-- Chat Input Footer Bar -->
+        <div class="p-3.5 px-4 border-t border-gray-200 bg-white shrink-0">
+          <form onsubmit="handleSendChatMessage(event)" class="flex items-center gap-2">
+            <input type="text" id="chat-input-text" placeholder="Type your message as Faculty..." class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold">
+            <button type="submit" class="bg-deep-sea hover:bg-navy-mid text-white px-5 py-2.5 rounded-xl font-sub font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-colors shrink-0">
+              <span>Send</span>
+              <span class="material-symbols-outlined text-sm">send</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════ TAB: PROFILE ════════ -->
+  <section id="tab-profile" class="tab-content">
+    <div class="mb-6">
+      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">My Profile</h2>
+      <p class="text-sm text-slate mt-1">View and update your faculty details.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <!-- Avatar Card -->
+      <div class="card flex flex-col items-center text-center">
+        <!-- Clickable Avatar -->
+        <div class="relative group mb-4 cursor-pointer" onclick="document.getElementById('avatar-file-input').click()" title="Click to change photo">
+          <div id="profile-avatar-wrap" class="w-24 h-24 rounded-full bg-teal/20 border-4 border-teal/40 flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined fill-icon text-teal text-5xl" id="profile-avatar-icon">person</span>
+          </div>
+          <div class="absolute inset-0 rounded-full bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="material-symbols-outlined text-white text-2xl">photo_camera</span>
+            <span class="text-white text-[9px] font-bold uppercase tracking-wider mt-0.5">Change</span>
+          </div>
+          <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+        </div>
+
+        <button id="remove-photo-btn" onclick="removeAvatar()" class="hidden text-xs text-red-400 hover:text-red-600 mb-3 flex items-center gap-1 transition-colors">
+          <span class="material-symbols-outlined text-sm">delete</span> Remove Photo
+        </button>
+
+        <h3 id="profile-display-name" class="font-sub text-lg text-deep-sea font-bold uppercase tracking-wide">Faculty Name</h3>
+        <p class="text-xs text-slate mt-1">Mathematics & Physics</p>
+        <div class="flex flex-wrap justify-center gap-2 mt-3">
+          <span class="badge bg-teal/10 text-teal border border-teal/30">Faculty</span>
+          <span class="badge bg-deep-sea text-white">Senior Lecturer</span>
+        </div>
+
+        <div class="mt-5 w-full text-left">
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Employee ID</p><p class="font-bold text-deep-sea mt-0.5">FAC-2022-007</p></div>
+            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Joined</p><p class="font-bold text-deep-sea mt-0.5">Mar 2022</p></div>
+            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Students</p><p class="font-bold text-teal mt-0.5">86</p></div>
+            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Classes/Week</p><p class="font-bold text-gold mt-0.5">12</p></div>
+          </div>
+        </div>
+
+        <!-- Quick Name Update -->
+        <div class="mt-5 w-full">
+          <p class="text-xs text-slate font-semibold uppercase tracking-wider mb-1.5 text-left">Quick Name Update</p>
+          <div class="flex gap-2">
+            <input id="quick-name-input" type="text" placeholder="Enter your name"
+              class="flex-1 form-input text-sm min-w-0">
+            <button onclick="applyQuickName()" class="px-3 py-2 bg-deep-sea text-white rounded-xl text-xs font-bold hover:bg-navy-mid transition-colors shrink-0">
+              <span class="material-symbols-outlined text-base">check</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Form -->
+      <div class="lg:col-span-2 card">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Edit Professional Details</h3>
+        <div id="profile-save-msg" class="hidden mb-4 p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"></div>
+        <form onsubmit="saveProfile(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Full Name</label>
+            <input id="pf-name" type="text" placeholder="Your full name" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Designation</label>
+            <input id="pf-designation" type="text" value="Senior Lecturer" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Email</label>
+            <input id="pf-email" type="email" value="faculty@sindhupath.in" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Phone</label>
+            <input id="pf-phone" type="tel" placeholder="+91 XXXXX XXXXX" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Primary Subject</label>
+            <select id="pf-subject" class="form-input">
+              <option>Mathematics</option>
+              <option>Physics</option>
+              <option>English</option>
+              <option>General Knowledge</option>
+              <option>DNS / Nautical</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Qualification</label>
+            <input id="pf-qual" type="text" placeholder="e.g. M.Sc Physics, B.Ed" class="form-input">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="form-label">Bio / About</label>
+            <textarea id="pf-bio" rows="3" placeholder="Brief professional summary..." class="form-input resize-none"></textarea>
+          </div>
+          <div class="sm:col-span-2 flex justify-end">
+            <button type="submit" class="btn-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">save</span> Save Changes
+            </button>
+          </div>
+        </form>
+
+        <!-- Change Password -->
+        <div class="border-t border-gray-100 mt-6 pt-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Change Password</h3>
+              <p class="text-xs text-slate mt-0.5">Verify your current credentials before setting a new password.</p>
+            </div>
+            <div id="pw-step-indicator" class="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+              <span id="pw-step-badge" class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span id="pw-step-text">Step 1 of 2</span>
+            </div>
+          </div>
+
+          <!-- Step 1: Verify Current Password -->
+          <div id="pw-step-1" class="bg-canvas border border-gray-100 rounded-xl p-4 sm:p-5 mb-4">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="w-6 h-6 rounded-full bg-deep-sea text-white flex items-center justify-center text-xs font-bold font-sub">1</span>
+              <h4 class="font-sub text-sm font-semibold text-deep-sea uppercase tracking-wide">Enter Current Password</h4>
+              <span id="pw-verified-tag" class="hidden ml-auto badge bg-emerald-100 text-emerald-700 flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">check_circle</span> Verified
+              </span>
+            </div>
+            
+            <form id="form-verify-curpass" onsubmit="verifyCurrentPassword(event)" class="space-y-3">
+              <div class="max-w-md">
+                <label class="form-label" for="pf-currentpass">Current Password</label>
+                <div class="relative">
+                  <input id="pf-currentpass" type="password" placeholder="Enter your current password" class="form-input pr-10" autocomplete="current-password" required>
+                  <button type="button" onclick="togglePasswordVisibility('pf-currentpass', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate hover:text-deep-sea transition-colors" title="Toggle visibility">
+                    <span class="material-symbols-outlined text-lg">visibility</span>
+                  </button>
+                </div>
+                <p id="pw-verify-error" class="hidden text-xs text-red-600 mt-1 font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">error</span>
+                  <span id="pw-verify-error-text">Current password is incorrect.</span>
+                </p>
+              </div>
+
+              <div class="flex items-center gap-3 pt-1">
+                <button id="btn-verify-curpass" type="submit" class="btn-primary flex items-center gap-2 text-xs">
+                  <span class="material-symbols-outlined text-sm">lock_open</span> Verify Current Password
+                </button>
+                <button id="btn-reset-curpass" type="button" onclick="resetPasswordSteps()" class="hidden btn-outline text-xs flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm">restart_alt</span> Re-verify
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Step 2: Set New Password & Confirm Password -->
+          <div id="pw-step-2" class="hidden bg-canvas border border-gray-100 rounded-xl p-4 sm:p-5 transition-all">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="w-6 h-6 rounded-full bg-gold text-white flex items-center justify-center text-xs font-bold font-sub">2</span>
+              <h4 class="font-sub text-sm font-semibold text-deep-sea uppercase tracking-wide">Set New Password</h4>
+            </div>
+
+            <form id="form-update-newpass" onsubmit="updateNewPassword(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="form-label" for="pf-newpass">New Password</label>
+                  <div class="relative">
+                    <input id="pf-newpass" type="password" placeholder="Min. 8 characters" class="form-input pr-10" autocomplete="new-password" required>
+                    <button type="button" onclick="togglePasswordVisibility('pf-newpass', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate hover:text-deep-sea transition-colors" title="Toggle visibility">
+                      <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                  </div>
+                  <p class="text-[11px] text-slate mt-1">Must be at least 8 characters</p>
+                </div>
+
+                <div>
+                  <label class="form-label" for="pf-confirmpass">Confirm New Password</label>
+                  <div class="relative">
+                    <input id="pf-confirmpass" type="password" placeholder="Repeat new password" class="form-input pr-10" autocomplete="new-password" required>
+                    <button type="button" onclick="togglePasswordVisibility('pf-confirmpass', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate hover:text-deep-sea transition-colors" title="Toggle visibility">
+                      <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-2 border-t border-gray-200/60">
+                <button type="button" onclick="resetPasswordSteps()" class="btn-outline text-xs flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm">close</span> Cancel
+                </button>
+                <button id="btn-submit-newpass" type="submit" class="btn-gold flex items-center gap-2 text-xs">
+                  <span class="material-symbols-outlined text-sm">lock_reset</span> Update Password in Supabase
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#main -->
+
+<!-- ════════ MODAL: SCHEDULE ONLINE CLASS / EXAM ════════ -->
+<div id="modal-schedule-event" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-sch-title" onclick="if(event.target===this) closeScheduleModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <h3 id="modal-sch-title" class="font-sub text-lg font-bold text-deep-sea uppercase tracking-wide flex items-center gap-2">
+          <span class="material-symbols-outlined text-gold">event_available</span> Schedule Class or Exam
+        </h3>
+        <p class="text-xs text-slate mt-0.5" id="modal-sch-date-display">Select event details</p>
+      </div>
+      <button onclick="closeScheduleModal()" aria-label="Close modal" class="text-slate hover:text-deep-sea p-1 rounded-lg hover:bg-gray-100 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <form onsubmit="saveScheduleEvent(event)">
+      <div class="modal-body space-y-4">
+        
+        <!-- Event Type Selection -->
+        <div>
+          <label class="form-label">Event Type *</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl border border-gray-200 bg-canvas hover:border-gold cursor-pointer transition-all has-[:checked]:bg-teal/10 has-[:checked]:border-teal has-[:checked]:text-teal">
+              <input type="radio" name="sch-type" value="online" checked onchange="toggleEventTypeFields()" class="hidden">
+              <span class="material-symbols-outlined text-xl">devices</span>
+              <span class="text-xs font-bold font-sub">Online Class</span>
+            </label>
+            <label class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl border border-gray-200 bg-canvas hover:border-gold cursor-pointer transition-all has-[:checked]:bg-amber-50 has-[:checked]:border-amber-500 has-[:checked]:text-amber-700">
+              <input type="radio" name="sch-type" value="exam" onchange="toggleEventTypeFields()" class="hidden">
+              <span class="material-symbols-outlined text-xl">quiz</span>
+              <span class="text-xs font-bold font-sub">Exam</span>
+            </label>
+            <label class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl border border-gray-200 bg-canvas hover:border-gold cursor-pointer transition-all has-[:checked]:bg-blue-50 has-[:checked]:border-blue-600 has-[:checked]:text-blue-700">
+              <input type="radio" name="sch-type" value="regular" onchange="toggleEventTypeFields()" class="hidden">
+              <span class="material-symbols-outlined text-xl">school</span>
+              <span class="text-xs font-bold font-sub">Offline Class</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Date & Time Row -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">Date *</label>
+            <input type="date" id="sch-event-date" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Time *</label>
+            <input type="time" id="sch-event-time" class="form-input" value="10:00" required>
+          </div>
+        </div>
+
+        <!-- Batch & Subject Row -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">Target Batch *</label>
+            <select id="sch-event-batch" class="form-input" required>
+              <option value="Batch A">Batch A (IMU-CET)</option>
+              <option value="Batch B">Batch B (DNS Prep)</option>
+              <option value="Batch C">Batch C (Sponsorship)</option>
+              <option value="All Batches">All Batches</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Subject / Title *</label>
+            <input type="text" id="sch-event-subject" list="subject-options" placeholder="e.g. Mathematics" class="form-input" required>
+            <datalist id="subject-options">
+              <option value="Mathematics"></option>
+              <option value="Physics"></option>
+              <option value="DNS / Nautical Science"></option>
+              <option value="English"></option>
+              <option value="General Knowledge"></option>
+              <option value="Aptitude & Reasoning"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <!-- ONLINE CLASS FIELDS (Meeting Link Box) -->
+        <div id="fields-online" class="p-3.5 rounded-xl bg-teal/5 border border-teal/20 space-y-2">
+          <label class="form-label text-teal flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">link</span> Meeting Link (Google Meet / Zoom / Teams) *
+          </label>
+          <input type="url" id="sch-event-link" placeholder="e.g. https://meet.google.com/abc-defg-hij" class="form-input border-teal/30 focus:border-teal">
+          <p class="text-[11px] text-slate">Students will see a "Join Class" button in their portal to launch this meeting directly.</p>
+        </div>
+
+        <!-- EXAM FIELDS (Duration & Instructions) -->
+        <div id="fields-exam" class="hidden p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 space-y-3">
+          <div>
+            <label class="form-label text-amber-800">Duration (Minutes)</label>
+            <input type="number" id="sch-event-duration" value="90" min="15" max="300" class="form-input">
+          </div>
+          <div>
+            <label class="form-label text-amber-800">Exam Instructions / Venue</label>
+            <textarea id="sch-event-instructions" rows="2" placeholder="e.g. Total Marks: 100. Scientific calculators allowed. Hall 1 or online test portal." class="form-input resize-none"></textarea>
+          </div>
+        </div>
+
+        <!-- REGULAR CLASS FIELDS (Room Number) -->
+        <div id="fields-regular" class="hidden p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
+          <label class="form-label text-blue-800">Classroom / Room Number</label>
+          <input type="text" id="sch-event-room" placeholder="e.g. Room 101, Hall 2" class="form-input">
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" onclick="closeScheduleModal()" class="btn-outline">Cancel</button>
+        <button type="submit" class="btn-gold flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">check_circle</span> Save Schedule
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ════════════════ JAVASCRIPT ════════════════ -->
+<script>
+'use strict';
+
+// ── Supabase client ──────────────────────────
+const SUPABASE_URL      = 'https://jqmivbtedttaczkuyxcn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxbWl2YnRlZHR0YWN6a3V5eGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNjM5NTgsImV4cCI6MjEwNjczOTk1OH0.4-5cZBFziRMcaeVEgTTrtwAz99N1EdJpolv2dp3zwzw';
+let sbClient = null;
+try {
+  if (window.supabase) {
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch(e) { console.warn('Supabase init error:', e); }
+
+// ── localStorage keys ────────────────────────
+const LS_NAME = 'sp_faculty_name';
+const LS_IMG  = 'sp_faculty_avatar';
+const LS_SCHEDULE = 'sp_faculty_schedule_events';
+
+// ── Set faculty name everywhere ──────────────
+function setFacultyName(name) {
+  const formatted = name ? (name.charAt(0).toUpperCase() + name.slice(1)) : 'Faculty';
+  document.getElementById('sb-faculty-name').textContent    = formatted;
+  document.getElementById('header-name').textContent         = formatted;
+  document.getElementById('dash-welcome-name').textContent   = formatted.toUpperCase();
+  document.getElementById('profile-display-name').textContent = formatted;
+  document.getElementById('pf-name').value                   = formatted;
+  document.getElementById('quick-name-input').value          = formatted !== 'Faculty' ? formatted : '';
+  localStorage.setItem(LS_NAME, formatted);
+}
+
+// ── Set avatar everywhere ────────────────────
+function setFacultyAvatar(dataUrl) {
+  // Sidebar
+  const sbWrap = document.getElementById('sb-avatar-wrap');
+  const sbIcon = document.getElementById('sb-avatar-icon');
+  const oldSb  = sbWrap.querySelector('img');
+  if (oldSb) oldSb.remove();
+  if (dataUrl) {
+    sbIcon.style.display = 'none';
+    const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Avatar', className: 'w-full h-full object-cover' });
+    sbWrap.appendChild(img);
+  } else { sbIcon.style.display = ''; }
+
+  // Header chip
+  const hdrWrap = document.getElementById('header-avatar-wrap');
+  const hdrIcon = document.getElementById('header-avatar-icon');
+  const oldHdr  = hdrWrap ? hdrWrap.querySelector('img') : null;
+  if (oldHdr) oldHdr.remove();
+  if (dataUrl && hdrWrap) {
+    hdrIcon.style.display = 'none';
+    const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Avatar', className: 'w-full h-full object-cover' });
+    hdrWrap.appendChild(img);
+  } else if (hdrIcon) { hdrIcon.style.display = ''; }
+
+  // Profile card
+  const pfWrap   = document.getElementById('profile-avatar-wrap');
+  const pfIcon   = document.getElementById('profile-avatar-icon');
+  const removeBtn = document.getElementById('remove-photo-btn');
+  const oldPf    = pfWrap.querySelector('img');
+  if (oldPf) oldPf.remove();
+  if (dataUrl) {
+    pfIcon.style.display = 'none';
+    const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Profile', className: 'w-full h-full object-cover' });
+    pfWrap.appendChild(img);
+    removeBtn.classList.remove('hidden');
+  } else {
+    pfIcon.style.display = '';
+    removeBtn.classList.add('hidden');
+  }
+
+  // Dashboard avatar
+  const dashWrap = document.getElementById('dash-avatar');
+  const dashIcon = document.getElementById('dash-avatar-icon');
+  const oldDash  = dashWrap ? dashWrap.querySelector('img') : null;
+  if (oldDash) oldDash.remove();
+  if (dataUrl && dashWrap) {
+    if (dashIcon) dashIcon.style.display = 'none';
+    const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Avatar', className: 'w-full h-full object-cover' });
+    dashWrap.appendChild(img);
+  } else if (dashIcon) { dashIcon.style.display = ''; }
+}
+
+// ── Avatar file upload ───────────────────────
+function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Please select a valid image.', 'error'); return; }
+  if (file.size > 5 * 1024 * 1024)    { toast('Image must be under 5 MB.', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    try { localStorage.setItem(LS_IMG, dataUrl); } catch(err) { toast('Image applied but too large to save permanently.', 'info'); }
+    setFacultyAvatar(dataUrl);
+    toast('Profile photo updated!', 'success');
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function removeAvatar() {
+  localStorage.removeItem(LS_IMG);
+  setFacultyAvatar(null);
+  toast('Profile photo removed.', 'info');
+}
+
+function applyQuickName() {
+  const val = document.getElementById('quick-name-input').value.trim();
+  if (!val) { toast('Please enter a name.', 'error'); return; }
+  setFacultyName(val);
+  toast('Name updated!', 'success');
+}
+
+// ── Logout ───────────────────────────────────
+async function doLogout() {
+  if (sbClient) await sbClient.auth.signOut();
+  window.location.href = 'login.html';
+}
+
+// ── Sidebar ──────────────────────────────────
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('show'); }
+
+// ── Tab switching ────────────────────────────
+const TAB_META = {
+  dashboard: ['Dashboard',       'Welcome back'],
+  classes:   ['My Classes',      'Your assigned class modules'],
+  students:  ['Students',        'Roster across your batches'],
+  materials: ['Upload Materials','Share notes and PDFs'],
+  notice:    ['Post Notice',     'Publish announcements'],
+  attendance:['Attendance',      'Mark and review class attendance'],
+  mocktests: ['Mock Tests',      'Create and manage tests'],
+  schedule:  ['Schedule',        'Your weekly class timetable'],
+  chat:      ['Faculty & Student Chat', 'Live communication with cadets and faculty'],
+  profile:   ['Profile',         'Manage your professional details'],
+};
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.getAttribute('onclick') === `switchTab('${id}')`);
+  });
+  document.querySelectorAll('.mobile-dock-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-tab') === id);
+  });
+  const tabEl = document.getElementById('tab-' + id);
+  if (tabEl) tabEl.classList.add('active');
+  const [title, sub] = TAB_META[id] || ['Portal', ''];
+  document.getElementById('page-title').textContent    = title;
+  document.getElementById('page-subtitle').textContent = sub;
+  if (window.innerWidth < 768) closeSidebar();
+  if (id === 'students')   renderStudents();
+  if (id === 'classes')    renderClasses();
+  if (id === 'materials')  renderMaterials();
+  if (id === 'notice')     renderNotices();
+  if (id === 'attendance') loadAttendanceRoster();
+  if (id === 'mocktests')  renderTests();
+  if (id === 'schedule')   { renderCalendar(); renderScheduledEventsList(); renderMobileSchedule('wed'); }
+  if (id === 'chat')       { loadChatMessages(); selectChatChannel('general'); }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── WEEKLY SCHEDULE DATA + MOBILE DAY RENDER ──────────────────
+const FACULTY_SCHEDULE_DATA = {
+  mon: [
+    { time: '07:30 AM', subject: 'Mathematics — Trigonometry', batch: 'Batch A', room: 'Room 101', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '10:00 AM', subject: 'Physics — Mechanics', batch: 'Batch B', room: 'Room 203', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Lunch Break & Faculty Meeting', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '04:30 PM', subject: 'Doubt Session — Open Q&A', batch: 'All Batches', room: 'Room 101', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+  ],
+  tue: [
+    { time: '10:00 AM', subject: 'Physics — Wave Optics', batch: 'Batch B', room: 'Room 203', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'DNS Nautical — Ship Stability', batch: 'Batch C', room: 'Room 305', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+  ],
+  wed: [
+    { time: '07:30 AM', subject: 'Mathematics — Calculus', batch: 'Batch A', room: 'Room 101', badge: 'Live Now', color: 'bg-emerald-100 text-emerald-700 font-bold' },
+    { time: '10:00 AM', subject: 'Physics — Optics', batch: 'Batch B', room: 'Room 203', badge: 'Upcoming', color: 'bg-blue-100 text-blue-700 font-semibold' },
+    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'Mock Test Supervision', batch: 'All Batches', room: 'Hall 1', badge: 'Exam', color: 'bg-amber-100 text-amber-700 font-bold' },
+    { time: '04:30 PM', subject: 'Doubt Session — Open Q&A', batch: 'All Batches', room: 'Room 101', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+  ],
+  thu: [
+    { time: '07:30 AM', subject: 'Mathematics — Algebra', batch: 'Batch A', room: 'Room 101', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'DNS Nautical — Navigation', batch: 'Batch C', room: 'Room 305', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+  ],
+  fri: [
+    { time: '10:00 AM', subject: 'Physics — Electricity', batch: 'Batch B', room: 'Room 203', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '04:30 PM', subject: 'Doubt Session — Physics Focus', batch: 'Batch B', room: 'Online', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+  ],
+  sat: [
+    { time: '07:30 AM', subject: 'Mathematics — Revision', batch: 'Batch A', room: 'Room 101', badge: 'Scheduled', color: 'bg-gold/20 text-gold border border-gold/30' },
+    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'GK Maritime Awareness Lecture', batch: 'All Batches', room: 'Hall 2', badge: 'Special', color: 'bg-teal/10 text-teal border border-teal/30' },
+  ]
+};
+
+let currentSchedDay = 'wed';
+
+function selectScheduleDay(day) {
+  currentSchedDay = day;
+  document.querySelectorAll('.sched-pill').forEach(p => {
+    p.classList.remove('active');
+    if (p.getAttribute('data-day') === day) p.classList.add('active');
+  });
+  renderMobileSchedule(day);
+}
+
+function renderMobileSchedule(day = 'wed') {
+  const container = document.getElementById('schedule-day-container');
+  if (!container) return;
+  const items = FACULTY_SCHEDULE_DATA[day] || [];
+  if (items.length === 0) {
+    container.innerHTML = `<p class="text-xs text-slate p-6 text-center bg-white rounded-2xl border border-gray-200">No classes assigned for this day.</p>`;
+    return;
+  }
+  container.innerHTML = items.map(item => `
+    <div class="flex items-center gap-3.5 p-4 rounded-2xl bg-white border border-gray-200 shadow-sm hover:border-gold/40 transition-colors">
+      <div class="w-16 text-center shrink-0 border-r border-gray-100 pr-3">
+        <p class="text-xs font-bold text-deep-sea">${item.time.split(' ')[0]}</p>
+        <p class="text-[10px] text-slate font-semibold uppercase">${item.time.split(' ')[1] || ''}</p>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-2 mb-1">
+          <p class="text-sm font-bold text-deep-sea truncate">${item.subject}</p>
+          <span class="badge ${item.color} shrink-0 text-[9px]">${item.badge}</span>
+        </div>
+        <p class="text-xs text-slate flex items-center gap-2">
+          <span>${item.batch}</span> · <span class="font-medium text-gray-700">${item.room}</span>
+        </p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleScheduleView(mode) {
+  const dayCont = document.getElementById('schedule-day-container');
+  const gridCont = document.getElementById('schedule-grid-container');
+  const dayPills = document.getElementById('sched-day-pills');
+  const btnDay = document.getElementById('btn-sched-dayview');
+  const btnGrid = document.getElementById('btn-sched-gridview');
+
+  if (mode === 'grid') {
+    dayCont?.classList.add('hidden');
+    dayPills?.classList.add('hidden');
+    gridCont?.classList.remove('hidden');
+    btnGrid?.classList.add('bg-deep-sea', 'text-white');
+    btnGrid?.classList.remove('text-slate');
+    btnDay?.classList.remove('bg-deep-sea', 'text-white');
+    btnDay?.classList.add('text-slate');
+  } else {
+    gridCont?.classList.add('hidden');
+    dayCont?.classList.remove('hidden');
+    dayPills?.classList.remove('hidden');
+    btnDay?.classList.add('bg-deep-sea', 'text-white');
+    btnDay?.classList.remove('text-slate');
+    btnGrid?.classList.remove('bg-deep-sea', 'text-white');
+    btnGrid?.classList.add('text-slate');
+    renderMobileSchedule(currentSchedDay);
+  }
+}
+
+// ── Toast ────────────────────────────────────
+function toast(msg, type = 'info') {
+  Toastify({
+    text: msg, duration: 3000, gravity: 'top', position: 'right',
+    style: { background: type==='success'?'#16A34A':type==='error'?'#DC2626':type==='gold'?'#C89B3C':'#0B2345', color:'#fff', fontFamily:'Montserrat', fontSize:'13px', borderRadius:'12px' }
+  }).showToast();
+}
+
+// ══════════════════════════════════════════════
+//  STATIC DATA
+// ══════════════════════════════════════════════
+const CLASSES_DATA = [
+  { id:1, subject:'Mathematics',       batch:'Batch A', schedule:'Mon / Wed / Fri – 07:30 AM', room:'Room 101', students:32, progress:72, icon:'calculate', color:'deep-sea' },
+  { id:2, subject:'Physics',           batch:'Batch B', schedule:'Mon / Tue / Wed / Fri – 10:00 AM', room:'Room 203', students:28, progress:60, icon:'biotech', color:'deep-sea' },
+  { id:3, subject:'DNS / Nautical',    batch:'Batch C', schedule:'Tue / Thu – 02:00 PM', room:'Room 305', students:20, progress:45, icon:'sailing', color:'deep-sea' },
+  { id:4, subject:'General Knowledge', batch:'All',     schedule:'Sat – 02:00 PM',    room:'Hall 2',    students:86, progress:55, icon:'travel_explore', color:'teal' },
+  { id:5, subject:'Mock Tests',        batch:'All',     schedule:'Wed – 02:00 PM',    room:'Hall 1',    students:86, progress:80, icon:'quiz',  color:'gold' },
+  { id:6, subject:'Doubt Sessions',    batch:'All',     schedule:'Mon / Wed / Fri – 04:30 PM', room:'Room 101', students:60, progress:90, icon:'help_outline', color:'deep-sea' },
+];
+
+const STUDENTS_DATA = [
+  { id:1,  name:'Arjun Sharma',    roll:'SP-2025-001', course:'IMU-CET',      batch:'A', attendance:88, last_score:82 },
+  { id:2,  name:'Kavitha Menon',   roll:'SP-2025-002', course:'DNS Prep',     batch:'B', attendance:92, last_score:91 },
+  { id:3,  name:'Rahul Pillai',    roll:'SP-2025-003', course:'Sponsorship',  batch:'C', attendance:76, last_score:71 },
+  { id:4,  name:'Sneha Iyer',      roll:'SP-2025-004', course:'IMU-CET',      batch:'A', attendance:95, last_score:56 },
+  { id:5,  name:'Vishnu Krishnan', roll:'SP-2025-005', course:'Entrance',     batch:'B', attendance:71, last_score:88 },
+  { id:6,  name:'Priya Nair',      roll:'SP-2025-006', course:'IMU-CET',      batch:'A', attendance:89, last_score:79 },
+  { id:7,  name:'Arun Menon',      roll:'SP-2025-007', course:'DNS Prep',     batch:'B', attendance:68, last_score:63 },
+  { id:8,  name:'Deepa Thomas',    roll:'SP-2025-008', course:'Sponsorship',  batch:'C', attendance:84, last_score:75 },
+  { id:9,  name:'Sanjay Varma',    roll:'SP-2025-009', course:'IMU-CET',      batch:'A', attendance:79, last_score:68 },
+  { id:10, name:'Anjali Singh',    roll:'SP-2025-010', course:'IMU-CET',      batch:'A', attendance:91, last_score:84 },
+  { id:11, name:'Nikhil Rao',      roll:'SP-2025-011', course:'DNS Prep',     batch:'B', attendance:62, last_score:55 },
+  { id:12, name:'Meera Suresh',    roll:'SP-2025-012', course:'Sponsorship',  batch:'C', attendance:88, last_score:80 },
+];
+
+let appMaterials = [
+  { id:1, title:'Trigonometry — Complete Notes', subject:'Mathematics', type:'PDF', batch:'All', date:'20 Sep 2026', desc:'Chapter-wise notes covering all identities and formulas.' },
+  { id:2, title:'Optics & Wave Theory',           subject:'Physics',     type:'PDF', batch:'Batch B', date:'18 Sep 2026', desc:'Reflection, refraction, and wave optics with diagrams.' },
+  { id:3, title:'Ship Stability Fundamentals',    subject:'DNS / Nautical', type:'PDF', batch:'Batch C', date:'15 Sep 2026', desc:'Metacentric height, buoyancy, and stability diagrams.' },
+  { id:4, title:'Current Affairs — Sep 2026',     subject:'General Knowledge', type:'PDF', batch:'All', date:'01 Oct 2026', desc:'Monthly current affairs for IMU-CET and sponsorship exams.' },
+  { id:5, title:'Mechanics Worksheet — Set 2',    subject:'Physics',     type:'Worksheet', batch:'Batch B', date:'10 Sep 2026', desc:'Practice problems on Newton\'s laws and friction.' },
+];
+
+let appNotices = [
+  { id:1, title:'October Exam Schedule Released', category:'Exam',    target:'All Students', date:'29 Sep 2026', content:'The October examination schedule has been uploaded. Please check the notice board.' },
+  { id:2, title:'Extra Class on Saturday',        category:'Academic', target:'Batch A',     date:'27 Sep 2026', content:'An additional Mathematics revision class will be held this Saturday at 9 AM.' },
+  { id:3, title:'Material Submission Deadline',   category:'General',  target:'All Students', date:'25 Sep 2026', content:'All assignment submissions must be made by 5 PM on 5th October 2026.' },
+];
+
+let appTests = [
+  { id:1, title:'IMU-CET Full Mock — Series 5', subject:'Full Syllabus', batch:'All Batches', duration:90, marks:100, date:'25 Sep 2026', responses:62 },
+  { id:2, title:'Mathematics — Calculus Sprint', subject:'Mathematics',   batch:'Batch A',    duration:30, marks:50,  date:'20 Sep 2026', responses:30 },
+  { id:3, title:'Physics — Optics Chapter Test', subject:'Physics',       batch:'Batch B',    duration:45, marks:50,  date:'18 Sep 2026', responses:26 },
+  { id:4, title:'DNS Navigation Basics',          subject:'DNS / Nautical',batch:'Batch C',   duration:60, marks:75,  date:'15 Sep 2026', responses:18 },
+];
+
+// ── Attendance roster data ───────────────────
+const ATT_ROSTERS = {
+  'math-a':    [{name:'Arjun Sharma'},{name:'Sneha Iyer'},{name:'Priya Nair'},{name:'Sanjay Varma'},{name:'Anjali Singh'},{name:'Rohan Das'},{name:'Leela Krishnan'},{name:'Manoj Pillai'}],
+  'physics-b': [{name:'Kavitha Menon'},{name:'Vishnu Krishnan'},{name:'Arun Menon'},{name:'Nikhil Rao'},{name:'Divya Rajan'},{name:'Suresh Kumar'},{name:'Bindu Nair'}],
+  'dns-c':     [{name:'Rahul Pillai'},{name:'Deepa Thomas'},{name:'Meera Suresh'},{name:'Thomas Varghese'},{name:'Anitha George'}],
+  'gk-all':    [{name:'Arjun Sharma'},{name:'Kavitha Menon'},{name:'Rahul Pillai'},{name:'Sneha Iyer'},{name:'Vishnu Krishnan'},{name:'Priya Nair'},{name:'Arun Menon'},{name:'Deepa Thomas'},{name:'Sanjay Varma'},{name:'Anjali Singh'},{name:'Nikhil Rao'},{name:'Meera Suresh'}],
+  'doubt-all': [{name:'Arjun Sharma'},{name:'Kavitha Menon'},{name:'Sneha Iyer'},{name:'Priya Nair'},{name:'Anjali Singh'},{name:'Arun Menon'},{name:'Deepa Thomas'}],
+};
+let attState = {}; // roll → 'P' | 'A'
+
+// ══════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════════════════
+
+function renderClasses() {
+  document.getElementById('classes-grid').innerHTML = CLASSES_DATA.map(c => `
+    <div class="card hover:shadow-md transition-shadow">
+      <div class="flex items-start justify-between mb-3">
+        <div class="w-11 h-11 rounded-xl bg-${c.color}/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-${c.color === 'gold' ? 'gold' : c.color === 'teal' ? 'teal' : 'deep-sea'} text-2xl">${c.icon}</span>
+        </div>
+        <span class="badge bg-canvas text-slate border border-gray-200">${c.batch}</span>
+      </div>
+      <h4 class="font-sub text-deep-sea font-semibold text-base uppercase tracking-wide">${c.subject}</h4>
+      <p class="text-xs text-slate mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span>${c.schedule}</p>
+      <p class="text-xs text-slate mt-0.5 flex items-center gap-1"><span class="material-symbols-outlined text-sm">meeting_room</span>${c.room}</p>
+      <div class="mt-3">
+        <div class="flex justify-between text-xs mb-1"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">${c.progress}%</span></div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:${c.progress}%"></div></div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button onclick="switchTab('students')" class="btn-outline flex-1 text-xs flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-sm">groups</span> Students (${c.students})
+        </button>
+        <button onclick="switchTab('attendance')" class="btn-primary text-xs px-3 flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">fact_check</span>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderStudents() {
+  const batchFilter  = document.getElementById('student-batch-filter')?.value || 'all';
+  const searchFilter = (document.getElementById('student-search')?.value || '').toLowerCase();
+  let rows = STUDENTS_DATA.filter(s => {
+    const batchOk  = batchFilter === 'all' || s.batch === batchFilter;
+    const searchOk = !searchFilter || s.name.toLowerCase().includes(searchFilter) || s.roll.toLowerCase().includes(searchFilter) || s.course.toLowerCase().includes(searchFilter);
+    return batchOk && searchOk;
+  });
+  const attBadge = a => a >= 85 ? `<span class="badge bg-emerald-100 text-emerald-700">${a}%</span>` : a >= 70 ? `<span class="badge bg-amber-100 text-amber-700">${a}%</span>` : `<span class="badge bg-red-100 text-red-600">${a}%</span>`;
+  const scoreBadge = s => s >= 80 ? `<span class="badge bg-emerald-100 text-emerald-700">${s}</span>` : s >= 60 ? `<span class="badge bg-amber-100 text-amber-700">${s}</span>` : `<span class="badge bg-red-100 text-red-600">${s}</span>`;
+  document.getElementById('students-tbody').innerHTML = rows.map(s => `
+    <tr>
+      <td><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-deep-sea/10 flex items-center justify-center text-deep-sea font-bold text-xs">${s.name.charAt(0)}</div>${s.name}</div></td>
+      <td class="font-mono text-xs">${s.roll}</td>
+      <td>${s.course}</td>
+      <td><span class="badge bg-blue-50 text-blue-700">Batch ${s.batch}</span></td>
+      <td>${attBadge(s.attendance)}</td>
+      <td>${scoreBadge(s.last_score)}</td>
+      <td><span class="badge bg-emerald-100 text-emerald-700">Active</span></td>
+    </tr>
+  `).join('') || '<tr><td colspan="7" class="text-center py-8 text-slate text-sm">No students found.</td></tr>';
+}
+
+function filterStudents() { renderStudents(); }
+
+function renderMaterials() {
+  document.getElementById('materials-list').innerHTML = appMaterials.map(m => `
+    <div class="mat-row">
+      <div class="mat-icon-wrap"><span class="material-symbols-outlined text-gold text-lg">description</span></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-deep-sea truncate">${m.title}</p>
+        <p class="text-xs text-slate">${m.subject} · ${m.type} · ${m.batch} · ${m.date}</p>
+      </div>
+      <button onclick="deleteMaterial(${m.id})" class="text-red-400 hover:text-red-600 transition-colors shrink-0" title="Delete">
+        <span class="material-symbols-outlined text-lg">delete</span>
+      </button>
+    </div>
+  `).join('') || '<p class="text-sm text-slate text-center py-6">No materials uploaded yet.</p>';
+}
+
+function uploadMaterial(e) {
+  e.preventDefault();
+  const title   = document.getElementById('m-title').value.trim();
+  const subject = document.getElementById('m-subject').value;
+  const type    = document.getElementById('m-type').value;
+  const batch   = document.getElementById('m-batch').value;
+  const desc    = document.getElementById('m-desc').value.trim();
+  if (!title || !subject) { toast('Title and subject are required.', 'error'); return; }
+  const mat = { id: Date.now(), title, subject, type, batch, desc, date: new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) };
+  appMaterials.unshift(mat);
+  renderMaterials();
+  e.target.reset();
+  toast(`✓ "${title}" uploaded!`, 'success');
+}
+
+function deleteMaterial(id) {
+  if (!confirm('Delete this material?')) return;
+  appMaterials = appMaterials.filter(m => m.id !== id);
+  renderMaterials();
+  toast('Material deleted.', 'error');
+}
+
+function renderNotices() {
+  const CAT_COLOR = { Exam:'bg-red-100 text-red-700', Academic:'bg-blue-100 text-blue-700', Urgent:'bg-red-100 text-red-700', Holiday:'bg-purple-100 text-purple-700', General:'bg-gray-100 text-gray-700' };
+  document.getElementById('notices-list').innerHTML = appNotices.map(n => `
+    <div class="notice-card">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="badge ${CAT_COLOR[n.category]||'bg-gray-100 text-gray-700'}">${n.category}</span>
+          <span class="text-[10px] text-slate">${n.date}</span>
+          <span class="text-[10px] text-teal ml-auto">${n.target}</span>
+        </div>
+        <p class="text-sm font-bold text-deep-sea">${n.title}</p>
+        <p class="text-xs text-slate mt-1 line-clamp-2">${n.content}</p>
+      </div>
+      <button onclick="deleteNotice(${n.id})" class="text-red-400 hover:text-red-600 transition-colors shrink-0 self-start mt-1" title="Delete">
+        <span class="material-symbols-outlined text-base">delete</span>
+      </button>
+    </div>
+  `).join('') || '<p class="text-sm text-slate text-center py-6">No notices posted yet.</p>';
+}
+
+function previewNotice() {
+  const title   = document.getElementById('n-title').value.trim();
+  const content = document.getElementById('n-content').value.trim();
+  if (!title && !content) { toast('Enter title and content first.', 'error'); return; }
+  document.getElementById('np-title').textContent   = title || '(No title)';
+  document.getElementById('np-content').textContent = content || '(No content)';
+  document.getElementById('notice-preview-box').classList.remove('hidden');
+}
+
+function postNotice(e) {
+  e.preventDefault();
+  const title    = document.getElementById('n-title').value.trim();
+  const content  = document.getElementById('n-content').value.trim();
+  const category = document.getElementById('n-category').value;
+  const target   = document.getElementById('n-target').value;
+  if (!title || !content) { toast('Title and content are required.', 'error'); return; }
+  const n = { id: Date.now(), title, content, category, target, date: new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) };
+  appNotices.unshift(n);
+  try { localStorage.setItem('sp_notices', JSON.stringify(appNotices)); } catch(err){}
+  renderNotices();
+  e.target.reset();
+  document.getElementById('notice-preview-box').classList.add('hidden');
+  toast('✓ Notice published!', 'success');
+}
+
+function deleteNotice(id) {
+  if (!confirm('Delete this notice?')) return;
+  appNotices = appNotices.filter(n => n.id !== id);
+  try { localStorage.setItem('sp_notices', JSON.stringify(appNotices)); } catch(err){}
+  renderNotices();
+  toast('Notice deleted.', 'error');
+}
+
+// ── Attendance ───────────────────────────────
+function loadAttendanceRoster() {
+  const cls  = document.getElementById('att-class')?.value || 'math-a';
+  const list = ATT_ROSTERS[cls] || [];
+  attState = {};
+  list.forEach((s, i) => attState[i] = 'P'); // default all present
+  renderRoster(list);
+}
+
+function renderRoster(list) {
+  document.getElementById('att-roster').innerHTML = list.map((s, i) => `
+    <div class="att-row">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-full bg-deep-sea/10 flex items-center justify-center text-deep-sea font-bold text-xs shrink-0">${s.name.charAt(0)}</div>
+        <span class="text-sm font-semibold text-deep-sea">${s.name}</span>
+      </div>
+      <div class="att-toggle">
+        <button id="btn-p-${i}" class="att-btn-present ${attState[i]==='P'?'active':''}" onclick="setAtt(${i},'P')">Present</button>
+        <button id="btn-a-${i}" class="att-btn-absent ${attState[i]==='A'?'active':''}"  onclick="setAtt(${i},'A')">Absent</button>
+      </div>
+    </div>
+  `).join('') || '<p class="text-sm text-slate py-4 text-center">No students in this class.</p>';
+  updateAttCount();
+}
+
+function setAtt(i, val) {
+  attState[i] = val;
+  const pBtn = document.getElementById('btn-p-' + i);
+  const aBtn = document.getElementById('btn-a-' + i);
+  if (pBtn) { pBtn.classList.toggle('active', val === 'P'); }
+  if (aBtn) { aBtn.classList.toggle('active', val === 'A'); }
+  updateAttCount();
+}
+
+function markAll(val) {
+  Object.keys(attState).forEach(i => setAtt(Number(i), val));
+}
+
+function updateAttCount() {
+  const total   = Object.keys(attState).length;
+  const present = Object.values(attState).filter(v => v === 'P').length;
+  const el = document.getElementById('att-count');
+  if (el) el.textContent = `${present}/${total} present`;
+}
+
+function submitAttendance() {
+  const total   = Object.keys(attState).length;
+  const present = Object.values(attState).filter(v => v === 'P').length;
+  if (total === 0) { toast('No students in roster.', 'error'); return; }
+  toast(`✓ Attendance saved — ${present}/${total} present`, 'success');
+}
+
+// ── Mock Tests ───────────────────────────────
+function renderTests() {
+  document.getElementById('tests-list').innerHTML = appTests.map(t => `
+    <div class="p-4 rounded-xl border border-gray-100 bg-canvas hover:border-gold/30 transition-colors">
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold text-deep-sea leading-snug">${t.title}</p>
+          <p class="text-xs text-slate mt-1">${t.subject} · ${t.batch} · ${t.duration} min · ${t.marks} marks</p>
+          <p class="text-xs text-teal mt-0.5"><span class="material-symbols-outlined text-sm align-middle">group</span> ${t.responses} responses</p>
+        </div>
+        <div class="flex gap-1 shrink-0">
+          <button onclick="toast('Edit functionality coming soon.','info')" class="p-1.5 rounded-lg hover:bg-gray-100 text-slate hover:text-deep-sea transition-colors" title="Edit">
+            <span class="material-symbols-outlined text-base">edit</span>
+          </button>
+          <button onclick="deleteTest(${t.id})" class="p-1.5 rounded-lg hover:bg-red-50 text-slate hover:text-red-500 transition-colors" title="Delete">
+            <span class="material-symbols-outlined text-base">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('') || '<p class="text-sm text-slate text-center py-6">No tests created yet.</p>';
+}
+
+function createTest(e) {
+  e.preventDefault();
+  const title    = document.getElementById('t-title').value.trim();
+  const subject  = document.getElementById('t-subject').value;
+  const batch    = document.getElementById('t-batch').value;
+  const duration = parseInt(document.getElementById('t-duration').value) || 90;
+  const marks    = parseInt(document.getElementById('t-marks').value) || 100;
+  const date     = document.getElementById('t-date').value || new Date().toISOString().split('T')[0];
+  if (!title) { toast('Test title is required.', 'error'); return; }
+  const t = { id: Date.now(), title, subject, batch, duration, marks, date, responses: 0 };
+  appTests.unshift(t);
+  renderTests();
+  e.target.reset();
+  document.getElementById('t-date').value = new Date().toISOString().split('T')[0];
+  toast(`✓ Test "${title}" created!`, 'success');
+}
+
+function deleteTest(id) {
+  if (!confirm('Delete this test?')) return;
+  appTests = appTests.filter(t => t.id !== id);
+  renderTests();
+  toast('Test deleted.', 'error');
+}
+
+// ══════════════════════════════════════════════
+//  SCHEDULE & CALENDAR LOGIC
+// ══════════════════════════════════════════════
+let currentCalYear = 2026;
+let currentCalMonth = 9; // 0-indexed: 9 = October
+
+const DEFAULT_SCHEDULE_EVENTS = [
+  {
+    id: 1,
+    type: 'online',
+    date: '2026-10-15',
+    time: '10:00',
+    batch: 'Batch A',
+    subject: 'Trigonometry & Calculus — Live Session',
+    link: 'https://meet.google.com/abc-defg-hij',
+    duration: 60
+  },
+  {
+    id: 2,
+    type: 'exam',
+    date: '2026-10-22',
+    time: '14:00',
+    batch: 'Batch B',
+    subject: 'Physics Optics & Wave Theory Exam',
+    duration: 90,
+    instructions: 'Total Marks: 100. Bring scientific calculator to Hall 1 or complete online portal.'
+  },
+  {
+    id: 3,
+    type: 'online',
+    date: '2026-10-05',
+    time: '14:30',
+    batch: 'Batch C',
+    subject: 'Ship Stability & Chartwork Interactive Workshop',
+    link: 'https://meet.google.com/xyz-uvwx-rst',
+    duration: 90
+  }
+];
+
+let appScheduleEvents = [];
+try {
+  const saved = localStorage.getItem(LS_SCHEDULE);
+  if (saved) {
+    appScheduleEvents = JSON.parse(saved);
+  } else {
+    appScheduleEvents = [...DEFAULT_SCHEDULE_EVENTS];
+    localStorage.setItem(LS_SCHEDULE, JSON.stringify(appScheduleEvents));
+  }
+} catch(e) {
+  appScheduleEvents = [...DEFAULT_SCHEDULE_EVENTS];
+}
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function changeMonth(delta) {
+  currentCalMonth += delta;
+  if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
+  if (currentCalMonth < 0)  { currentCalMonth = 11; currentCalYear--; }
+  renderCalendar();
+}
+
+function goToCurrentMonth() {
+  currentCalYear = 2026;
+  currentCalMonth = 9; // October
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const titleEl = document.getElementById('cal-month-title');
+  if (titleEl) titleEl.textContent = `${MONTH_NAMES[currentCalMonth]} ${currentCalYear}`;
+
+  const grid = document.getElementById('calendar-grid');
+  if (!grid) return;
+
+  const firstDay = new Date(currentCalYear, currentCalMonth, 1).getDay();
+  const daysInMonth = new Date(currentCalYear, currentCalMonth + 1, 0).getDate();
+  const prevMonthDays = new Date(currentCalYear, currentCalMonth, 0).getDate();
+
+  let html = '';
+
+  // Prev month trailing days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const dayNum = prevMonthDays - i;
+    html += `<div class="p-2 min-h-[70px] sm:min-h-[85px] rounded-xl bg-gray-50/50 border border-gray-100 opacity-40 text-xs select-none">
+      <span class="font-semibold text-slate">${dayNum}</span>
+    </div>`;
+  }
+
+  // Current month days
+  for (let day = 1; day <= daysInMonth; day++) {
+    const monthStr = String(currentCalMonth + 1).padStart(2, '0');
+    const dayStr   = String(day).padStart(2, '0');
+    const fullDate = `${currentCalYear}-${monthStr}-${dayStr}`;
+
+    const isToday = currentCalMonth === 9 && day === 1; // Example today indicator
+
+    const dayEvents = appScheduleEvents.filter(e => e.date === fullDate);
+
+    html += `
+      <div onclick="openScheduleModal('${fullDate}')"
+        class="p-2 min-h-[70px] sm:min-h-[85px] rounded-xl border transition-all cursor-pointer group flex flex-col justify-between ${isToday ? 'bg-gold/10 border-gold shadow-sm' : 'bg-white border-gray-200 hover:border-gold/60 hover:shadow-md'}">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-xs ${isToday ? 'text-gold' : 'text-deep-sea'}">${day}</span>
+          ${isToday ? '<span class="text-[9px] font-sub font-bold text-gold uppercase">Today</span>' : '<span class="material-symbols-outlined text-slate opacity-0 group-hover:opacity-100 text-sm">add_circle</span>'}
+        </div>
+        <div class="space-y-1 mt-1">
+          ${dayEvents.map(ev => {
+            if (ev.type === 'online') {
+              return `<div class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-teal text-white truncate" title="${ev.subject}">🌐 ${ev.time} ${ev.batch}</div>`;
+            } else if (ev.type === 'exam') {
+              return `<div class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-amber-500 text-white truncate" title="${ev.subject}">📝 ${ev.time} Exam</div>`;
+            } else {
+              return `<div class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-deep-sea text-white truncate" title="${ev.subject}">🏫 ${ev.time} Class</div>`;
+            }
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Next month leading days
+  const totalCells = firstDay + daysInMonth;
+  const remainingCells = (totalCells > 35 ? 42 : 35) - totalCells;
+  for (let d = 1; d <= remainingCells; d++) {
+    html += `<div class="p-2 min-h-[70px] sm:min-h-[85px] rounded-xl bg-gray-50/50 border border-gray-100 opacity-40 text-xs select-none">
+      <span class="font-semibold text-slate">${d}</span>
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function renderScheduledEventsList() {
+  const container = document.getElementById('scheduled-events-list');
+  const countBadge = document.getElementById('scheduled-events-count');
+
+  if (countBadge) countBadge.textContent = `${appScheduleEvents.length} Scheduled`;
+
+  if (!container) return;
+
+  if (appScheduleEvents.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8 text-slate text-xs bg-canvas rounded-xl border border-dashed border-gray-200">
+        <span class="material-symbols-outlined text-3xl block mb-1">event_busy</span>
+        No online classes or exams scheduled. Click "+ Schedule Class / Exam" to add one.
+      </div>`;
+    return;
+  }
+
+  const sorted = [...appScheduleEvents].sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+  container.innerHTML = sorted.map(ev => {
+    const isOnline  = ev.type === 'online';
+    const isExam    = ev.type === 'exam';
+
+    const typeBadge = isOnline
+      ? '<span class="badge bg-teal/10 text-teal border border-teal/30">🌐 Online Class</span>'
+      : isExam
+      ? '<span class="badge bg-amber-100 text-amber-700 border border-amber-300">📝 Exam</span>'
+      : '<span class="badge bg-blue-50 text-blue-700">🏫 Offline Class</span>';
+
+    let formattedDate = ev.date;
+    try {
+      const parts = ev.date.split('-');
+      const dt = new Date(parts[0], parts[1]-1, parts[2]);
+      formattedDate = dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    } catch(e){}
+
+    return `
+      <div class="p-4 rounded-xl border border-gray-200 bg-white hover:border-gold/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2 mb-1.5">
+            ${typeBadge}
+            <span class="badge bg-gray-100 text-gray-700">${ev.batch}</span>
+            <span class="text-xs text-slate font-semibold flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">calendar_today</span> ${formattedDate} at ${ev.time}
+            </span>
+          </div>
+          <h4 class="text-sm font-bold text-deep-sea leading-snug">${ev.subject}</h4>
+          ${isOnline && ev.link ? `
+            <div class="mt-2 flex items-center gap-2 text-xs text-slate bg-teal/5 p-2 rounded-lg border border-teal/20">
+              <span class="material-symbols-outlined text-teal text-base shrink-0">link</span>
+              <span class="truncate font-mono text-[11px] text-teal select-all">${ev.link}</span>
+            </div>
+          ` : ''}
+          ${isExam && ev.instructions ? `
+            <p class="text-xs text-slate mt-1 italic"><span class="font-semibold">Instructions:</span> ${ev.instructions}</p>
+          ` : ''}
+        </div>
+        
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+          ${isOnline && ev.link ? `
+            <a href="${ev.link}" target="_blank" rel="noopener noreferrer"
+              class="btn-gold text-xs py-1.5 px-3 flex items-center gap-1 text-white shadow-sm hover:shadow" title="Join Meeting">
+              <span class="material-symbols-outlined text-sm">video_call</span> Join Class
+            </a>
+            <button onclick="copyMeetingLink('${ev.link}')" class="p-2 rounded-xl border border-gray-200 text-slate hover:text-deep-sea hover:border-gold transition-colors" title="Copy Meeting Link">
+              <span class="material-symbols-outlined text-base">content_copy</span>
+            </button>
+          ` : ''}
+          <button onclick="deleteScheduleEvent(${ev.id})" class="p-2 rounded-xl border border-gray-200 text-red-400 hover:text-red-600 hover:border-red-200 transition-colors" title="Delete Schedule">
+            <span class="material-symbols-outlined text-base">delete</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyMeetingLink(link) {
+  navigator.clipboard.writeText(link).then(() => {
+    toast('Meeting link copied to clipboard!', 'success');
+  }).catch(() => {
+    toast('Link: ' + link, 'info');
+  });
+}
+
+function toggleEventTypeFields() {
+  const selectedType = document.querySelector('input[name="sch-type"]:checked')?.value || 'online';
+  document.getElementById('fields-online').classList.toggle('hidden', selectedType !== 'online');
+  document.getElementById('fields-exam').classList.toggle('hidden', selectedType !== 'exam');
+  document.getElementById('fields-regular').classList.toggle('hidden', selectedType !== 'regular');
+}
+
+function openScheduleModal(dateStr) {
+  const modal = document.getElementById('modal-schedule-event');
+  if (!modal) return;
+
+  const dateInput = document.getElementById('sch-event-date');
+  const targetDate = dateStr || new Date().toISOString().split('T')[0];
+  if (dateInput) dateInput.value = targetDate;
+
+  const subtitle = document.getElementById('modal-sch-date-display');
+  if (subtitle) {
+    try {
+      const parts = targetDate.split('-');
+      const dt = new Date(parts[0], parts[1]-1, parts[2]);
+      subtitle.textContent = `Scheduling for ${dt.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}`;
+    } catch(e) {
+      subtitle.textContent = `Scheduling for ${targetDate}`;
+    }
+  }
+
+  const onlineRadio = document.querySelector('input[name="sch-type"][value="online"]');
+  if (onlineRadio) onlineRadio.checked = true;
+  toggleEventTypeFields();
+
+  modal.classList.add('open');
+}
+
+function closeScheduleModal() {
+  const modal = document.getElementById('modal-schedule-event');
+  if (modal) modal.classList.remove('open');
+}
+
+function saveScheduleEvent(e) {
+  e.preventDefault();
+  const type     = document.querySelector('input[name="sch-type"]:checked')?.value || 'online';
+  const date     = document.getElementById('sch-event-date').value;
+  const time     = document.getElementById('sch-event-time').value || '10:00';
+  const batch    = document.getElementById('sch-event-batch').value;
+  const subject  = document.getElementById('sch-event-subject').value.trim();
+  const link     = document.getElementById('sch-event-link').value.trim();
+  const duration = parseInt(document.getElementById('sch-event-duration').value) || 90;
+  const instructions = document.getElementById('sch-event-instructions').value.trim();
+  const room     = document.getElementById('sch-event-room').value.trim();
+
+  if (!date || !subject) {
+    toast('Date and Subject are required.', 'error');
+    return;
+  }
+
+  if (type === 'online' && link && !link.startsWith('http')) {
+    toast('Meeting link should start with http:// or https://', 'error');
+    return;
+  }
+
+  const newEv = {
+    id: Date.now(),
+    type, date, time, batch, subject,
+    link: type === 'online' ? link : '',
+    duration: type === 'exam' ? duration : 60,
+    instructions: type === 'exam' ? instructions : '',
+    room: type === 'regular' ? room : ''
+  };
+
+  appScheduleEvents.unshift(newEv);
+  try {
+    localStorage.setItem(LS_SCHEDULE, JSON.stringify(appScheduleEvents));
+  } catch(err) {}
+
+  closeScheduleModal();
+  renderCalendar();
+  renderScheduledEventsList();
+
+  const label = type === 'online' ? 'Online Class' : type === 'exam' ? 'Exam' : 'Class';
+  toast(`✓ ${label} scheduled for ${batch} on ${date}!`, 'success');
+
+  document.getElementById('sch-event-subject').value = '';
+  document.getElementById('sch-event-link').value = '';
+}
+
+function deleteScheduleEvent(id) {
+  if (!confirm('Cancel/delete this scheduled event?')) return;
+  appScheduleEvents = appScheduleEvents.filter(ev => ev.id !== id);
+  try {
+    localStorage.setItem(LS_SCHEDULE, JSON.stringify(appScheduleEvents));
+  } catch(err) {}
+  renderCalendar();
+  renderScheduledEventsList();
+  toast('Schedule item deleted.', 'error');
+}
+
+// ── Profile Actions ──────────────────────────
+function saveProfile(e) {
+  e.preventDefault();
+  const name = document.getElementById('pf-name').value.trim();
+  if (name) setFacultyName(name);
+  const msg = document.getElementById('profile-save-msg');
+  msg.textContent = '✓ Profile updated successfully!';
+  msg.classList.remove('hidden');
+  toast('Profile saved!', 'success');
+  setTimeout(() => msg.classList.add('hidden'), 3000);
+}
+
+let currentFacultyEmail = '';
+let isCurrentPassVerified = false;
+
+function togglePasswordVisibility(inputId, btnEl) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const icon = btnEl.querySelector('.material-symbols-outlined');
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (icon) icon.textContent = 'visibility_off';
+  } else {
+    input.type = 'password';
+    if (icon) icon.textContent = 'visibility';
+  }
+}
+
+function resetPasswordSteps() {
+  isCurrentPassVerified = false;
+  const curPassInput = document.getElementById('pf-currentpass');
+  if (curPassInput) {
+    curPassInput.value = '';
+    curPassInput.readOnly = false;
+    curPassInput.classList.remove('border-red-500', 'bg-gray-50');
+  }
+  const errEl = document.getElementById('pw-verify-error');
+  if (errEl) errEl.classList.add('hidden');
+  
+  const tag = document.getElementById('pw-verified-tag');
+  if (tag) tag.classList.add('hidden');
+  
+  const btnVerify = document.getElementById('btn-verify-curpass');
+  if (btnVerify) {
+    btnVerify.classList.remove('hidden');
+    btnVerify.disabled = false;
+    btnVerify.innerHTML = '<span class="material-symbols-outlined text-sm">lock_open</span> Verify Current Password';
+  }
+  const btnReset = document.getElementById('btn-reset-curpass');
+  if (btnReset) btnReset.classList.add('hidden');
+
+  const step2 = document.getElementById('pw-step-2');
+  if (step2) step2.classList.add('hidden');
+
+  const stepBadge = document.getElementById('pw-step-badge');
+  if (stepBadge) {
+    stepBadge.classList.remove('bg-emerald-500');
+    stepBadge.classList.add('bg-amber-500');
+  }
+  const stepText = document.getElementById('pw-step-text');
+  if (stepText) stepText.textContent = 'Step 1 of 2';
+
+  const newPassInput = document.getElementById('pf-newpass');
+  if (newPassInput) newPassInput.value = '';
+  const confirmPassInput = document.getElementById('pf-confirmpass');
+  if (confirmPassInput) confirmPassInput.value = '';
+}
+
+async function verifyCurrentPassword(e) {
+  if (e) e.preventDefault();
+  const curPassInput = document.getElementById('pf-currentpass');
+  const curPass = curPassInput ? curPassInput.value : '';
+  const errEl = document.getElementById('pw-verify-error');
+  const errText = document.getElementById('pw-verify-error-text');
+  const btn = document.getElementById('btn-verify-curpass');
+
+  if (!curPass) {
+    if (errEl) {
+      errText.textContent = 'Please enter your current password.';
+      errEl.classList.remove('hidden');
+    }
+    curPassInput?.focus();
+    return;
+  }
+
+  if (!sbClient) {
+    toast('Authentication service unavailable. Please refresh.', 'error');
+    return;
+  }
+
+  // Resolve user email
+  let email = currentFacultyEmail;
+  if (!email) {
+    try {
+      const { data } = await sbClient.auth.getSession();
+      email = data?.session?.user?.email || document.getElementById('pf-email')?.value;
+      if (email) currentFacultyEmail = email;
+    } catch(err) {}
+  }
+
+  if (!email) {
+    toast('Unable to resolve logged in email. Please reload.', 'error');
+    return;
+  }
+
+  const origHTML = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Verifying with Supabase...';
+  }
+  if (errEl) errEl.classList.add('hidden');
+  curPassInput.classList.remove('border-red-500');
+
+  try {
+    const { data, error } = await sbClient.auth.signInWithPassword({
+      email: email,
+      password: curPass
+    });
+
+    if (error || !data.session) {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+      }
+      if (errEl) {
+        errText.textContent = 'Current password is incorrect. Please try again.';
+        errEl.classList.remove('hidden');
+      }
+      curPassInput.classList.add('border-red-500');
+      curPassInput.focus();
+      toast('Current password incorrect.', 'error');
+      return;
+    }
+
+    // Success: current password verified by Supabase
+    isCurrentPassVerified = true;
+    curPassInput.readOnly = true;
+    curPassInput.classList.remove('border-red-500');
+    curPassInput.classList.add('bg-gray-50');
+
+    if (btn) btn.classList.add('hidden');
+    const btnReset = document.getElementById('btn-reset-curpass');
+    if (btnReset) btnReset.classList.remove('hidden');
+
+    const tag = document.getElementById('pw-verified-tag');
+    if (tag) tag.classList.remove('hidden');
+
+    const stepBadge = document.getElementById('pw-step-badge');
+    if (stepBadge) {
+      stepBadge.classList.remove('bg-amber-500');
+      stepBadge.classList.add('bg-emerald-500');
+    }
+    const stepText = document.getElementById('pw-step-text');
+    if (stepText) stepText.textContent = 'Step 2 of 2: Set New Password';
+
+    // Smoothly reveal Step 2
+    const step2 = document.getElementById('pw-step-2');
+    if (step2) {
+      step2.classList.remove('hidden');
+      step2.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    toast('Current password verified! Now enter your new password.', 'success');
+    setTimeout(() => {
+      document.getElementById('pf-newpass')?.focus();
+    }, 200);
+
+  } catch(err) {
+    console.error('Verification error:', err);
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHTML;
+    }
+    toast('Error verifying password: ' + (err.message || 'Please try again.'), 'error');
+  }
+}
+
+async function updateNewPassword(e) {
+  if (e) e.preventDefault();
+  if (!isCurrentPassVerified) {
+    toast('Please verify your current password first.', 'error');
+    document.getElementById('pf-currentpass')?.focus();
+    return;
+  }
+
+  const curPass = document.getElementById('pf-currentpass')?.value || '';
+  const np = document.getElementById('pf-newpass')?.value || '';
+  const cp = document.getElementById('pf-confirmpass')?.value || '';
+
+  if (!np || np.length < 8) {
+    toast('New password must be at least 8 characters.', 'error');
+    document.getElementById('pf-newpass')?.focus();
+    return;
+  }
+
+  if (np !== cp) {
+    toast('New password and confirm password do not match.', 'error');
+    document.getElementById('pf-confirmpass')?.focus();
+    return;
+  }
+
+  if (np === curPass) {
+    toast('New password cannot be the same as your current password.', 'warning');
+    document.getElementById('pf-newpass')?.focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit-newpass');
+  const origHTML = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Updating in Supabase...';
+  }
+
+  if (!sbClient) {
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+    toast('Supabase not available. Please reload.', 'error');
+    return;
+  }
+
+  try {
+    const { error } = await sbClient.auth.updateUser({ password: np });
+
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+
+    if (error) {
+      toast('Error updating password: ' + error.message, 'error');
+      return;
+    }
+
+    toast('Password successfully updated in Supabase!', 'success');
+    resetPasswordSteps();
+
+  } catch(err) {
+    console.error('Update password error:', err);
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+    toast('Failed to update password: ' + (err.message || 'Please try again.'), 'error');
+  }
+}
+
+// Backward compatibility alias
+async function changePassword(e) {
+  if (!isCurrentPassVerified) {
+    await verifyCurrentPassword(e);
+  } else {
+    await updateNewPassword(e);
+  }
+}
+
+const myRole = 'Faculty';
+
+// ══════════════════════════════════════════════
+//  SHARED ACADEMY LIVE CHAT LOGIC
+// ══════════════════════════════════════════════
+const LS_CHAT_MESSAGES = 'sp_portal_chat_messages_v1';
+let activeChatChannelId = 'general';
+let chatSearchFilter = '';
+
+const CHANNELS_LIST = [
+  { id: 'general', name: 'General Discussion', type: 'channel', icon: 'forum', badge: 'Academy All', desc: 'Academy-wide chat for all cadets & faculty' },
+  { id: 'batch-a', name: 'Batch A (IMU-CET)', type: 'channel', icon: 'groups', badge: 'Batch A', desc: 'Discussion for Batch A cadets & faculty' },
+  { id: 'batch-b', name: 'Batch B (DNS Prep)', type: 'channel', icon: 'groups', badge: 'Batch B', desc: 'Discussion for Batch B cadets & faculty' },
+  { id: 'batch-c', name: 'Batch C (Sponsorship)', type: 'channel', icon: 'groups', badge: 'Batch C', desc: 'Discussion for Batch C cadets & faculty' },
+  { id: 'dm-sharma', name: 'Capt. R. Sharma', type: 'dm', icon: 'person', role: 'Faculty', title: 'Senior Lecturer · Math/Physics', online: true },
+  { id: 'dm-pillai', name: 'Capt. Arun Pillai', type: 'dm', icon: 'person', role: 'Faculty', title: 'Master Mariner · Seamanship', online: true },
+  { id: 'dm-arjun', name: 'Arjun Sharma', type: 'dm', icon: 'person', role: 'Cadet', title: 'Batch A Student', online: true },
+  { id: 'dm-kavitha', name: 'Kavitha Menon', type: 'dm', icon: 'person', role: 'Cadet', title: 'Batch B Student', online: true }
+];
+
+const SEED_CHAT_MESSAGES = [
+  {
+    id: 1,
+    channelId: 'general',
+    senderName: 'Capt. R. Sharma',
+    senderRole: 'Faculty',
+    avatarBg: '#0B2345',
+    text: 'Welcome Cadets to the Sindhupath Live Chat! Feel free to ask your doubts or queries here.',
+    timestamp: '09:00 AM'
+  },
+  {
+    id: 2,
+    channelId: 'general',
+    senderName: 'Arjun Sharma',
+    senderRole: 'Cadet',
+    avatarBg: '#C89B3C',
+    text: 'Good morning Captain! Will today\'s Trigonometry class be recorded?',
+    timestamp: '09:05 AM'
+  },
+  {
+    id: 3,
+    channelId: 'general',
+    senderName: 'Capt. R. Sharma',
+    senderRole: 'Faculty',
+    avatarBg: '#0B2345',
+    text: 'Yes Arjun! All live classes are archived in the Study Materials tab.',
+    timestamp: '09:08 AM'
+  },
+  {
+    id: 4,
+    channelId: 'batch-a',
+    senderName: 'Kavitha Menon',
+    senderRole: 'Cadet',
+    avatarBg: '#0D9488',
+    text: 'Has anyone finished Chapter 4 Calculus exercises?',
+    timestamp: '10:15 AM'
+  },
+  {
+    id: 5,
+    channelId: 'dm-sharma',
+    senderName: 'Capt. R. Sharma',
+    senderRole: 'Faculty',
+    avatarBg: '#0B2345',
+    text: 'Hello Cadet! Let me know if you need help with your IMU-CET preparations.',
+    timestamp: '11:00 AM'
+  }
+];
+
+let appChatMessages = [];
+
+function loadChatMessages() {
+  try {
+    const raw = localStorage.getItem(LS_CHAT_MESSAGES);
+    if (raw) {
+      appChatMessages = JSON.parse(raw);
+    } else {
+      appChatMessages = [...SEED_CHAT_MESSAGES];
+      localStorage.setItem(LS_CHAT_MESSAGES, JSON.stringify(appChatMessages));
+    }
+  } catch(e) {
+    appChatMessages = [...SEED_CHAT_MESSAGES];
+  }
+}
+
+// Live cross-tab / cross-window sync listener
+window.addEventListener('storage', (e) => {
+  if (e.key === LS_CHAT_MESSAGES) {
+    loadChatMessages();
+    renderChatMessages();
+    renderChatChannelsList();
+  }
+});
+
+function selectChatChannel(id) {
+  activeChatChannelId = id;
+  const channel = CHANNELS_LIST.find(c => c.id === id) || CHANNELS_LIST[0];
+
+  const titleEl = document.getElementById('chat-active-title');
+  const subEl   = document.getElementById('chat-active-sub');
+  const avatarEl = document.getElementById('chat-header-avatar');
+
+  if (titleEl) titleEl.textContent = channel.name;
+  if (subEl)   subEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> ${channel.desc || (channel.role ? channel.role + ' · ' + channel.title : 'Active Channel')}`;
+  if (avatarEl) {
+    if (channel.type === 'dm') {
+      avatarEl.innerHTML = `<span class="font-bold text-white text-sm">${channel.name.charAt(0)}</span>`;
+      avatarEl.style.background = channel.role === 'Faculty' ? '#0B2345' : '#C89B3C';
+    } else {
+      avatarEl.innerHTML = `<span class="material-symbols-outlined text-gold">${channel.icon || 'forum'}</span>`;
+      avatarEl.style.background = '#0B2345';
+    }
+  }
+
+  // On mobile screens, hide channels list and show message container
+  if (window.innerWidth < 1024) {
+    const chanCol = document.getElementById('chat-channels-col');
+    const msgCol  = document.getElementById('chat-messages-col');
+    if (chanCol) chanCol.classList.add('hidden');
+    if (msgCol)  { msgCol.classList.remove('hidden'); msgCol.classList.add('flex'); }
+  }
+
+  renderChatChannelsList();
+  renderChatMessages();
+}
+
+function showMobileChatChannels() {
+  const chanCol = document.getElementById('chat-channels-col');
+  const msgCol  = document.getElementById('chat-messages-col');
+  if (chanCol) chanCol.classList.remove('hidden');
+  if (msgCol)  { msgCol.classList.add('hidden'); msgCol.classList.remove('flex'); }
+}
+
+function filterChatChannels() {
+  chatSearchFilter = (document.getElementById('chat-search')?.value || '').toLowerCase();
+  renderChatChannelsList();
+}
+
+function renderChatChannelsList() {
+  const container = document.getElementById('chat-channels-list');
+  if (!container) return;
+
+  const filtered = CHANNELS_LIST.filter(c => !chatSearchFilter || c.name.toLowerCase().includes(chatSearchFilter) || (c.title && c.title.toLowerCase().includes(chatSearchFilter)));
+
+  let html = '';
+
+  const channels = filtered.filter(c => c.type === 'channel');
+  if (channels.length > 0) {
+    html += `<p class="px-3 pt-2 pb-1 text-[10px] font-bold text-slate uppercase tracking-wider">Group Channels</p>`;
+    channels.forEach(c => {
+      const active = c.id === activeChatChannelId;
+      html += `
+        <div onclick="selectChatChannel('${c.id}')"
+          class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all ${active ? 'bg-deep-sea text-white font-bold shadow-sm' : 'hover:bg-white text-gray-700 hover:text-deep-sea'}">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="material-symbols-outlined text-lg ${active ? 'text-gold' : 'text-slate'}">${c.icon}</span>
+            <span class="text-xs truncate">${c.name}</span>
+          </div>
+          ${c.badge ? `<span class="badge ${active ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-gray-200 text-gray-600'} text-[9px]">${c.badge}</span>` : ''}
+        </div>
+      `;
+    });
+  }
+
+  const dms = filtered.filter(c => c.type === 'dm');
+  if (dms.length > 0) {
+    html += `<p class="px-3 pt-3 pb-1 text-[10px] font-bold text-slate uppercase tracking-wider">Direct Messages</p>`;
+    dms.forEach(c => {
+      const active = c.id === activeChatChannelId;
+      const badgeColor = c.role === 'Faculty' ? 'bg-teal/20 text-teal border border-teal/30' : 'bg-gold/20 text-gold border border-gold/30';
+      html += `
+        <div onclick="selectChatChannel('${c.id}')"
+          class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all ${active ? 'bg-deep-sea text-white font-bold shadow-sm' : 'hover:bg-white text-gray-700 hover:text-deep-sea'}">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 text-white" style="background:${c.role === 'Faculty' ? '#0B2345' : '#C89B3C'}">
+              ${c.name.charAt(0)}
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs truncate leading-tight">${c.name}</p>
+              <p class="text-[10px] ${active ? 'text-white/70' : 'text-slate'} truncate">${c.title || c.role}</p>
+            </div>
+          </div>
+          <span class="badge ${badgeColor} text-[9px]">${c.role}</span>
+        </div>
+      `;
+    });
+  }
+
+  container.innerHTML = html || `<p class="text-xs text-slate p-4 text-center">No channels found.</p>`;
+}
+
+function renderChatMessages() {
+  const container = document.getElementById('chat-messages-container');
+  if (!container) return;
+
+  const currentUserName = (typeof LS_NAME !== 'undefined' && localStorage.getItem(LS_NAME)) || (document.getElementById('pf-name')?.value) || 'Faculty';
+  const channelMessages = appChatMessages.filter(m => m.channelId === activeChatChannelId);
+
+  if (channelMessages.length === 0) {
+    container.innerHTML = `
+      <div class="h-full flex flex-col items-center justify-center text-center p-8 text-slate">
+        <span class="material-symbols-outlined text-4xl text-gray-300 mb-2">chat_bubble_outline</span>
+        <p class="text-xs font-semibold">No messages in this chat yet.</p>
+        <p class="text-[11px] text-slate/70 mt-0.5">Send a message below to start the conversation!</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = channelMessages.map(m => {
+    const isMe = m.senderName === currentUserName || m.senderName.toLowerCase().startsWith(currentUserName.toLowerCase());
+    const isFaculty = m.senderRole === 'Faculty';
+
+    return `
+      <div class="flex items-start gap-2.5 ${isMe ? 'flex-row-reverse' : ''}">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm" style="background:${isFaculty ? '#0B2345' : '#C89B3C'}">
+          ${m.senderName.charAt(0)}
+        </div>
+        
+        <div class="max-w-[75%] sm:max-w-[65%]">
+          <div class="flex items-center gap-2 mb-1 ${isMe ? 'justify-end' : ''}">
+            <span class="text-[11px] font-bold ${isMe ? 'text-deep-sea' : 'text-gray-700'}">${m.senderName}</span>
+            <span class="badge ${isFaculty ? 'bg-teal/20 text-teal border border-teal/30' : 'bg-gold/20 text-gold border border-gold/30'} text-[8px]">${m.senderRole}</span>
+            <span class="text-[10px] text-slate">${m.timestamp}</span>
+          </div>
+          
+          <div class="p-3 rounded-2xl text-xs leading-relaxed shadow-sm ${isMe ? 'bg-deep-sea text-white rounded-tr-none' : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'}">
+            ${m.text}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+function handleSendChatMessage(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('chat-input-text');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  const currentUserName = (typeof LS_NAME !== 'undefined' && localStorage.getItem(LS_NAME)) || (document.getElementById('pf-name')?.value) || 'Faculty';
+  const currentUserRole = 'Faculty';
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+  const newMsg = {
+    id: Date.now(),
+    channelId: activeChatChannelId,
+    senderName: currentUserName,
+    senderRole: currentUserRole,
+    avatarBg: '#0B2345',
+    text: text,
+    timestamp: timeStr
+  };
+
+  appChatMessages.push(newMsg);
+  try {
+    localStorage.setItem(LS_CHAT_MESSAGES, JSON.stringify(appChatMessages));
+  } catch(err) {}
+
+  input.value = '';
+  renderChatMessages();
+  toast('Message sent!', 'success');
+}
+
+function sendQuickReply(txt) {
+  const input = document.getElementById('chat-input-text');
+  if (input) {
+    input.value = txt;
+    handleSendChatMessage();
+  }
+}
+
+function resetChatMessages() {
+  if (!confirm('Reset chat to initial sample messages?')) return;
+  appChatMessages = [...SEED_CHAT_MESSAGES];
+  try {
+    localStorage.setItem(LS_CHAT_MESSAGES, JSON.stringify(appChatMessages));
+  } catch(err) {}
+  renderChatMessages();
+  toast('Chat messages reset.', 'info');
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+(async function init() {
+  // ── Verify Supabase session (redirect if not logged in) ──
+  if (sbClient) {
+    try {
+      const { data: { session } } = await sbClient.auth.getSession();
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+      currentFacultyEmail = session.user?.email || '';
+      // Pre-fill email from live session (read-only)
+      const emailEl = document.getElementById('pf-email');
+      if (emailEl) { emailEl.value = session.user.email; emailEl.readOnly = true; }
+    } catch(err) {
+      console.warn('Session check warning:', err);
+    }
+  }
+
+  // Set today's date in attendance date picker
+  const attDate = document.getElementById('att-date');
+  if (attDate) attDate.value = new Date().toISOString().split('T')[0];
+
+  // Set test date default
+  const tDate = document.getElementById('t-date');
+  if (tDate) tDate.value = new Date().toISOString().split('T')[0];
+
+  // Restore name and avatar from localStorage
+  const savedName = localStorage.getItem(LS_NAME);
+  setFacultyName(savedName || 'Faculty');
+  const savedImg = localStorage.getItem(LS_IMG);
+  if (savedImg) setFacultyAvatar(savedImg);
+
+
+  // Pre-load attendance for default class
+  loadAttendanceRoster();
+
+  // Render calendar & scheduled events
+  renderCalendar();
+  renderScheduledEventsList();
+
+  // Load chat messages
+  loadChatMessages();
+
+  // Close modal on Escape key
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeScheduleModal();
+    }
+  });
+})();
+</script>
+
+<!-- Mobile Bottom Dock (md:hidden) -->
+<nav id="mobile-bottom-dock" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 px-1 py-1 flex items-center justify-around shadow-lg pb-[max(0.5rem,env(safe-area-inset-bottom))] select-none">
+  <button type="button" class="mobile-dock-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
+    <span class="material-symbols-outlined text-xl">dashboard</span>
+    <span>Home</span>
+  </button>
+  <button type="button" class="mobile-dock-btn" data-tab="attendance" onclick="switchTab('attendance')">
+    <span class="material-symbols-outlined text-xl">fact_check</span>
+    <span>Attendance</span>
+  </button>
+  <button type="button" class="mobile-dock-btn" data-tab="materials" onclick="switchTab('materials')">
+    <span class="material-symbols-outlined text-xl">upload_file</span>
+    <span>Materials</span>
+  </button>
+  <button type="button" class="mobile-dock-btn" data-tab="schedule" onclick="switchTab('schedule')">
+    <span class="material-symbols-outlined text-xl">calendar_month</span>
+    <span>Schedule</span>
+  </button>
+  <button type="button" class="mobile-dock-btn" data-tab="chat" onclick="switchTab('chat')">
+    <span class="material-symbols-outlined text-xl">forum</span>
+    <span>Chat</span>
+  </button>
+  <button type="button" class="mobile-dock-btn" onclick="openSidebar()">
+    <span class="material-symbols-outlined text-xl">menu</span>
+    <span>More</span>
+  </button>
+</nav>
+
+</body>
+</html>
