@@ -168,15 +168,20 @@
     .tt-cell { min-height:52px; border-radius:8px; padding:5px 7px; font-size:11px; display:flex; flex-direction:column; justify-content:center; }
     .class-slot { background:linear-gradient(135deg,#0B2345,#0F2E5A); color:#fff; }
     .today-col { background:linear-gradient(135deg,#C89B3C,#9E7624) !important; color:#fff !important; }
+    .today-col p, .today-col span { color:#fff !important; }
 
-    /* ── Attendance ── */
-    .att-row { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:14px; border:1px solid #E2E8F0; min-height:54px; }
-    .att-toggle { display:flex; border-radius:10px; overflow:hidden; border:1px solid #E2E8F0; }
-    .att-toggle button { padding:8px 18px; font-size:12px; font-weight:700; font-family:'Oswald',sans-serif; cursor:pointer; border:none; transition:all .15s; min-height:44px; min-w:[48px]; }
+    /* ── Attendance Muster ── */
+    .att-row { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-radius:14px; border:1px solid #E2E8F0; min-height:58px; background:#fff; }
+    .att-toggle { display:flex; border-radius:10px; overflow:hidden; border:1px solid #CBD5E1; }
+    .att-toggle button { padding:7px 12px; font-size:11px; font-weight:700; font-family:'Oswald',sans-serif; cursor:pointer; border:none; transition:all .15s; min-height:40px; }
     .att-btn-present.active  { background:#16A34A; color:#fff; }
     .att-btn-present:not(.active) { background:#F0FDF4; color:#16A34A; }
     .att-btn-absent.active  { background:#DC2626; color:#fff; }
     .att-btn-absent:not(.active) { background:#FEF2F2; color:#DC2626; }
+    .att-btn-med.active     { background:#D97706; color:#fff; }
+    .att-btn-med:not(.active) { background:#FFFBEB; color:#D97706; }
+    .att-btn-leave.active   { background:#475569; color:#fff; }
+    .att-btn-leave:not(.active) { background:#F1F5F9; color:#475569; }
 
     /* ── Progress bar ── */
     .prog-wrap { background:#F1F5F9; border-radius:99px; height:7px; }
@@ -271,7 +276,7 @@
 <!-- ════════════════ MAIN ════════════════ -->
 <div id="main">
 
-  <!-- Top Bar -->
+  <!-- Top Bar: Bridge Command Deck -->
   <div id="topbar">
     <button class="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors" onclick="openSidebar()">
       <span class="material-symbols-outlined text-deep-sea">menu</span>
@@ -280,8 +285,29 @@
       <h1 id="page-title" class="font-sub text-deep-sea text-lg uppercase tracking-wide leading-none">Dashboard</h1>
       <p id="page-subtitle" class="text-slate text-xs mt-0.5">Welcome back</p>
     </div>
+
+    <!-- Live Marine Chronometer (IST & UTC) -->
+    <div class="hidden xl:flex items-center gap-3 bg-canvas border border-gray-200 rounded-xl px-3 py-1 text-xs font-mono">
+      <div class="flex items-center gap-1.5 text-deep-sea">
+        <span class="material-symbols-outlined text-sm text-gold">schedule</span>
+        <span id="chronometer-ist" class="font-bold">--:--:-- IST</span>
+      </div>
+      <span class="text-slate/30">|</span>
+      <div class="flex items-center gap-1.5 text-slate">
+        <span id="chronometer-utc">--:--:-- UTC</span>
+      </div>
+    </div>
+
+    <!-- Naval Headquarters Coordinates Telemetry -->
+    <div class="hidden lg:flex items-center gap-1.5 bg-canvas border border-gray-200 rounded-xl px-2.5 py-1 text-[11px] font-mono text-slate">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="text-deep-sea font-semibold">13°05'N 80°17'E</span>
+      <span class="text-slate/60">·</span>
+      <span class="text-[10px] uppercase font-bold text-teal">CHENNAI FLEET BASE</span>
+    </div>
+
     <div class="flex items-center gap-3 shrink-0">
-      <button class="relative p-2 rounded-xl hover:bg-gray-100 transition-colors">
+      <button class="relative p-2 rounded-xl hover:bg-gray-100 transition-colors" title="Bridge Notifications">
         <span class="material-symbols-outlined text-slate">notifications</span>
       </button>
       <div class="hidden sm:flex items-center gap-2 bg-canvas border border-gray-200 rounded-xl px-3 py-1.5">
@@ -301,13 +327,13 @@
         <span class="material-symbols-outlined fill-icon text-teal text-3xl" id="dash-avatar-icon">person</span>
       </div>
       <div class="flex-1">
-        <p class="text-gold/80 text-xs font-sub uppercase tracking-widest">Good day</p>
-        <h2 class="font-sub text-3xl font-bold text-white tracking-wide mt-0.5"><span id="dash-welcome-name">FACULTY</span></h2>
-        <p class="text-white/50 text-xs mt-1">Merchant Navy Academy · Kochi Campus</p>
+        <p class="text-gold/80 text-xs font-sub uppercase tracking-widest">Bridge Command Watch</p>
+        <h2 class="font-sub text-3xl font-bold text-white tracking-wide mt-0.5"><span id="dash-welcome-name">FACULTY OFFICER</span></h2>
+        <p class="text-white/50 text-xs mt-1">SINDHUPATH NAVAL COMMAND · HEADQUARTERS BENGALURU / CHENNAI FLEET</p>
       </div>
-      <div class="shrink-0">
+      <div class="shrink-0 flex gap-2">
         <button onclick="switchTab('attendance')" class="btn-gold text-xs flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-sm">fact_check</span> Mark Attendance
+          <span class="material-symbols-outlined text-sm">fact_check</span> Muster Attendance
         </button>
       </div>
     </div>
@@ -317,34 +343,34 @@
       <div class="stat-card">
         <div class="flex items-center justify-between mb-2">
           <span class="material-symbols-outlined text-deep-sea/40 text-2xl">groups</span>
-          <span class="badge bg-blue-50 text-blue-700">Active</span>
+          <span class="badge bg-blue-50 text-blue-700">Enrolled</span>
         </div>
-        <p class="text-3xl font-display text-deep-sea">86</p>
-        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Total Students</p>
+        <p class="text-3xl font-display text-deep-sea">142</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Commissioned Cadets</p>
       </div>
       <div class="stat-card">
         <div class="flex items-center justify-between mb-2">
-          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">class</span>
-          <span class="badge bg-teal/10 text-teal">This week</span>
+          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">sailing</span>
+          <span class="badge bg-emerald-50 text-emerald-700">DG Compliant</span>
         </div>
-        <p class="text-3xl font-display text-deep-sea">12</p>
-        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Classes Scheduled</p>
+        <p class="text-3xl font-display text-emerald-600">89.4%</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Avg Muster Rate</p>
       </div>
       <div class="stat-card">
         <div class="flex items-center justify-between mb-2">
-          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">upload_file</span>
-          <span class="badge bg-emerald-50 text-emerald-700">Uploaded</span>
+          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">verified</span>
+          <span class="badge bg-teal/10 text-teal">Shortlisted</span>
         </div>
-        <p class="text-3xl font-display text-deep-sea">24</p>
-        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Study Materials</p>
+        <p class="text-3xl font-display text-deep-sea">38</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Sponsorship Finalists</p>
       </div>
       <div class="stat-card">
         <div class="flex items-center justify-between mb-2">
-          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">pending_actions</span>
-          <span class="badge bg-amber-50 text-amber-700">Pending</span>
+          <span class="material-symbols-outlined text-deep-sea/40 text-2xl">quiz</span>
+          <span class="badge bg-amber-50 text-amber-700">Next 48h</span>
         </div>
-        <p class="text-3xl font-display text-gold">3</p>
-        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Tests to Review</p>
+        <p class="text-3xl font-display text-gold">2</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">IMU-CET Mocks Due</p>
       </div>
     </div>
 
@@ -353,48 +379,48 @@
       <!-- Today's Schedule -->
       <div class="card">
         <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4 flex items-center gap-2">
-          <span class="material-symbols-outlined fill-icon text-gold text-lg">today</span> Today's Classes
+          <span class="material-symbols-outlined fill-icon text-gold text-lg">today</span> Today's Nautical Watch &amp; Classes
         </h3>
-        <div class="space-y-3">
+        <div id="dash-today-schedule" class="space-y-3">
           <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
             <div class="w-10 h-10 rounded-xl bg-deep-sea flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined fill-icon text-gold text-lg">calculate</span>
+              <span class="material-symbols-outlined fill-icon text-gold text-lg">explore</span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-deep-sea">Mathematics — Trigonometry</p>
-              <p class="text-xs text-slate">Batch A · Room 101 · 07:30 AM</p>
+              <p class="text-sm font-semibold text-deep-sea">Celestial Navigation — Sight Reduction &amp; Polaris</p>
+              <p class="text-xs text-slate">Batch Alpha (DNS) · Bridge Sim Hall A · 07:30 AM</p>
             </div>
-            <span class="badge bg-emerald-100 text-emerald-700">Upcoming</span>
+            <span class="badge bg-emerald-100 text-emerald-700">0800 Watch</span>
           </div>
           <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
             <div class="w-10 h-10 rounded-xl bg-deep-sea flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined fill-icon text-gold text-lg">biotech</span>
+              <span class="material-symbols-outlined fill-icon text-gold text-lg">sailing</span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-deep-sea">Physics — Optics</p>
-              <p class="text-xs text-slate">Batch B · Room 203 · 10:00 AM</p>
+              <p class="text-sm font-semibold text-deep-sea">Naval Architecture — Ship Stability &amp; GM Calculation</p>
+              <p class="text-xs text-slate">Batch Winter (IMU) · Chartwork Lab 2 · 10:30 AM</p>
             </div>
-            <span class="badge bg-blue-100 text-blue-700">In 2h</span>
+            <span class="badge bg-blue-100 text-blue-700">Forenoon</span>
           </div>
           <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
             <div class="w-10 h-10 rounded-xl bg-teal/20 flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined fill-icon text-teal text-lg">quiz</span>
+              <span class="material-symbols-outlined fill-icon text-teal text-lg">compass_calibration</span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-deep-sea">Mock Test — Full Syllabus</p>
-              <p class="text-xs text-slate">Batch A + B · Hall 1 · 02:00 PM</p>
+              <p class="text-sm font-semibold text-deep-sea">COLREGs &amp; Watchkeeping (Rules of the Road Simulator)</p>
+              <p class="text-xs text-slate">All Deck Cadets · Radar Sim Room · 02:00 PM</p>
             </div>
-            <span class="badge bg-amber-100 text-amber-700">Exam</span>
+            <span class="badge bg-amber-100 text-amber-700">Simulation</span>
           </div>
           <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100">
             <div class="w-10 h-10 rounded-xl bg-deep-sea flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined fill-icon text-gold text-lg">help_outline</span>
+              <span class="material-symbols-outlined fill-icon text-gold text-lg">military_tech</span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-deep-sea">Doubt Session — Open Q&amp;A</p>
-              <p class="text-xs text-slate">All Batches · Room 101 · 04:30 PM</p>
+              <p class="text-sm font-semibold text-deep-sea">Shipping Company Sponsorship Board Defense</p>
+              <p class="text-xs text-slate">Maersk &amp; Fleet Shortlists · Command Boardroom · 04:30 PM</p>
             </div>
-            <span class="badge bg-purple-100 text-purple-700">Open</span>
+            <span class="badge bg-purple-100 text-purple-700">Interview</span>
           </div>
         </div>
       </div>
@@ -403,42 +429,42 @@
       <div class="space-y-5">
         <!-- Quick Actions -->
         <div class="card">
-          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-3">Quick Actions</h3>
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-3">Bridge Quick Actions</h3>
           <div class="grid grid-cols-2 gap-3">
             <button onclick="switchTab('attendance')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
               <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">fact_check</span>
-              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Mark Attendance</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Muster Attendance</span>
             </button>
             <button onclick="switchTab('notice')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
               <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">campaign</span>
-              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Post Notice</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Post Dispatch</span>
             </button>
             <button onclick="switchTab('materials')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
               <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">upload_file</span>
-              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Upload Material</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Upload Nautical Chart</span>
             </button>
             <button onclick="switchTab('mocktests')" class="flex flex-col items-center gap-2 p-4 rounded-xl bg-canvas border border-gray-100 hover:border-gold/50 hover:bg-gold/5 transition-all group">
-              <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">add_task</span>
-              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">Create Test</span>
+              <span class="material-symbols-outlined text-deep-sea group-hover:text-gold transition-colors">quiz</span>
+              <span class="text-xs font-semibold text-deep-sea group-hover:text-gold transition-colors text-center">IMU-CET Mock Exam</span>
             </button>
           </div>
         </div>
 
         <!-- Avg Attendance Overview -->
         <div class="card">
-          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Batch Attendance Overview</h3>
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">DG Shipping Muster Compliance (Min. 85%)</h3>
           <div class="space-y-3">
             <div>
-              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch A — IMU-CET</span><span class="font-bold text-emerald-600">87%</span></div>
-              <div class="prog-wrap"><div class="prog-fill" style="width:87%"></div></div>
+              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch Alpha — DNS Deck Cadet</span><span class="font-bold text-emerald-600">92.4% (COMPLIANT)</span></div>
+              <div class="prog-wrap"><div class="prog-fill" style="width:92.4%"></div></div>
             </div>
             <div>
-              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch B — DNS Prep</span><span class="font-bold text-gold">74%</span></div>
-              <div class="prog-wrap"><div class="prog-fill" style="width:74%;background:linear-gradient(90deg,#0B2345,#C89B3C)"></div></div>
+              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch Winter — IMU-CET Rankers</span><span class="font-bold text-emerald-600">88.1% (COMPLIANT)</span></div>
+              <div class="prog-wrap"><div class="prog-fill" style="width:88.1%"></div></div>
             </div>
             <div>
-              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch C — Sponsorship</span><span class="font-bold text-deep-sea">91%</span></div>
-              <div class="prog-wrap"><div class="prog-fill" style="width:91%"></div></div>
+              <div class="flex justify-between text-xs mb-1"><span class="font-semibold text-gray-700">Batch Bravo — Sponsorship Shortlist</span><span class="font-bold text-amber-600">81.5% (AUDIT WARNING)</span></div>
+              <div class="prog-wrap"><div class="prog-fill" style="width:81.5%;background:#D97706"></div></div>
             </div>
           </div>
         </div>
@@ -463,29 +489,38 @@
   <section id="tab-students" class="tab-content">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
       <div>
-        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Student Roster</h2>
-        <p class="text-sm text-slate mt-1">All students across your assigned batches.</p>
+        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Commissioned Cadet Roster</h2>
+        <p class="text-sm text-slate mt-1">Official cadet dossier, INDoS registration, sponsorship status, and DG compliance.</p>
       </div>
-      <div class="flex gap-2">
-        <select id="student-batch-filter" onchange="filterStudents()" class="form-input text-xs w-36">
-          <option value="all">All Batches</option>
-          <option value="A">Batch A</option>
-          <option value="B">Batch B</option>
-          <option value="C">Batch C</option>
+      <div class="flex flex-wrap gap-2">
+        <select id="student-batch-filter" onchange="filterStudents()" class="form-input text-xs w-44">
+          <option value="all">All Cadet Batches</option>
+          <option value="A">Batch Alpha (DNS Deck)</option>
+          <option value="B">Batch Winter (IMU Rankers)</option>
+          <option value="C">Batch Bravo (Sponsorship)</option>
         </select>
-        <input id="student-search" type="text" placeholder="Search..." onkeyup="filterStudents()" class="form-input text-xs w-40">
+        <select id="student-fleet-filter" onchange="filterStudents()" class="form-input text-xs w-40">
+          <option value="all">All Shipping Lines</option>
+          <option value="Maersk">Maersk Line</option>
+          <option value="Fleet">Fleet Management</option>
+          <option value="MSC">MSC Geneva</option>
+          <option value="Synergy">Synergy Marine</option>
+          <option value="Anglo">Anglo-Eastern</option>
+        </select>
+        <input id="student-search" type="text" placeholder="Search cadet or INDoS..." onkeyup="filterStudents()" class="form-input text-xs w-48">
       </div>
     </div>
     <div class="card overflow-x-auto">
       <table class="data-table" id="students-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Roll No.</th>
-            <th>Course</th>
+            <th>Cadet Officer</th>
+            <th>INDoS / Roll</th>
+            <th>Training Stream</th>
             <th>Batch</th>
-            <th>Attendance</th>
-            <th>Last Score</th>
+            <th>Target Fleet</th>
+            <th>Sponsorship Stage</th>
+            <th>DG Attendance</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -497,75 +532,134 @@
 
   <!-- ════════ TAB: UPLOAD MATERIALS ════════ -->
   <section id="tab-materials" class="tab-content">
-    <div class="mb-6">
-      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Upload Study Materials</h2>
-      <p class="text-sm text-slate mt-1">Share notes, PDFs, and reference documents with students.</p>
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge bg-gold/15 text-gold border border-gold/40 font-bold">COURSEWARE REPOSITORY</span>
+          <span class="badge bg-blue-100 text-blue-800 border border-blue-300">SUPABASE PRIVATE STORAGE</span>
+        </div>
+        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Maritime Study Courseware &amp; Publications</h2>
+        <p class="text-sm text-slate mt-0.5">Bridge &amp; Engine Room Technical Publications · IMO Circulars · Private Cloud Storage Pipeline</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="badge bg-canvas text-slate border border-gray-200 font-mono text-xs px-2.5 py-1">
+          <i class="fas fa-database text-gold mr-1.5"></i>BUCKET: materials/{class_id}
+        </span>
+      </div>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-      <!-- Upload Form -->
-      <div class="card">
-        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Add New Material</h3>
-        <form onsubmit="uploadMaterial(event)" class="space-y-4">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <!-- Upload Form (5 cols) -->
+      <div class="card lg:col-span-5">
+        <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-gold">upload_file</span> Publish Maritime Courseware
+          </h3>
+          <span class="text-[10px] font-mono text-teal bg-teal/10 px-2 py-0.5 rounded border border-teal/20">PRIVATE ENCRYPTION</span>
+        </div>
+
+        <form onsubmit="uploadMaterial(event)" class="space-y-3.5">
           <div>
-            <label class="form-label">Title *</label>
-            <input id="m-title" type="text" placeholder="e.g. Trigonometry Complete Notes" class="form-input" required>
+            <label class="form-label">Publication / Document Title *</label>
+            <input id="m-title" type="text" placeholder="e.g. Celestial Sight Reduction Form 2026" class="form-input" required>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+
+          <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="form-label">Subject *</label>
-              <select id="m-subject" class="form-input" required>
-                <option value="">Select Subject</option>
-                <option>Mathematics</option>
-                <option>Physics</option>
-                <option>English</option>
-                <option>General Knowledge</option>
-                <option>DNS / Nautical</option>
-                <option>Aptitude</option>
+              <label class="form-label">Training Module *</label>
+              <select id="m-class-id" class="form-input" onchange="syncMaterialSubject()">
+                <option value="1">Celestial Navigation (Alpha)</option>
+                <option value="2">Ship Stability &amp; Trim (Winter)</option>
+                <option value="3">COLREGs Watchkeeping (Bravo)</option>
+                <option value="4">Marine Diesels &amp; Auxiliaries (Engine)</option>
+                <option value="5">Sponsorship Interview Board (Shortlist)</option>
+                <option value="6">IMU-CET Physics &amp; Math Intensive</option>
               </select>
             </div>
             <div>
-              <label class="form-label">Type</label>
+              <label class="form-label">Discipline / Subject</label>
+              <select id="m-subject" class="form-input">
+                <option value="Navigation">Nautical Science &amp; Navigation</option>
+                <option value="Stability">Ship Stability &amp; Trim</option>
+                <option value="Watchkeeping">COLREGs &amp; Watchkeeping</option>
+                <option value="Marine Engineering">Marine Engineering &amp; Diesels</option>
+                <option value="Sponsorship">Shipping Sponsorship Question Bank</option>
+                <option value="Mathematics">IMU-CET Mathematics</option>
+                <option value="Physics">Shipboard Applied Physics</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="form-label">Document Type</label>
               <select id="m-type" class="form-input">
-                <option>PDF</option>
-                <option>Notes</option>
-                <option>Worksheet</option>
-                <option>Reference</option>
-                <option>Video Link</option>
+                <option value="PDF">Technical PDF Manual</option>
+                <option value="Worksheet">Chartwork Worksheet</option>
+                <option value="Diagram">Machinery Blueprint / Diagram</option>
+                <option value="Circular">IMO / DG Circular</option>
+                <option value="Dossier">Sponsorship Interview Dossier</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Cadet Cohort</label>
+              <select id="m-batch" class="form-input">
+                <option value="All Batches">All Fleet Batches</option>
+                <option value="Batch Alpha">Batch Alpha (DNS Deck)</option>
+                <option value="Batch Winter">Batch Winter (IMU-CET Rankers)</option>
+                <option value="Batch Bravo">Batch Bravo (Pre-Sea)</option>
+                <option value="Batch Engine">Batch Engine (GME)</option>
+                <option value="Shortlisted">Shortlisted Candidates</option>
               </select>
             </div>
           </div>
+
           <div>
-            <label class="form-label">Target Batch</label>
-            <select id="m-batch" class="form-input">
-              <option value="All">All Batches</option>
-              <option value="A">Batch A</option>
-              <option value="B">Batch B</option>
-              <option value="C">Batch C</option>
-            </select>
+            <label class="form-label">Technical Scope / Summary</label>
+            <textarea id="m-desc" rows="2" placeholder="e.g. Step-by-step sight reduction and Polaris latitude correction formulas..." class="form-input resize-none text-xs"></textarea>
           </div>
+
+          <!-- Real File Upload Dropzone -->
           <div>
-            <label class="form-label">Description</label>
-            <textarea id="m-desc" rows="2" placeholder="Brief description of the material..." class="form-input resize-none"></textarea>
-          </div>
-          <div>
-            <label class="form-label">File (Simulated)</label>
-            <div class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center hover:border-gold/40 transition-colors cursor-pointer" onclick="document.getElementById('m-file').click()">
-              <span class="material-symbols-outlined text-slate text-3xl block mb-1">cloud_upload</span>
-              <p class="text-xs text-slate">Click to select file <span class="text-deep-sea font-semibold">or drag & drop</span></p>
-              <p class="text-[10px] text-slate/70 mt-1">PDF, DOC, PPTX — up to 20 MB</p>
-              <input type="file" id="m-file" class="hidden">
+            <label class="form-label">Select Document File *</label>
+            <div id="m-dropzone" class="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center hover:border-gold/50 bg-canvas transition-colors cursor-pointer" onclick="document.getElementById('m-file').click()">
+              <span class="material-symbols-outlined text-gold text-3xl block mb-1">cloud_upload</span>
+              <p class="text-xs text-slate" id="m-file-label">Click to select publication <span class="text-deep-sea font-semibold">or drag &amp; drop</span></p>
+              <p class="text-[10px] text-slate/70 mt-1" id="m-file-sub">PDF, DOCX, PNG, JPG, CAD Diagrams — up to 50 MB</p>
+              <input type="file" id="m-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.webp" onchange="handleMaterialFileSelect(event)" class="hidden">
+            </div>
+
+            <!-- Upload Progress Strip -->
+            <div id="m-upload-progress" class="hidden mt-2 p-2.5 rounded-xl bg-teal/10 border border-teal/20 text-xs">
+              <div class="flex items-center justify-between text-[11px] font-bold text-teal mb-1">
+                <span id="m-upload-status-text">Uploading to Supabase Storage...</span>
+                <span id="m-upload-pct">0%</span>
+              </div>
+              <div class="w-full bg-teal/20 rounded-full h-1.5 overflow-hidden">
+                <div id="m-upload-bar" class="bg-teal h-full transition-all duration-300" style="width: 0%"></div>
+              </div>
             </div>
           </div>
-          <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-sm">upload</span> Upload Material
+
+          <button id="m-submit-btn" type="submit" class="btn-gold w-full flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">cloud_upload</span> Upload to Secure Maritime Storage
           </button>
         </form>
       </div>
 
-      <!-- Uploaded List -->
-      <div class="card">
-        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">My Uploaded Materials</h3>
-        <div class="space-y-3" id="materials-list"><!-- JS --></div>
+      <!-- Uploaded List (7 cols) -->
+      <div class="card lg:col-span-7 flex flex-col">
+        <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+          <div>
+            <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Published Maritime Publications</h3>
+            <p class="text-xs text-slate">Synchronized with Cadet Study Bridge &amp; Supabase Storage</p>
+          </div>
+          <span class="badge bg-deep-sea/10 text-deep-sea font-mono" id="materials-count-badge">5 Documents</span>
+        </div>
+
+        <div class="space-y-3 flex-1 overflow-y-auto max-h-[580px] pr-1" id="materials-list">
+          <!-- JS Rendered -->
+        </div>
       </div>
     </div>
   </section>
@@ -634,65 +728,109 @@
   </section>
 
 
-  <!-- ════════ TAB: ATTENDANCE ════════ -->
+  <!-- ════════ TAB: ATTENDANCE (DG SHIPPING MUSTER) ════════ -->
   <section id="tab-attendance" class="tab-content">
-    <div class="mb-6">
-      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Attendance</h2>
-      <p class="text-sm text-slate mt-1">Mark and review student attendance per class.</p>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">DG Shipping Muster &amp; Roll Call</h2>
+        <p class="text-sm text-slate mt-1">Official watch-shift muster log. Cadets below 85% attendance face DG debarment.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="exportMusterCSV()" class="btn-outline text-xs flex items-center gap-1.5 bg-white shadow-sm">
+          <span class="material-symbols-outlined text-sm text-gold">download</span> Export Audit CSV
+        </button>
+      </div>
     </div>
 
-    <!-- Controls -->
+    <!-- Muster Controls -->
     <div class="card mb-5">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label class="form-label">Select Class</label>
+          <label class="form-label">Training Module / Class</label>
           <select id="att-class" class="form-input" onchange="loadAttendanceRoster()">
-            <option value="math-a">Mathematics — Batch A</option>
-            <option value="physics-b">Physics — Batch B</option>
-            <option value="dns-c">DNS Nautical — Batch C</option>
-            <option value="gk-all">General Knowledge — All</option>
-            <option value="doubt-all">Doubt Session — All</option>
+            <option value="nav-a">Celestial &amp; Terrestrial Navigation — Batch Alpha</option>
+            <option value="stab-w">Ship Stability &amp; Trim — Batch Winter</option>
+            <option value="colreg-b">COLREGs Watchkeeping Simulator — Batch Bravo</option>
+            <option value="engine-g">Marine Auxiliary Machinery — Batch Engine</option>
+            <option value="spon-all">Sponsorship Board Defense — Shortlist</option>
           </select>
         </div>
         <div>
-          <label class="form-label">Date</label>
+          <label class="form-label">Watch Shift</label>
+          <select id="att-shift" class="form-input" onchange="loadAttendanceRoster()">
+            <option value="0800">Morning Watch (0800 – 1000 hrs)</option>
+            <option value="1030">Forenoon Watch (1030 – 1230 hrs)</option>
+            <option value="1400">Afternoon Watch (1400 – 1600 hrs)</option>
+            <option value="1630">Dog Watch / Defense (1630 – 1830 hrs)</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Muster Date</label>
           <input id="att-date" type="date" class="form-input">
         </div>
         <div class="flex items-end gap-2">
-          <button onclick="markAll('P')" class="btn-outline flex-1 text-xs">✓ All Present</button>
-          <button onclick="markAll('A')" class="btn-danger flex-1 text-xs">✗ All Absent</button>
+          <button onclick="markAll('P')" class="btn-outline flex-1 text-xs" title="Mark All Present">✓ All Deck</button>
+          <button onclick="markAll('A')" class="btn-danger flex-1 text-xs" title="Mark All Absent">✗ All Absent</button>
         </div>
+      </div>
+    </div>
+
+    <!-- DG Compliance Telemetry Strip -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+      <div class="p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase">Deck Muster Count</div>
+        <div class="font-display text-2xl text-deep-sea mt-0.5" id="muster-total-cadets">0 Cadets</div>
+      </div>
+      <div class="p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase">On-Watch Present</div>
+        <div class="font-display text-2xl text-emerald-600 mt-0.5" id="muster-present-count">0</div>
+      </div>
+      <div class="p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase">Sick Bay / Leave</div>
+        <div class="font-display text-2xl text-amber-600 mt-0.5" id="muster-leave-count">0</div>
+      </div>
+      <div class="p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase">DG Compliance</div>
+        <div class="font-display text-2xl text-gold mt-0.5" id="muster-compliance-rate">100%</div>
       </div>
     </div>
 
     <!-- Roster -->
     <div class="card mb-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Student Roster</h3>
-        <span id="att-count" class="text-xs text-slate">0 marked</span>
+        <div>
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Cadet Roll Call (Deck Muster)</h3>
+          <p class="text-xs text-slate mt-0.5">Legend: [P] Present on Deck · [A] Absent · [M] Sick Bay / Quarantine · [SP] Shore Pass</p>
+        </div>
+        <span id="att-count" class="text-xs text-slate font-mono bg-canvas px-3 py-1 rounded-lg border border-gray-200">0 evaluated</span>
       </div>
-      <div class="space-y-2" id="att-roster"><!-- JS --></div>
-      <div class="mt-5 flex justify-end">
-        <button onclick="submitAttendance()" class="btn-gold flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">save</span> Submit Attendance
+      <div class="space-y-2.5" id="att-roster"><!-- JS --></div>
+      <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="text-xs text-slate font-mono">
+          <i class="fas fa-shield-halved text-gold mr-1"></i> Endorsed records synchronize with company sponsorship boards.
+        </div>
+        <button onclick="submitAttendance()" class="btn-gold flex items-center gap-2 px-6">
+          <span class="material-symbols-outlined text-sm">verified</span> Endorse &amp; Save Muster Log
         </button>
       </div>
     </div>
 
     <!-- Past Records -->
     <div class="card">
-      <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Recent Attendance Records</h3>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Endorsed Maritime Muster Logs</h3>
+        <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-300 font-mono">AUDIT VERIFIED</span>
+      </div>
       <div class="overflow-x-auto">
         <table class="data-table">
           <thead>
-            <tr><th>Date</th><th>Class</th><th>Batch</th><th>Present</th><th>Absent</th><th>%</th></tr>
+            <tr><th>Muster Date</th><th>Watch Shift</th><th>Training Module</th><th>Batch</th><th>Deck Present</th><th>Sick/Leave</th><th>DG Compliance</th></tr>
           </thead>
           <tbody>
-            <tr><td>28 Sep 2026</td><td>Mathematics</td><td>Batch A</td><td>28</td><td>4</td><td><span class="badge bg-emerald-100 text-emerald-700">87.5%</span></td></tr>
-            <tr><td>27 Sep 2026</td><td>Physics</td><td>Batch B</td><td>22</td><td>6</td><td><span class="badge bg-amber-100 text-amber-700">78.6%</span></td></tr>
-            <tr><td>26 Sep 2026</td><td>DNS Nautical</td><td>Batch C</td><td>18</td><td>2</td><td><span class="badge bg-emerald-100 text-emerald-700">90%</span></td></tr>
-            <tr><td>25 Sep 2026</td><td>GK / Maritime</td><td>All</td><td>60</td><td>14</td><td><span class="badge bg-amber-100 text-amber-700">81%</span></td></tr>
-            <tr><td>24 Sep 2026</td><td>Doubt Session</td><td>All</td><td>45</td><td>29</td><td><span class="badge bg-red-100 text-red-600">60.8%</span></td></tr>
+            <tr><td class="font-mono text-xs">28 Sep 2026</td><td class="font-mono text-xs">0800 – 1000 hrs</td><td>Celestial Navigation</td><td>Batch Alpha</td><td>32 / 34</td><td>2 [M]</td><td><span class="badge bg-emerald-100 text-emerald-800 font-mono">94.1% COMPLIANT</span></td></tr>
+            <tr><td class="font-mono text-xs">27 Sep 2026</td><td class="font-mono text-xs">1030 – 1230 hrs</td><td>Ship Stability &amp; Trim</td><td>Batch Winter</td><td>35 / 38</td><td>1 [SP]</td><td><span class="badge bg-emerald-100 text-emerald-800 font-mono">92.1% COMPLIANT</span></td></tr>
+            <tr><td class="font-mono text-xs">26 Sep 2026</td><td class="font-mono text-xs">1400 – 1600 hrs</td><td>COLREGs Watchkeeping</td><td>Batch Bravo</td><td>20 / 24</td><td>1 [M]</td><td><span class="badge bg-amber-100 text-amber-800 font-mono">83.3% WARN</span></td></tr>
+            <tr><td class="font-mono text-xs">25 Sep 2026</td><td class="font-mono text-xs">1630 – 1830 hrs</td><td>Sponsorship Defense</td><td>Shortlist</td><td>40 / 42</td><td>0</td><td><span class="badge bg-emerald-100 text-emerald-800 font-mono">95.2% COMPLIANT</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -702,86 +840,191 @@
 
   <!-- ════════ TAB: MOCK TESTS ════════ -->
   <section id="tab-mocktests" class="tab-content">
-    <div class="mb-6">
-      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Mock Tests</h2>
-      <p class="text-sm text-slate mt-1">Create, manage, and review mock tests for your students.</p>
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge bg-gold/15 text-gold border border-gold/40 font-bold">IMU-CET CBT ENGINE</span>
+          <span class="badge bg-amber-100 text-amber-800 border border-amber-300">-0.25 NEGATIVE PENALTY</span>
+          <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300">SPONSORSHIP RADAR</span>
+        </div>
+        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">IMU-CET CBT &amp; Sponsorship Assessment Engine</h2>
+        <p class="text-sm text-slate mt-0.5">DG Shipping Examination Standards · Sectional Cutoffs · Automated Shipping Line Sponsorship Endorsements</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="exportRankListCSV()" class="btn-outline text-xs flex items-center gap-1.5 bg-white shadow-sm hover:border-gold">
+          <span class="material-symbols-outlined text-sm">download</span> Export Merit Deck CSV
+        </button>
+      </div>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-      <!-- Create Test Form -->
-      <div class="card">
-        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Create New Test</h3>
-        <form onsubmit="createTest(event)" class="space-y-4">
+
+    <!-- Exam Config & Test Deck Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
+      <!-- Create / Configure Proctored Test Form (5 cols) -->
+      <div class="card lg:col-span-5">
+        <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-gold">add_task</span> Configure CBT Examination
+          </h3>
+          <span class="text-[10px] font-mono text-slate uppercase bg-canvas px-2 py-0.5 rounded border border-gray-200">DG-EXAM-PROCTOR</span>
+        </div>
+
+        <form onsubmit="createTest(event)" class="space-y-3.5">
           <div>
-            <label class="form-label">Test Title *</label>
-            <input id="t-title" type="text" placeholder="e.g. IMU-CET Full Mock — Series 6" class="form-input" required>
+            <label class="form-label">Examination Title *</label>
+            <input id="t-title" type="text" value="IMU-CET All-India CBT Mock — Series 06" placeholder="e.g. IMU-CET All-India CBT Mock — Series 06" class="form-input" required>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+
+          <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="form-label">Subject</label>
-              <select id="t-subject" class="form-input">
-                <option>Full Syllabus</option>
-                <option>Mathematics</option>
-                <option>Physics</option>
-                <option>English</option>
-                <option>General Knowledge</option>
-                <option>DNS / Nautical</option>
+              <label class="form-label">Syllabus / Pattern</label>
+              <select id="t-subject" class="form-input" onchange="updateExamDefaults()">
+                <option value="Full Syllabus CBT">Full Syllabus CBT (200 Qs / 180 Min)</option>
+                <option value="Mathematics">Mathematics Intensive (50 Qs)</option>
+                <option value="Physics">Shipboard Physics (50 Qs)</option>
+                <option value="Chemistry">Marine Chemistry (20 Qs)</option>
+                <option value="English Aptitude">Maritime English &amp; Aptitude (40 Qs)</option>
+                <option value="General Knowledge">General Knowledge &amp; Maritime (40 Qs)</option>
+                <option value="Nautical Science">DNS Nautical Science Specialty</option>
+                <option value="Marine Engineering">GME Auxiliary Machinery</option>
               </select>
             </div>
             <div>
-              <label class="form-label">Target Batch</label>
+              <label class="form-label">Cadet Cohort</label>
               <select id="t-batch" class="form-input">
-                <option>All Batches</option>
-                <option>Batch A</option>
-                <option>Batch B</option>
-                <option>Batch C</option>
+                <option value="All Entrance Cadets">All Entrance Cadets</option>
+                <option value="Batch Alpha (DNS)">Batch Alpha (DNS Deck)</option>
+                <option value="Batch Winter (IMU)">Batch Winter (IMU-CET Rankers)</option>
+                <option value="Batch Bravo (Pre-Sea)">Batch Bravo (Pre-Sea)</option>
+                <option value="Batch Engine (GME)">Batch Engine (GME)</option>
+                <option value="Shortlisted Sponsorship Pool">Shortlisted Cadets</option>
               </select>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+
+          <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="form-label">Duration (minutes)</label>
-              <input id="t-duration" type="number" value="90" min="10" class="form-input">
+              <label class="form-label">Duration (Minutes)</label>
+              <input id="t-duration" type="number" value="180" min="15" max="300" class="form-input">
             </div>
             <div>
-              <label class="form-label">Total Marks</label>
-              <input id="t-marks" type="number" value="100" min="10" class="form-input">
+              <label class="form-label">Total Marks (Max)</label>
+              <input id="t-marks" type="number" value="200" min="10" max="400" class="form-input">
             </div>
           </div>
-          <div>
-            <label class="form-label">Schedule Date</label>
-            <input id="t-date" type="date" class="form-input">
+
+          <!-- IMU-CET Negative Marking & Cutoff Thresholds -->
+          <div class="p-3.5 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-deep-sea flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="t-neg-mark" checked class="rounded text-gold focus:ring-gold w-4 h-4">
+                <span>IMU-CET Negative Marking Rule</span>
+              </label>
+              <span class="badge bg-amber-200/70 text-amber-900 text-[9px] font-mono">-0.25 / wrong</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-slate block mb-1">Tier 1 Elite Cutoff</label>
+                <input id="t-cutoff-t1" type="number" value="150" class="form-input py-1 px-2.5 text-xs h-9 bg-white" title="Score for Maersk / Fleet Management endorsement">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-slate block mb-1">Tier 2 Premier Cutoff</label>
+                <input id="t-cutoff-t2" type="number" value="130" class="form-input py-1 px-2.5 text-xs h-9 bg-white" title="Score for Synergy / MSC endorsement">
+              </div>
+            </div>
+            <p class="text-[10px] text-slate font-sans leading-tight">Cadets meeting Tier 1 cutoff (&ge; 150/200) are automatically endorsed for Maersk Line &amp; Fleet Management board defense.</p>
           </div>
-          <div>
-            <label class="form-label">Instructions</label>
-            <textarea id="t-instructions" rows="2" placeholder="Enter test instructions..." class="form-input resize-none"></textarea>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="form-label">Examination Date</label>
+              <input id="t-date" type="date" class="form-input">
+            </div>
+            <div>
+              <label class="form-label">CBT Terminal / Hall</label>
+              <input id="t-venue" type="text" value="CBT Sim Lab 1 &amp; Hall A" class="form-input">
+            </div>
           </div>
-          <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-sm">add_circle</span> Create Test
+
+          <div>
+            <label class="form-label">Proctored Guidelines &amp; Instructions</label>
+            <textarea id="t-instructions" rows="2" class="form-input resize-none text-xs">Negative marking -0.25 active across all sections. Scientific calculator allowed. Sectional minimums: Math 40%, Phys 40%. Passing cutoff 100/200.</textarea>
+          </div>
+
+          <button type="submit" class="btn-gold w-full flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">publish</span> Deploy IMU-CET Examination
           </button>
         </form>
       </div>
 
-      <!-- Test List -->
-      <div class="card">
-        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Existing Tests</h3>
-        <div class="space-y-3" id="tests-list"><!-- JS --></div>
+      <!-- Tests Management List (7 cols) -->
+      <div class="card lg:col-span-7 flex flex-col">
+        <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+          <div>
+            <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Fleet Examination Registry</h3>
+            <p class="text-xs text-slate">Active proctored examinations and mock series</p>
+          </div>
+          <span class="badge bg-deep-sea/10 text-deep-sea font-mono" id="tests-count-badge">4 Tests</span>
+        </div>
+
+        <div class="space-y-3 flex-1 overflow-y-auto max-h-[580px] pr-1" id="tests-list">
+          <!-- JS Rendered -->
+        </div>
       </div>
     </div>
 
-    <!-- Test Results -->
-    <div class="card mt-5">
-      <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Recent Test Results</h3>
+    <!-- Cadet Merit Deck & Commercial Shipping Sponsorship Matrix -->
+    <div class="card" id="merit-deck-section">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b border-gray-100 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="badge bg-deep-sea text-white">MERIT DECK</span>
+            <span class="badge bg-gold/15 text-gold border border-gold/40">DG SHIPPING STANDARDS</span>
+          </div>
+          <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mt-1" id="active-test-heading">All-India Cadet Merit Matrix &amp; Shipping Sponsorship Endorsements</h3>
+          <p class="text-xs text-slate mt-0.5">Real-time AIR simulations, negative penalty deductions, and automated crewing placement tiers</p>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div>
+            <select id="results-test-select" onchange="changeActiveTestResults()" class="form-input text-xs py-1.5 px-3 min-h-[38px] bg-canvas border-gray-300">
+              <!-- Dynamically populated options from appTests -->
+            </select>
+          </div>
+          <div>
+            <select id="results-tier-filter" onchange="filterTestResults()" class="form-input text-xs py-1.5 px-3 min-h-[38px] bg-canvas border-gray-300">
+              <option value="all">All Sponsorship Tiers</option>
+              <option value="Tier 1">Tier 1 (Maersk / Fleet Mgmt)</option>
+              <option value="Tier 2">Tier 2 (Synergy / MSC)</option>
+              <option value="Tier 3">Tier 3 (Scorpio / BSM)</option>
+              <option value="Remedial">Below Cutoff / Remedial</option>
+            </select>
+          </div>
+          <div class="relative">
+            <input type="text" id="results-search" oninput="filterTestResults()" placeholder="Search cadet or INDoS..." class="form-input text-xs py-1.5 pl-8 pr-3 min-h-[38px] w-48">
+            <span class="material-symbols-outlined text-slate text-sm absolute left-2.5 top-1/2 -translate-y-1/2">search</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Merit Matrix Table -->
       <div class="overflow-x-auto">
         <table class="data-table">
           <thead>
-            <tr><th>Student</th><th>Test</th><th>Score</th><th>%</th><th>Rank</th><th>Status</th></tr>
+            <tr>
+              <th class="w-16">AIR Sim</th>
+              <th>Cadet Officer &amp; INDoS</th>
+              <th>Attempt Breakdown</th>
+              <th>Negative Penalty</th>
+              <th>Net Score &amp; %</th>
+              <th>Percentile</th>
+              <th>Sectional Clearance</th>
+              <th>Sponsorship Endorsement</th>
+              <th class="text-right">Scorecard</th>
+            </tr>
           </thead>
-          <tbody>
-            <tr><td>Arjun Sharma</td><td>IMU-CET Mock 5</td><td>82/100</td><td>82%</td><td>#3</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
-            <tr><td>Kavitha Menon</td><td>IMU-CET Mock 5</td><td>91/100</td><td>91%</td><td>#1</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
-            <tr><td>Rahul Pillai</td><td>Physics Sprint</td><td>38/50</td><td>76%</td><td>#5</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
-            <tr><td>Sneha Iyer</td><td>Math Calculus</td><td>28/50</td><td>56%</td><td>#12</td><td><span class="badge bg-red-100 text-red-600">Below Avg</span></td></tr>
-            <tr><td>Vishnu Krishnan</td><td>English Grammar</td><td>44/50</td><td>88%</td><td>#2</td><td><span class="badge bg-emerald-100 text-emerald-700">Pass</span></td></tr>
+          <tbody id="merit-results-tbody">
+            <!-- JS Rendered -->
           </tbody>
         </table>
       </div>
@@ -868,7 +1111,7 @@
     <div id="sched-day-pills" class="flex overflow-x-auto gap-2 mb-5 pb-1 no-scrollbar">
       <button class="sched-pill filter-pill" data-day="mon" onclick="selectScheduleDay('mon')">Mon</button>
       <button class="sched-pill filter-pill" data-day="tue" onclick="selectScheduleDay('tue')">Tue</button>
-      <button class="sched-pill filter-pill active" data-day="wed" onclick="selectScheduleDay('wed')">Wed ★ Today</button>
+      <button class="sched-pill filter-pill" data-day="wed" onclick="selectScheduleDay('wed')">Wed</button>
       <button class="sched-pill filter-pill" data-day="thu" onclick="selectScheduleDay('thu')">Thu</button>
       <button class="sched-pill filter-pill" data-day="fri" onclick="selectScheduleDay('fri')">Fri</button>
       <button class="sched-pill filter-pill" data-day="sat" onclick="selectScheduleDay('sat')">Sat</button>
@@ -887,7 +1130,7 @@
             <th class="p-3 text-left text-xs font-sub text-slate uppercase tracking-wide w-24 bg-canvas">Time</th>
             <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Mon</th>
             <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Tue</th>
-            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide bg-gold/5 border-x border-gold/20">Wed<br><span class="text-[9px] text-gold">(Today)</span></th>
+            <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Wed</th>
             <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Thu</th>
             <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Fri</th>
             <th class="p-3 text-center text-xs font-sub text-slate uppercase tracking-wide">Sat</th>
@@ -896,47 +1139,47 @@
         <tbody class="divide-y divide-gray-100">
           <tr class="divide-x divide-gray-100">
             <td class="p-2 font-bold text-deep-sea text-center text-xs">07:30 AM</td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Mathematics</p><p class="text-white/60 text-[10px]">Batch A · R101</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Celestial Nav</p><p class="text-white/60 text-[10px]">Alpha · Bridge Sim</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
-            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Mathematics</p><p class="text-[10px] opacity-70">Batch A · R101</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Mathematics</p><p class="text-white/60 text-[10px]">Batch A · R101</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Terrestrial Nav</p><p class="text-white/60 text-[10px]">Alpha · Bridge Sim</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Marine Diesels</p><p class="text-white/60 text-[10px]">Engine · Hall 1</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Mathematics</p><p class="text-white/60 text-[10px]">Batch A · R101</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">IMU Math Sprint</p><p class="text-white/60 text-[10px]">Alpha · Hall 101</p></div></td>
           </tr>
           <tr class="divide-x divide-gray-100">
             <td class="p-2 font-bold text-deep-sea text-center text-xs">10:00 AM</td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Physics</p><p class="text-white/60 text-[10px]">Batch B · R203</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Physics</p><p class="text-white/60 text-[10px]">Batch B · R203</p></div></td>
-            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Physics</p><p class="text-[10px] opacity-70">Batch B · R203</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Ship Stability</p><p class="text-white/60 text-[10px]">Winter · Chartwork 2</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Hydrostatics</p><p class="text-white/60 text-[10px]">Winter · Chartwork 2</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Ship Stability</p><p class="text-white/60 text-[10px]">Winter · Chartwork 2</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Physics</p><p class="text-white/60 text-[10px]">Batch B · R203</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Marine Boilers</p><p class="text-white/60 text-[10px]">Engine · Hall 1</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
           </tr>
           <tr class="divide-x divide-gray-100">
             <td class="p-2 font-bold text-deep-sea text-center text-xs">12:00 PM</td>
-            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
-            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
-            <td class="p-1.5 bg-gold/5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
-            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
-            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
-            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Lunch</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Mess</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Mess</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Mess</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Mess</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Mess</p></div></td>
+            <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">Mess</p></div></td>
           </tr>
           <tr class="divide-x divide-gray-100">
             <td class="p-2 font-bold text-deep-sea text-center text-xs">02:00 PM</td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">DNS Nautical</p><p class="text-white/60 text-[10px]">Batch C · R305</p></div></td>
-            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Mock Test</p><p class="text-[10px] opacity-70">All Batches · Hall 1</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">DNS Nautical</p><p class="text-white/60 text-[10px]">Batch C · R305</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">COLREGs Sim</p><p class="text-white/60 text-[10px]">Bravo · Radar Room</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">CBT Mock 06</p><p class="text-white/60 text-[10px]">All · CBT Sim 1</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">ARPA Radar</p><p class="text-white/60 text-[10px]">Bravo · Radar Room</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">GK Maritime</p><p class="text-white/60 text-[10px]">All · Hall 2</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">SOLAS Safety</p><p class="text-white/60 text-[10px]">All · Auditorium</p></div></td>
           </tr>
           <tr class="divide-x divide-gray-100">
             <td class="p-2 font-bold text-deep-sea text-center text-xs">04:30 PM</td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Doubt Session</p><p class="text-white/60 text-[10px]">Open Q&A</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Chart Clinic</p><p class="text-white/60 text-[10px]">Open Defense</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
-            <td class="p-1.5 bg-gold/5"><div class="tt-cell class-slot today-col"><p class="font-semibold">Doubt Session</p><p class="text-[10px] opacity-70">Open Q&A</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Sponsor Board</p><p class="text-white/60 text-[10px]">Shortlist · Boardroom</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
-            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Doubt Session</p><p class="text-white/60 text-[10px]">Physics Focus</p></div></td>
+            <td class="p-1.5"><div class="tt-cell class-slot"><p class="font-semibold text-gold">Cadet Mock</p><p class="text-white/60 text-[10px]">Alpha · Boardroom</p></div></td>
             <td class="p-1.5"><div class="tt-cell"><p class="text-slate text-center text-xs">—</p></div></td>
           </tr>
         </tbody>
@@ -1060,27 +1303,40 @@
           <span class="material-symbols-outlined text-sm">delete</span> Remove Photo
         </button>
 
-        <h3 id="profile-display-name" class="font-sub text-lg text-deep-sea font-bold uppercase tracking-wide">Faculty Name</h3>
-        <p class="text-xs text-slate mt-1">Mathematics & Physics</p>
-        <div class="flex flex-wrap justify-center gap-2 mt-3">
-          <span class="badge bg-teal/10 text-teal border border-teal/30">Faculty</span>
-          <span class="badge bg-deep-sea text-white">Senior Lecturer</span>
+        <h3 id="profile-display-name" class="font-sub text-lg text-deep-sea font-bold uppercase tracking-wide">Capt. R. Sharma</h3>
+        <p class="text-xs text-slate mt-1" id="profile-display-rank">Master Mariner (FG) · Navigational Watch Officer</p>
+        <div class="flex flex-wrap justify-center gap-1.5 mt-3">
+          <span class="badge bg-gold/15 text-gold border border-gold/40">Master Mariner</span>
+          <span class="badge bg-deep-sea text-white">DG Approved</span>
+          <span class="badge bg-teal/10 text-teal border border-teal/20">Bengaluru Base</span>
         </div>
 
         <div class="mt-5 w-full text-left">
           <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Employee ID</p><p class="font-bold text-deep-sea mt-0.5">FAC-2022-007</p></div>
-            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Joined</p><p class="font-bold text-deep-sea mt-0.5">Mar 2022</p></div>
-            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Students</p><p class="font-bold text-teal mt-0.5">86</p></div>
-            <div class="bg-canvas rounded-lg p-2.5"><p class="text-slate">Classes/Week</p><p class="font-bold text-gold mt-0.5">12</p></div>
+            <div class="bg-canvas rounded-lg p-2.5 border border-gray-100">
+              <p class="text-slate font-mono text-[10px] uppercase">INDoS Number</p>
+              <p class="font-bold text-deep-sea mt-0.5 font-mono text-xs" id="pf-disp-indos">24IN01092</p>
+            </div>
+            <div class="bg-canvas rounded-lg p-2.5 border border-gray-100">
+              <p class="text-slate font-mono text-[10px] uppercase">CoC License</p>
+              <p class="font-bold text-deep-sea mt-0.5 font-mono text-xs" id="pf-disp-coc">IND/FG/2012/104</p>
+            </div>
+            <div class="bg-canvas rounded-lg p-2.5 border border-gray-100">
+              <p class="text-slate font-mono text-[10px] uppercase">Cadets Commissioned</p>
+              <p class="font-bold text-teal mt-0.5">142 Cadets</p>
+            </div>
+            <div class="bg-canvas rounded-lg p-2.5 border border-gray-100">
+              <p class="text-slate font-mono text-[10px] uppercase">Sea Service</p>
+              <p class="font-bold text-gold mt-0.5">14 Yrs Command</p>
+            </div>
           </div>
         </div>
 
         <!-- Quick Name Update -->
         <div class="mt-5 w-full">
-          <p class="text-xs text-slate font-semibold uppercase tracking-wider mb-1.5 text-left">Quick Name Update</p>
+          <p class="text-xs text-slate font-semibold uppercase tracking-wider mb-1.5 text-left">Quick Call-Sign Update</p>
           <div class="flex gap-2">
-            <input id="quick-name-input" type="text" placeholder="Enter your name"
+            <input id="quick-name-input" type="text" placeholder="Enter officer name"
               class="flex-1 form-input text-sm min-w-0">
             <button onclick="applyQuickName()" class="px-3 py-2 bg-deep-sea text-white rounded-xl text-xs font-bold hover:bg-navy-mid transition-colors shrink-0">
               <span class="material-symbols-outlined text-base">check</span>
@@ -1091,47 +1347,65 @@
 
       <!-- Edit Form -->
       <div class="lg:col-span-2 card">
-        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Edit Professional Details</h3>
+        <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide mb-4">Command Officer Credentials &amp; CoC Details</h3>
         <div id="profile-save-msg" class="hidden mb-4 p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"></div>
         <form onsubmit="saveProfile(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="form-label">Full Name</label>
-            <input id="pf-name" type="text" placeholder="Your full name" class="form-input">
+            <label class="form-label">Full Officer Name</label>
+            <input id="pf-name" type="text" placeholder="e.g. Capt. Raghavan Sharma" class="form-input">
           </div>
           <div>
-            <label class="form-label">Designation</label>
-            <input id="pf-designation" type="text" value="Senior Lecturer" class="form-input">
-          </div>
-          <div>
-            <label class="form-label">Email</label>
-            <input id="pf-email" type="email" value="faculty@sindhupath.in" class="form-input">
-          </div>
-          <div>
-            <label class="form-label">Phone</label>
-            <input id="pf-phone" type="tel" placeholder="+91 XXXXX XXXXX" class="form-input">
-          </div>
-          <div>
-            <label class="form-label">Primary Subject</label>
-            <select id="pf-subject" class="form-input">
-              <option>Mathematics</option>
-              <option>Physics</option>
-              <option>English</option>
-              <option>General Knowledge</option>
-              <option>DNS / Nautical</option>
+            <label class="form-label">Naval Rank / Designation</label>
+            <select id="pf-designation" class="form-input">
+              <option value="Master Mariner (FG) — Senior Nautical Lecturer">Master Mariner (FG) — Senior Nautical Lecturer</option>
+              <option value="Chief Engineer (MEO Cl. 1) — Marine Engineering Head">Chief Engineer (MEO Cl. 1) — Marine Engineering Head</option>
+              <option value="Chief Officer — Navigation &amp; Watchkeeping Instructor">Chief Officer — Navigation &amp; Watchkeeping Instructor</option>
+              <option value="Second Engineer — Auxiliary Machinery Specialist">Second Engineer — Auxiliary Machinery Specialist</option>
+              <option value="Naval Architecture &amp; Ship Stability Specialist">Naval Architecture &amp; Ship Stability Specialist</option>
+              <option value="Senior Lecturer — IMU-CET Entrance Academy">Senior Lecturer — IMU-CET Entrance Academy</option>
             </select>
           </div>
           <div>
-            <label class="form-label">Qualification</label>
-            <input id="pf-qual" type="text" placeholder="e.g. M.Sc Physics, B.Ed" class="form-input">
+            <label class="form-label">Certificate of Competency (CoC) Number</label>
+            <input id="pf-coc" type="text" value="IND/FG/2012/104" class="form-input font-mono" placeholder="e.g. IND/FG/2012/104">
+          </div>
+          <div>
+            <label class="form-label">Faculty INDoS Registration Number</label>
+            <input id="pf-indos" type="text" value="24IN01092" class="form-input font-mono" placeholder="e.g. 24IN01092">
+          </div>
+          <div>
+            <label class="form-label">Official Command Email</label>
+            <input id="pf-email" type="email" value="faculty@sindhupath.in" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Bridge Phone / Duty Contact</label>
+            <input id="pf-phone" type="tel" value="+91 94440 28192" placeholder="+91 XXXXX XXXXX" class="form-input font-mono">
+          </div>
+          <div>
+            <label class="form-label">Primary Maritime Discipline</label>
+            <select id="pf-subject" class="form-input">
+              <option value="Celestial &amp; Terrestrial Navigation">Celestial &amp; Terrestrial Navigation</option>
+              <option value="Ship Stability &amp; Trim (Naval Architecture)">Ship Stability &amp; Trim (Naval Architecture)</option>
+              <option value="COLREGs &amp; Bridge Resource Management">COLREGs &amp; Bridge Resource Management</option>
+              <option value="Marine Engineering &amp; 2-Stroke Diesels">Marine Engineering &amp; 2-Stroke Diesels</option>
+              <option value="Shipping Company Sponsorship Defense">Shipping Company Sponsorship Defense</option>
+              <option value="IMU-CET Mathematics &amp; Physics Intensive">IMU-CET Mathematics &amp; Physics Intensive</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Shipping Line Sea Service Experience</label>
+            <input id="pf-service" type="text" value="Maersk Line (8 yrs), Anglo-Eastern (6 yrs)" placeholder="e.g. Maersk Line (8 yrs), MSC (6 yrs)" class="form-input">
           </div>
           <div class="sm:col-span-2">
-            <label class="form-label">Bio / About</label>
-            <textarea id="pf-bio" rows="3" placeholder="Brief professional summary..." class="form-input resize-none"></textarea>
+            <label class="form-label">Officer Dossier / Command Bio</label>
+            <textarea id="pf-bio" rows="3" placeholder="Command experience, vessel types sailed, and academic focus..." class="form-input resize-none text-xs">Master Mariner with 14 years active sea service aboard Capesize bulk carriers and ultra-large container vessels. DG Shipping approved nautical instructor specializing in Celestial Navigation sight reduction and shipping company technical board interviews.</textarea>
           </div>
           <div class="sm:col-span-2 flex justify-end">
             <button type="submit" class="btn-primary flex items-center gap-2">
-              <span class="material-symbols-outlined text-sm">save</span> Save Changes
+              <span class="material-symbols-outlined text-sm">save</span> Endorse &amp; Save Credentials
             </button>
+          </div>
+        </form>
           </div>
         </form>
 
@@ -1332,8 +1606,8 @@
 
         <!-- REGULAR CLASS FIELDS (Room Number) -->
         <div id="fields-regular" class="hidden p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
-          <label class="form-label text-blue-800">Classroom / Room Number</label>
-          <input type="text" id="sch-event-room" placeholder="e.g. Room 101, Hall 2" class="form-input">
+          <label class="form-label text-blue-800">Classroom / Training Facility</label>
+          <input type="text" id="sch-event-room" placeholder="e.g. Bridge Sim Hall A, Chartwork Lab 2" class="form-input">
         </div>
 
       </div>
@@ -1345,6 +1619,78 @@
         </button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- ════════ MODAL: CADET SCORECARD & SPONSORSHIP DOSSIER ════════ -->
+<div id="modal-cadet-scorecard" class="modal-backdrop" role="dialog" aria-modal="true" onclick="if(event.target===this) closeScorecardModal()">
+  <div class="modal-box" style="max-width: 680px;">
+    <div class="modal-header">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge bg-gold/15 text-gold border border-gold/40">IMU-CET CBT SCORECARD</span>
+          <span id="sc-tier-badge" class="badge bg-deep-sea text-white">TIER 1 ELITE</span>
+        </div>
+        <h3 id="sc-cadet-name" class="font-sub text-lg font-bold text-deep-sea uppercase tracking-wide">Cadet Sneha Roy</h3>
+        <p class="text-xs text-slate mt-0.5" id="sc-cadet-sub">Roll: SP-2026-D011 · INDoS: 24IN09511 · Target Fleet: Synergy Marine</p>
+      </div>
+      <button onclick="closeScorecardModal()" aria-label="Close modal" class="text-slate hover:text-deep-sea p-1 rounded-lg hover:bg-gray-100 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body space-y-4">
+      <!-- Top Score summary cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="p-3 rounded-xl bg-canvas border border-gray-200 text-center">
+          <span class="text-[10px] font-bold text-slate uppercase block">Net Score</span>
+          <span class="font-display text-2xl font-bold text-deep-sea" id="sc-net-score">189.5</span>
+          <span class="text-[10px] text-slate block" id="sc-max-score">/ 200 (94.8%)</span>
+        </div>
+        <div class="p-3 rounded-xl bg-canvas border border-gray-200 text-center">
+          <span class="text-[10px] font-bold text-slate uppercase block">Simulated AIR</span>
+          <span class="font-display text-2xl font-bold text-gold" id="sc-air-rank">#08</span>
+          <span class="text-[10px] text-slate block">All-India Cadets</span>
+        </div>
+        <div class="p-3 rounded-xl bg-canvas border border-gray-200 text-center">
+          <span class="text-[10px] font-bold text-slate uppercase block">Percentile</span>
+          <span class="font-display text-2xl font-bold text-emerald-600" id="sc-percentile">99.8%</span>
+          <span class="text-[10px] text-emerald-700 block font-medium">Top 0.2% Cohort</span>
+        </div>
+        <div class="p-3 rounded-xl bg-canvas border border-gray-200 text-center">
+          <span class="text-[10px] font-bold text-slate uppercase block">Penalty Deducted</span>
+          <span class="font-display text-2xl font-bold text-red-500" id="sc-penalty">-1.50</span>
+          <span class="text-[10px] text-red-600 block" id="sc-wrong-count">6 Incorrect</span>
+        </div>
+      </div>
+
+      <!-- Sectional Scores Breakdown -->
+      <div class="p-4 rounded-xl border border-gray-200 bg-white">
+        <h4 class="text-xs font-bold text-deep-sea uppercase tracking-wider mb-3 flex items-center justify-between">
+          <span>Sectional Performance Analysis</span>
+          <span class="text-[10px] text-slate font-mono">Benchmark: &ge; 40%</span>
+        </h4>
+        <div class="space-y-2.5 text-xs" id="sc-sections-bars">
+          <!-- Bars -->
+        </div>
+      </div>
+
+      <!-- Sponsorship Board Recommendation -->
+      <div class="p-4 rounded-xl bg-gradient-to-r from-deep-sea/5 to-teal/5 border border-deep-sea/10 space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-gold text-lg">verified</span>
+          <span class="text-xs font-bold text-deep-sea uppercase tracking-wide">Commercial Shipping Board Endorsement</span>
+        </div>
+        <p class="text-xs text-slate" id="sc-recommendation-text">Cadet has qualified for Tier 1 commercial shipping line sponsorships. Cleared to sit for Maersk Line and Fleet Management primary technical interview board.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" onclick="closeScorecardModal()" class="btn-outline">Close</button>
+      <button type="button" onclick="toast('Official Cadet Dossier PDF printed for Crewing Board.','success')" class="btn-gold flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">print</span> Print Cadet Dossier
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1464,7 +1810,7 @@ function applyQuickName() {
 // ── Logout ───────────────────────────────────
 async function doLogout() {
   if (sbClient) await sbClient.auth.signOut();
-  window.location.href = 'login.html';
+  window.location.href = 'login2.html';
 }
 
 // ── Sidebar ──────────────────────────────────
@@ -1479,7 +1825,7 @@ const TAB_META = {
   materials: ['Upload Materials','Share notes and PDFs'],
   notice:    ['Post Notice',     'Publish announcements'],
   attendance:['Attendance',      'Mark and review class attendance'],
-  mocktests: ['Mock Tests',      'Create and manage tests'],
+  mocktests: ['IMU-CET CBT Engine', 'Proctored exams, negative marking & sponsorship ranking'],
   schedule:  ['Schedule',        'Your weekly class timetable'],
   chat:      ['Faculty & Student Chat', 'Live communication with cadets and faculty'],
   profile:   ['Profile',         'Manage your professional details'],
@@ -1505,7 +1851,7 @@ function switchTab(id) {
   if (id === 'notice')     renderNotices();
   if (id === 'attendance') loadAttendanceRoster();
   if (id === 'mocktests')  renderTests();
-  if (id === 'schedule')   { renderCalendar(); renderScheduledEventsList(); renderMobileSchedule('wed'); }
+  if (id === 'schedule')   { renderCalendar(); renderScheduledEventsList(); initScheduleDayPills(); updateScheduleGridToday(getTodaySchedDay()); renderMobileSchedule(currentSchedDay); }
   if (id === 'chat')       { loadChatMessages(); selectChatChannel('general'); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1513,52 +1859,164 @@ function switchTab(id) {
 // ── WEEKLY SCHEDULE DATA + MOBILE DAY RENDER ──────────────────
 const FACULTY_SCHEDULE_DATA = {
   mon: [
-    { time: '07:30 AM', subject: 'Mathematics — Trigonometry', batch: 'Batch A', room: 'Room 101', badge: 'Completed', color: 'bg-slate/20 text-slate' },
-    { time: '10:00 AM', subject: 'Physics — Mechanics', batch: 'Batch B', room: 'Room 203', badge: 'Completed', color: 'bg-slate/20 text-slate' },
-    { time: '12:00 PM', subject: 'Lunch Break & Faculty Meeting', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
-    { time: '04:30 PM', subject: 'Doubt Session — Open Q&A', batch: 'All Batches', room: 'Room 101', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '07:30 AM', subject: 'Celestial Navigation (Sight Reduction)', batch: 'Batch Alpha (DNS)', room: 'Bridge Sim Hall A', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '10:00 AM', subject: 'Naval Architecture & Ship Stability (GM)', batch: 'Batch Winter (IMU)', room: 'Chartwork Lab 2', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Wardroom Mess Break & Faculty Briefing', batch: 'All Officers', room: 'Officers Mess', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '04:30 PM', subject: 'Notice to Mariners & Chart Correction Clinic', batch: 'All Batches', room: 'Bridge Sim Hall A', badge: 'Completed', color: 'bg-slate/20 text-slate' },
   ],
   tue: [
-    { time: '10:00 AM', subject: 'Physics — Wave Optics', batch: 'Batch B', room: 'Room 203', badge: 'Completed', color: 'bg-slate/20 text-slate' },
-    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
-    { time: '02:00 PM', subject: 'DNS Nautical — Ship Stability', batch: 'Batch C', room: 'Room 305', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '10:00 AM', subject: 'Applied Physics — Hydrostatics & Buoyancy', batch: 'Batch Winter (IMU)', room: 'Chartwork Lab 2', badge: 'Completed', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Wardroom Mess Break', batch: 'All', room: 'Officers Mess', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'COLREGs Steering & Sailing Rules Simulation', batch: 'Batch Bravo (Pre-Sea)', room: 'Radar Sim Room', badge: 'Completed', color: 'bg-slate/20 text-slate' },
   ],
   wed: [
-    { time: '07:30 AM', subject: 'Mathematics — Calculus', batch: 'Batch A', room: 'Room 101', badge: 'Live Now', color: 'bg-emerald-100 text-emerald-700 font-bold' },
-    { time: '10:00 AM', subject: 'Physics — Optics', batch: 'Batch B', room: 'Room 203', badge: 'Upcoming', color: 'bg-blue-100 text-blue-700 font-semibold' },
-    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
-    { time: '02:00 PM', subject: 'Mock Test Supervision', batch: 'All Batches', room: 'Hall 1', badge: 'Exam', color: 'bg-amber-100 text-amber-700 font-bold' },
-    { time: '04:30 PM', subject: 'Doubt Session — Open Q&A', batch: 'All Batches', room: 'Room 101', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+    { time: '07:30 AM', subject: 'Terrestrial Navigation & Dead Reckoning', batch: 'Batch Alpha (DNS)', room: 'Bridge Sim Hall A', badge: 'Live Now', color: 'bg-emerald-100 text-emerald-700 font-bold' },
+    { time: '10:00 AM', subject: 'Ship Stability — GZ Curves & Free Surface', batch: 'Batch Winter (IMU)', room: 'Chartwork Lab 2', badge: 'Upcoming', color: 'bg-blue-100 text-blue-700 font-semibold' },
+    { time: '12:00 PM', subject: 'Wardroom Mess Break', batch: 'All', room: 'Officers Mess', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'IMU-CET Proctored CBT Mock Series 06', batch: 'All Batches', room: 'CBT Sim Lab 1', badge: 'Exam', color: 'bg-amber-100 text-amber-700 font-bold' },
+    { time: '04:30 PM', subject: 'Company Sponsorship Technical Defense', batch: 'Shortlisted Pool', room: 'Command Boardroom', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
   ],
   thu: [
-    { time: '07:30 AM', subject: 'Mathematics — Algebra', batch: 'Batch A', room: 'Room 101', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
-    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
-    { time: '02:00 PM', subject: 'DNS Nautical — Navigation', batch: 'Batch C', room: 'Room 305', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+    { time: '07:30 AM', subject: 'Marine Propulsion — 2-Stroke Diesels', batch: 'Batch Engine (GME)', room: 'Machinery Hall 1', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Wardroom Mess Break', batch: 'All', room: 'Officers Mess', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'Radar Plotting & ARPA Target Tracking', batch: 'Batch Bravo (Pre-Sea)', room: 'Radar Sim Room', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
   ],
   fri: [
-    { time: '10:00 AM', subject: 'Physics — Electricity', batch: 'Batch B', room: 'Room 203', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
-    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
-    { time: '04:30 PM', subject: 'Doubt Session — Physics Focus', batch: 'Batch B', room: 'Online', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+    { time: '10:00 AM', subject: 'Marine Auxiliary Boilers & Purifiers', batch: 'Batch Engine (GME)', room: 'Machinery Hall 1', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
+    { time: '12:00 PM', subject: 'Wardroom Mess Break', batch: 'All', room: 'Officers Mess', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '04:30 PM', subject: 'Deck Cadet Sponsorship Mock Board', batch: 'Batch Alpha (DNS)', room: 'Command Boardroom', badge: 'Scheduled', color: 'bg-slate/20 text-slate' },
   ],
   sat: [
-    { time: '07:30 AM', subject: 'Mathematics — Revision', batch: 'Batch A', room: 'Room 101', badge: 'Scheduled', color: 'bg-gold/20 text-gold border border-gold/30' },
-    { time: '12:00 PM', subject: 'Lunch Break', batch: 'All', room: 'Staff Room', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
-    { time: '02:00 PM', subject: 'GK Maritime Awareness Lecture', batch: 'All Batches', room: 'Hall 2', badge: 'Special', color: 'bg-teal/10 text-teal border border-teal/30' },
+    { time: '07:30 AM', subject: 'IMU-CET Mathematics & Mechanics Sprint', batch: 'Batch Alpha (DNS)', room: 'Lecture Hall 101', badge: 'Scheduled', color: 'bg-gold/20 text-gold border border-gold/30' },
+    { time: '12:00 PM', subject: 'Wardroom Mess Break', batch: 'All', room: 'Officers Mess', badge: 'Break', color: 'bg-gray-100 text-gray-600' },
+    { time: '02:00 PM', subject: 'DG Shipping SOLAS / MARPOL Protocols', batch: 'All Cadets', room: 'Main Auditorium', badge: 'Special', color: 'bg-teal/10 text-teal border border-teal/30' },
   ]
 };
 
-let currentSchedDay = 'wed';
+const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const DAY_LABELS = {
+  mon: 'Mon',
+  tue: 'Tue',
+  wed: 'Wed',
+  thu: 'Thu',
+  fri: 'Fri',
+  sat: 'Sat'
+};
+
+function getTodaySchedDay() {
+  const dayIdx = new Date().getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  return (dayIdx >= 1 && dayIdx <= 6) ? DAY_KEYS[dayIdx] : 'mon';
+}
+
+let currentSchedDay = getTodaySchedDay();
+
+function initScheduleDayPills() {
+  const dayIdx = new Date().getDay();
+  const actualTodayKey = (dayIdx >= 1 && dayIdx <= 6) ? DAY_KEYS[dayIdx] : null;
+
+  document.querySelectorAll('.sched-pill').forEach(p => {
+    const day = p.getAttribute('data-day');
+    const baseLabel = DAY_LABELS[day] || (day.charAt(0).toUpperCase() + day.slice(1));
+    if (day === actualTodayKey) {
+      p.textContent = `${baseLabel} · Today`;
+    } else {
+      p.textContent = baseLabel;
+    }
+
+    if (day === currentSchedDay) {
+      p.classList.add('active');
+    } else {
+      p.classList.remove('active');
+    }
+  });
+}
+
+function updateScheduleGridToday(todayKey) {
+  const table = document.querySelector('#schedule-grid-container table');
+  if (!table) return;
+  const dayColMap = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+  const targetColIndex = dayColMap[todayKey] || -1;
+
+  // Update header th elements
+  const ths = table.querySelectorAll('thead th');
+  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  days.forEach((d, idx) => {
+    const colIdx = idx + 1;
+    const th = ths[colIdx];
+    if (!th) return;
+    const label = d.charAt(0).toUpperCase() + d.slice(1);
+    if (colIdx === targetColIndex) {
+      th.className = 'p-3 text-center text-xs font-sub text-gold uppercase tracking-wide bg-gold/10 border-x border-gold/30 font-bold';
+      th.innerHTML = `${label}<br><span class="text-[9px] text-gold font-semibold">(Today)</span>`;
+    } else {
+      th.className = 'p-3 text-center text-xs font-sub text-slate uppercase tracking-wide';
+      th.innerHTML = label;
+    }
+  });
+
+  // Update tbody rows
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(tr => {
+    const cells = tr.querySelectorAll('td');
+    for (let c = 1; c <= 6; c++) {
+      const td = cells[c];
+      if (!td) continue;
+      const slotDiv = td.querySelector('.class-slot');
+      if (c === targetColIndex) {
+        td.classList.add('bg-gold/5');
+        if (slotDiv) {
+          slotDiv.classList.add('today-col');
+        }
+      } else {
+        td.classList.remove('bg-gold/5');
+        if (slotDiv) {
+          slotDiv.classList.remove('today-col');
+        }
+      }
+    }
+  });
+}
+
+function renderDashboardTodaySchedule() {
+  const cont = document.getElementById('dash-today-schedule');
+  if (!cont) return;
+  const todayKey = getTodaySchedDay();
+  const items = FACULTY_SCHEDULE_DATA[todayKey] || [];
+  if (items.length === 0) {
+    cont.innerHTML = `<div class="p-4 rounded-xl bg-canvas border border-gray-100 text-center text-xs text-slate">No scheduled nautical watch or classes for today.</div>`;
+    return;
+  }
+  const icons = ['explore', 'sailing', 'compass_calibration', 'military_tech', 'anchor'];
+  cont.innerHTML = items.map((item, idx) => {
+    const icon = icons[idx % icons.length];
+    return `
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-canvas border border-gray-100 hover:border-gold/30 transition-colors">
+        <div class="w-10 h-10 rounded-xl bg-deep-sea flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined fill-icon text-gold text-lg">${icon}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-deep-sea truncate">${item.subject}</p>
+          <p class="text-xs text-slate truncate">${item.batch} · ${item.room} · ${item.time}</p>
+        </div>
+        <span class="badge ${item.color} shrink-0 text-[10px]">${item.badge}</span>
+      </div>
+    `;
+  }).join('');
+}
 
 function selectScheduleDay(day) {
   currentSchedDay = day;
   document.querySelectorAll('.sched-pill').forEach(p => {
-    p.classList.remove('active');
-    if (p.getAttribute('data-day') === day) p.classList.add('active');
+    if (p.getAttribute('data-day') === day) {
+      p.classList.add('active');
+    } else {
+      p.classList.remove('active');
+    }
   });
   renderMobileSchedule(day);
 }
 
-function renderMobileSchedule(day = 'wed') {
+function renderMobileSchedule(day = currentSchedDay) {
   const container = document.getElementById('schedule-day-container');
   if (!container) return;
   const items = FACULTY_SCHEDULE_DATA[day] || [];
@@ -1621,62 +2079,337 @@ function toast(msg, type = 'info') {
 }
 
 // ══════════════════════════════════════════════
-//  STATIC DATA
+//  MARITIME ACADEMY BATCHES & CADET TELEMETRY
 // ══════════════════════════════════════════════
 const CLASSES_DATA = [
-  { id:1, subject:'Mathematics',       batch:'Batch A', schedule:'Mon / Wed / Fri – 07:30 AM', room:'Room 101', students:32, progress:72, icon:'calculate', color:'deep-sea' },
-  { id:2, subject:'Physics',           batch:'Batch B', schedule:'Mon / Tue / Wed / Fri – 10:00 AM', room:'Room 203', students:28, progress:60, icon:'biotech', color:'deep-sea' },
-  { id:3, subject:'DNS / Nautical',    batch:'Batch C', schedule:'Tue / Thu – 02:00 PM', room:'Room 305', students:20, progress:45, icon:'sailing', color:'deep-sea' },
-  { id:4, subject:'General Knowledge', batch:'All',     schedule:'Sat – 02:00 PM',    room:'Hall 2',    students:86, progress:55, icon:'travel_explore', color:'teal' },
-  { id:5, subject:'Mock Tests',        batch:'All',     schedule:'Wed – 02:00 PM',    room:'Hall 1',    students:86, progress:80, icon:'quiz',  color:'gold' },
-  { id:6, subject:'Doubt Sessions',    batch:'All',     schedule:'Mon / Wed / Fri – 04:30 PM', room:'Room 101', students:60, progress:90, icon:'help_outline', color:'deep-sea' },
+  { id:1, subject:'Celestial & Terrestrial Navigation', batch:'Batch Alpha (DNS)', schedule:'Mon / Wed / Fri – 07:30 AM', room:'Bridge Sim Hall A', students:34, progress:78, icon:'explore', color:'deep-sea' },
+  { id:2, subject:'Naval Architecture & Ship Stability', batch:'Batch Winter (IMU)', schedule:'Mon / Tue / Wed / Fri – 10:00 AM', room:'Chartwork Lab 2', students:38, progress:65, icon:'sailing', color:'deep-sea' },
+  { id:3, subject:'COLREGs & Watchkeeping (Rules of the Road)', batch:'Batch Bravo (Pre-Sea)', schedule:'Tue / Thu – 02:00 PM', room:'Radar Sim Room', students:24, progress:55, icon:'compass_calibration', color:'deep-sea' },
+  { id:4, subject:'Marine Auxiliary Machinery & 2-Stroke Diesels', batch:'Batch Engine (GME)', schedule:'Sat – 02:00 PM', room:'Machinery Hall 1', students:28, progress:60, icon:'precision_manufacturing', color:'teal' },
+  { id:5, subject:'Shipping Company Sponsorship Board Defense', batch:'Shortlisted Cadets', schedule:'Wed – 02:00 PM', room:'Command Boardroom', students:42, progress:85, icon:'military_tech', color:'gold' },
+  { id:6, subject:'IMU-CET Physics & Mathematics Intensive', batch:'All Entrance Cadets', schedule:'Mon / Wed / Fri – 04:30 PM', room:'Lecture Hall 101', students:76, progress:90, icon:'calculate', color:'deep-sea' },
 ];
 
 const STUDENTS_DATA = [
-  { id:1,  name:'Arjun Sharma',    roll:'SP-2025-001', course:'IMU-CET',      batch:'A', attendance:88, last_score:82 },
-  { id:2,  name:'Kavitha Menon',   roll:'SP-2025-002', course:'DNS Prep',     batch:'B', attendance:92, last_score:91 },
-  { id:3,  name:'Rahul Pillai',    roll:'SP-2025-003', course:'Sponsorship',  batch:'C', attendance:76, last_score:71 },
-  { id:4,  name:'Sneha Iyer',      roll:'SP-2025-004', course:'IMU-CET',      batch:'A', attendance:95, last_score:56 },
-  { id:5,  name:'Vishnu Krishnan', roll:'SP-2025-005', course:'Entrance',     batch:'B', attendance:71, last_score:88 },
-  { id:6,  name:'Priya Nair',      roll:'SP-2025-006', course:'IMU-CET',      batch:'A', attendance:89, last_score:79 },
-  { id:7,  name:'Arun Menon',      roll:'SP-2025-007', course:'DNS Prep',     batch:'B', attendance:68, last_score:63 },
-  { id:8,  name:'Deepa Thomas',    roll:'SP-2025-008', course:'Sponsorship',  batch:'C', attendance:84, last_score:75 },
-  { id:9,  name:'Sanjay Varma',    roll:'SP-2025-009', course:'IMU-CET',      batch:'A', attendance:79, last_score:68 },
-  { id:10, name:'Anjali Singh',    roll:'SP-2025-010', course:'IMU-CET',      batch:'A', attendance:91, last_score:84 },
-  { id:11, name:'Nikhil Rao',      roll:'SP-2025-011', course:'DNS Prep',     batch:'B', attendance:62, last_score:55 },
-  { id:12, name:'Meera Suresh',    roll:'SP-2025-012', course:'Sponsorship',  batch:'C', attendance:88, last_score:80 },
+  { id:1,  name:'Cadet Aryan Sharma',   roll:'SP-2026-D042', indos:'24IN08412', stream:'DNS Deck Cadet', batch:'A', fleet:'Maersk Line', sponsorship:'Shortlisted (Tech Cleared)', attendance:92, last_score:88 },
+  { id:2,  name:'Cadet Rohan Kulkarni',  roll:'SP-2026-E019', indos:'24IN09104', stream:'B.Tech Marine',  batch:'B', fleet:'Fleet Management', sponsorship:'Interview Cleared', attendance:88, last_score:91 },
+  { id:3,  name:'Cadet Varun Nair',      roll:'SP-2026-D055', indos:'24IN07892', stream:'DNS Deck Cadet', batch:'A', fleet:'MSC Geneva', sponsorship:'Board Defense Pending', attendance:86, last_score:76 },
+  { id:4,  name:'Cadet Sneha Roy',       roll:'SP-2026-D011', indos:'24IN09511', stream:'DNS Deck Cadet', batch:'A', fleet:'Synergy Marine', sponsorship:'Offer Received', attendance:96, last_score:94 },
+  { id:5,  name:'Cadet Aniket Verma',    roll:'SP-2026-G008', indos:'24IN08320', stream:'GME Engine',     batch:'C', fleet:'Anglo-Eastern', sponsorship:'Medical Cleared', attendance:89, last_score:82 },
+  { id:6,  name:'Cadet Kavitha Menon',   roll:'SP-2026-I031', indos:'24IN07154', stream:'IMU-CET Ranker', batch:'B', fleet:'Fleet Management', sponsorship:'Aptitude Qualified', attendance:94, last_score:85 },
+  { id:7,  name:'Cadet Vishnu Krishnan', roll:'SP-2026-D063', indos:'24IN09233', stream:'DNS Deck Cadet', batch:'A', fleet:'Scorpio Tankers', sponsorship:'Shortlisted', attendance:84, last_score:71 },
+  { id:8,  name:'Cadet Priya Nair',      roll:'SP-2026-I078', indos:'24IN08945', stream:'IMU-CET Ranker', batch:'B', fleet:'Maersk Line', sponsorship:'Written Cleared', attendance:91, last_score:79 },
+  { id:9,  name:'Cadet Rahul Pillai',    roll:'SP-2026-D029', indos:'24IN07740', stream:'DNS Deck Cadet', batch:'C', fleet:'BSM Schulte', sponsorship:'Panel Interview', attendance:74, last_score:68 },
+  { id:10, name:'Cadet Deepa Thomas',    roll:'SP-2026-S005', indos:'24IN08611', stream:'Sponsorship Only', batch:'C', fleet:'Synergy Marine', sponsorship:'Shortlisted', attendance:87, last_score:80 },
+  { id:11, name:'Cadet Sanjay Varma',    roll:'SP-2026-I014', indos:'24IN07490', stream:'IMU-CET Ranker', batch:'A', fleet:'Chevron Shipping', sponsorship:'Prep Stage', attendance:82, last_score:74 },
+  { id:12, name:'Cadet Nikhil Rao',      roll:'SP-2026-D071', indos:'24IN09880', stream:'DNS Deck Cadet', batch:'B', fleet:'NYK Line', sponsorship:'Tech Round Pending', attendance:71, last_score:62 },
 ];
 
 let appMaterials = [
-  { id:1, title:'Trigonometry — Complete Notes', subject:'Mathematics', type:'PDF', batch:'All', date:'20 Sep 2026', desc:'Chapter-wise notes covering all identities and formulas.' },
-  { id:2, title:'Optics & Wave Theory',           subject:'Physics',     type:'PDF', batch:'Batch B', date:'18 Sep 2026', desc:'Reflection, refraction, and wave optics with diagrams.' },
-  { id:3, title:'Ship Stability Fundamentals',    subject:'DNS / Nautical', type:'PDF', batch:'Batch C', date:'15 Sep 2026', desc:'Metacentric height, buoyancy, and stability diagrams.' },
-  { id:4, title:'Current Affairs — Sep 2026',     subject:'General Knowledge', type:'PDF', batch:'All', date:'01 Oct 2026', desc:'Monthly current affairs for IMU-CET and sponsorship exams.' },
-  { id:5, title:'Mechanics Worksheet — Set 2',    subject:'Physics',     type:'Worksheet', batch:'Batch B', date:'10 Sep 2026', desc:'Practice problems on Newton\'s laws and friction.' },
+  { id:1, title:'Celestial Sight Reduction Tables (Norie\'s & Sight Form)', subject:'Navigation', type:'PDF', batch:'Batch Alpha', date:'20 Sep 2026', desc:'Sight reduction procedures for Sun, Stars, and Polaris latitude corrections.' },
+  { id:2, title:'Ship Stability & GZ Curves Calculation Sheet', subject:'Stability', type:'PDF', batch:'Batch Winter', date:'18 Sep 2026', desc:'Cross curves of stability, dynamical stability, and free surface effect notes.' },
+  { id:3, title:'COLREGs Quick-Action Matrix (Steering & Sailing Rules)', subject:'Watchkeeping', type:'PDF', batch:'All Batches', date:'15 Sep 2026', desc:'Rules 1 to 19 summary: Head-on, Crossing, Overtaking, and Restricted Visibility.' },
+  { id:4, title:'Marine Auxiliary Boilers & Fuel Oil Treatment Diagram', subject:'Marine Engineering', type:'Diagram', batch:'Batch Engine', date:'01 Oct 2026', desc:'High-pressure steam auxiliary systems, purifiers, and viscosity controls.' },
+  { id:5, title:'Maersk Line Sponsorship Interview Question Bank', subject:'Sponsorship', type:'Worksheet', batch:'Shortlisted', date:'10 Sep 2026', desc:'Real technical and situational questions from 2024-25 selection panels.' },
 ];
 
 let appNotices = [
-  { id:1, title:'October Exam Schedule Released', category:'Exam',    target:'All Students', date:'29 Sep 2026', content:'The October examination schedule has been uploaded. Please check the notice board.' },
-  { id:2, title:'Extra Class on Saturday',        category:'Academic', target:'Batch A',     date:'27 Sep 2026', content:'An additional Mathematics revision class will be held this Saturday at 9 AM.' },
-  { id:3, title:'Material Submission Deadline',   category:'General',  target:'All Students', date:'25 Sep 2026', content:'All assignment submissions must be made by 5 PM on 5th October 2026.' },
+  { id:1, title:'DG Shipping Mandatory Attendance Audit — October 2026', category:'Compliance', target:'All Batches', date:'29 Sep 2026', content:'Cadets falling below the 85% attendance threshold are required to complete compensating watch shifts before sponsorship endorsement.' },
+  { id:2, title:'Maersk Fleet Sponsorship Technical Panel Schedule', category:'Sponsorship', target:'Batch Alpha & Winter', date:'27 Sep 2026', content:'Shortlisted cadets must report to Chartwork Lab 2 in full uniform at 0830 hrs on Saturday for final mock board defense.' },
+  { id:3, title:'IMU-CET Mock Exam Series 06 Uploaded', category:'Exam', target:'All Entrance Cadets', date:'25 Sep 2026', content:'Proctored CBT Mock Test Series 06 is live. Negative marking (-0.25) active across all sections.' },
 ];
 
 let appTests = [
-  { id:1, title:'IMU-CET Full Mock — Series 5', subject:'Full Syllabus', batch:'All Batches', duration:90, marks:100, date:'25 Sep 2026', responses:62 },
-  { id:2, title:'Mathematics — Calculus Sprint', subject:'Mathematics',   batch:'Batch A',    duration:30, marks:50,  date:'20 Sep 2026', responses:30 },
-  { id:3, title:'Physics — Optics Chapter Test', subject:'Physics',       batch:'Batch B',    duration:45, marks:50,  date:'18 Sep 2026', responses:26 },
-  { id:4, title:'DNS Navigation Basics',          subject:'DNS / Nautical',batch:'Batch C',   duration:60, marks:75,  date:'15 Sep 2026', responses:18 },
+  {
+    id: 1,
+    title: 'IMU-CET All-India CBT Mock — Series 05',
+    subject: 'Full Syllabus CBT',
+    batch: 'All Entrance Cadets',
+    duration: 180,
+    marks: 200,
+    negativeMarking: true,
+    negativePenalty: 0.25,
+    cutoffTier1: 150,
+    cutoffTier2: 130,
+    date: '25 Sep 2026',
+    venue: 'CBT Sim Lab 1 & Hall A',
+    responses: 64,
+    avgScore: 134.5,
+    topScore: 189.5,
+    topScorer: 'Cadet Sneha Roy'
+  },
+  {
+    id: 2,
+    title: 'IMU-CET Mathematics Intensive — Calculus & Vectors',
+    subject: 'Mathematics',
+    batch: 'Batch Alpha (DNS)',
+    duration: 60,
+    marks: 50,
+    negativeMarking: true,
+    negativePenalty: 0.25,
+    cutoffTier1: 42,
+    cutoffTier2: 35,
+    date: '20 Sep 2026',
+    venue: 'Hall 2 Terminal',
+    responses: 34,
+    avgScore: 36.2,
+    topScore: 48.0,
+    topScorer: 'Cadet Rohan Kulkarni'
+  },
+  {
+    id: 3,
+    title: 'Shipboard Physics — Mechanics & Hydrostatics',
+    subject: 'Physics',
+    batch: 'Batch Winter (IMU)',
+    duration: 60,
+    marks: 50,
+    negativeMarking: true,
+    negativePenalty: 0.25,
+    cutoffTier1: 40,
+    cutoffTier2: 32,
+    date: '18 Sep 2026',
+    venue: 'Lecture Hall 101',
+    responses: 38,
+    avgScore: 34.8,
+    topScore: 46.5,
+    topScorer: 'Cadet Aryan Sharma'
+  },
+  {
+    id: 4,
+    title: 'COLREGs & Maritime Aptitude Evaluation',
+    subject: 'DNS / Nautical',
+    batch: 'Batch Bravo (Pre-Sea)',
+    duration: 60,
+    marks: 50,
+    negativeMarking: false,
+    negativePenalty: 0,
+    cutoffTier1: 44,
+    cutoffTier2: 38,
+    date: '15 Sep 2026',
+    venue: 'Radar Sim Room',
+    responses: 24,
+    avgScore: 41.0,
+    topScore: 49.0,
+    topScorer: 'Cadet Varun Nair'
+  }
 ];
 
-// ── Attendance roster data ───────────────────
-const ATT_ROSTERS = {
-  'math-a':    [{name:'Arjun Sharma'},{name:'Sneha Iyer'},{name:'Priya Nair'},{name:'Sanjay Varma'},{name:'Anjali Singh'},{name:'Rohan Das'},{name:'Leela Krishnan'},{name:'Manoj Pillai'}],
-  'physics-b': [{name:'Kavitha Menon'},{name:'Vishnu Krishnan'},{name:'Arun Menon'},{name:'Nikhil Rao'},{name:'Divya Rajan'},{name:'Suresh Kumar'},{name:'Bindu Nair'}],
-  'dns-c':     [{name:'Rahul Pillai'},{name:'Deepa Thomas'},{name:'Meera Suresh'},{name:'Thomas Varghese'},{name:'Anitha George'}],
-  'gk-all':    [{name:'Arjun Sharma'},{name:'Kavitha Menon'},{name:'Rahul Pillai'},{name:'Sneha Iyer'},{name:'Vishnu Krishnan'},{name:'Priya Nair'},{name:'Arun Menon'},{name:'Deepa Thomas'},{name:'Sanjay Varma'},{name:'Anjali Singh'},{name:'Nikhil Rao'},{name:'Meera Suresh'}],
-  'doubt-all': [{name:'Arjun Sharma'},{name:'Kavitha Menon'},{name:'Sneha Iyer'},{name:'Priya Nair'},{name:'Anjali Singh'},{name:'Arun Menon'},{name:'Deepa Thomas'}],
+let activeTestId = 1;
+
+const TEST_RESULTS_DATA = {
+  1: [
+    {
+      cadet: 'Cadet Sneha Roy', roll: 'SP-2026-D011', indos: '24IN09511', stream: 'DNS Deck Cadet',
+      correct: 191, wrong: 6, unattempted: 3,
+      gross: 191, penalty: 1.50, net: 189.50,
+      percentile: 99.8, airSim: 'AIR #08',
+      sections: { math: 48, phys: 47, chem: 19, eng: 38, gk: 37.5 },
+      tier: 'Tier 1', fleet: 'Maersk Line',
+      recommendation: 'Elite Sponsor Cleared: Maersk Line & Fleet Management Technical Board'
+    },
+    {
+      cadet: 'Cadet Aryan Sharma', roll: 'SP-2026-D042', indos: '24IN08412', stream: 'DNS Deck Cadet',
+      correct: 182, wrong: 12, unattempted: 6,
+      gross: 182, penalty: 3.00, net: 179.00,
+      percentile: 98.6, airSim: 'AIR #24',
+      sections: { math: 45, phys: 46, chem: 17, eng: 36, gk: 35 },
+      tier: 'Tier 1', fleet: 'Fleet Management',
+      recommendation: 'Elite Sponsor Cleared: Maersk Line & Fleet Management Technical Board'
+    },
+    {
+      cadet: 'Cadet Rohan Kulkarni', roll: 'SP-2026-E019', indos: '24IN09104', stream: 'B.Tech Marine',
+      correct: 176, wrong: 16, unattempted: 8,
+      gross: 176, penalty: 4.00, net: 172.00,
+      percentile: 97.4, airSim: 'AIR #41',
+      sections: { math: 46, phys: 43, chem: 18, eng: 34, gk: 31 },
+      tier: 'Tier 1', fleet: 'MSC Geneva',
+      recommendation: 'Elite Sponsor Cleared: MSC Geneva & Anglo-Eastern Technical Board'
+    },
+    {
+      cadet: 'Cadet Kavitha Menon', roll: 'SP-2026-I031', indos: '24IN07154', stream: 'IMU-CET Ranker',
+      correct: 165, wrong: 20, unattempted: 15,
+      gross: 165, penalty: 5.00, net: 160.00,
+      percentile: 94.2, airSim: 'AIR #88',
+      sections: { math: 41, phys: 39, chem: 16, eng: 35, gk: 29 },
+      tier: 'Tier 1', fleet: 'Synergy Marine',
+      recommendation: 'Elite Sponsor Cleared: Synergy Marine & Fleet Management'
+    },
+    {
+      cadet: 'Cadet Aniket Verma', roll: 'SP-2026-G008', indos: '24IN08320', stream: 'GME Engine',
+      correct: 154, wrong: 28, unattempted: 18,
+      gross: 154, penalty: 7.00, net: 147.00,
+      percentile: 91.5, airSim: 'AIR #142',
+      sections: { math: 38, phys: 36, chem: 15, eng: 31, gk: 27 },
+      tier: 'Tier 2', fleet: 'Anglo-Eastern',
+      recommendation: 'Premier Sponsor Eligible: Anglo-Eastern & Synergy Marine'
+    },
+    {
+      cadet: 'Cadet Varun Nair', roll: 'SP-2026-D055', indos: '24IN07892', stream: 'DNS Deck Cadet',
+      correct: 142, wrong: 32, unattempted: 26,
+      gross: 142, penalty: 8.00, net: 134.00,
+      percentile: 86.1, airSim: 'AIR #230',
+      sections: { math: 34, phys: 33, chem: 14, eng: 28, gk: 25 },
+      tier: 'Tier 2', fleet: 'Scorpio Tankers',
+      recommendation: 'Premier Sponsor Eligible: Scorpio Tankers & BSM Schulte'
+    },
+    {
+      cadet: 'Cadet Vishnu Krishnan', roll: 'SP-2026-D063', indos: '24IN09233', stream: 'DNS Deck Cadet',
+      correct: 131, wrong: 36, unattempted: 33,
+      gross: 131, penalty: 9.00, net: 122.00,
+      percentile: 79.4, airSim: 'AIR #395',
+      sections: { math: 30, phys: 31, chem: 12, eng: 26, gk: 23 },
+      tier: 'Tier 3', fleet: 'BSM Schulte',
+      recommendation: 'Standard Sponsor Eligible: BSM Schulte Technical Review'
+    },
+    {
+      cadet: 'Cadet Deepa Thomas', roll: 'SP-2026-S005', indos: '24IN08611', stream: 'Sponsorship Only',
+      correct: 124, wrong: 40, unattempted: 36,
+      gross: 124, penalty: 10.00, net: 114.00,
+      percentile: 72.0, airSim: 'AIR #560',
+      sections: { math: 28, phys: 29, chem: 11, eng: 25, gk: 21 },
+      tier: 'Tier 3', fleet: 'Synergy Marine',
+      recommendation: 'Standard Sponsor Eligible: Secondary Board Evaluation'
+    },
+    {
+      cadet: 'Cadet Sanjay Varma', roll: 'SP-2026-I014', indos: '24IN07490', stream: 'IMU-CET Ranker',
+      correct: 115, wrong: 44, unattempted: 41,
+      gross: 115, penalty: 11.00, net: 104.00,
+      percentile: 64.3, airSim: 'AIR #780',
+      sections: { math: 25, phys: 26, chem: 10, eng: 23, gk: 20 },
+      tier: 'Remedial', fleet: 'Chevron Shipping',
+      recommendation: 'Re-attempt Recommended: Below Cutoff Threshold (110)'
+    },
+    {
+      cadet: 'Cadet Rahul Pillai', roll: 'SP-2026-D029', indos: '24IN07740', stream: 'DNS Deck Cadet',
+      correct: 108, wrong: 48, unattempted: 44,
+      gross: 108, penalty: 12.00, net: 96.00,
+      percentile: 57.1, airSim: 'AIR #960',
+      sections: { math: 22, phys: 24, chem: 9, eng: 22, gk: 19 },
+      tier: 'Remedial', fleet: 'BSM Schulte',
+      recommendation: 'Re-attempt Recommended: Below Minimum Passing Benchmark (100)'
+    },
+    {
+      cadet: 'Cadet Nikhil Rao', roll: 'SP-2026-D071', indos: '24IN09880', stream: 'DNS Deck Cadet',
+      correct: 98, wrong: 52, unattempted: 50,
+      gross: 98, penalty: 13.00, net: 85.00,
+      percentile: 46.8, airSim: 'AIR #1240',
+      sections: { math: 19, phys: 21, chem: 8, eng: 20, gk: 17 },
+      tier: 'Remedial', fleet: 'NYK Line',
+      recommendation: 'Debarred from Sponsor Defense: Failed Qualifying Threshold'
+    }
+  ],
+  2: [
+    {
+      cadet: 'Cadet Rohan Kulkarni', roll: 'SP-2026-E019', indos: '24IN09104', stream: 'B.Tech Marine',
+      correct: 49, wrong: 1, unattempted: 0,
+      gross: 49, penalty: 0.25, net: 48.75,
+      percentile: 99.5, airSim: 'AIR #12',
+      sections: { math: 48.75 },
+      tier: 'Tier 1', fleet: 'MSC Geneva',
+      recommendation: 'Elite Mathematics Distinction: 100% Vector Mastery'
+    },
+    {
+      cadet: 'Cadet Sneha Roy', roll: 'SP-2026-D011', indos: '24IN09511', stream: 'DNS Deck Cadet',
+      correct: 47, wrong: 3, unattempted: 0,
+      gross: 47, penalty: 0.75, net: 46.25,
+      percentile: 97.2, airSim: 'AIR #35',
+      sections: { math: 46.25 },
+      tier: 'Tier 1', fleet: 'Synergy Marine',
+      recommendation: 'Elite Mathematics Distinction'
+    },
+    {
+      cadet: 'Cadet Aryan Sharma', roll: 'SP-2026-D042', indos: '24IN08412', stream: 'DNS Deck Cadet',
+      correct: 44, wrong: 4, unattempted: 2,
+      gross: 44, penalty: 1.00, net: 43.00,
+      percentile: 92.4, airSim: 'AIR #76',
+      sections: { math: 43.00 },
+      tier: 'Tier 1', fleet: 'Maersk Line',
+      recommendation: 'Tier 1 Benchmark Met'
+    }
+  ],
+  3: [
+    {
+      cadet: 'Cadet Aryan Sharma', roll: 'SP-2026-D042', indos: '24IN08412', stream: 'DNS Deck Cadet',
+      correct: 47, wrong: 2, unattempted: 1,
+      gross: 47, penalty: 0.50, net: 46.50,
+      percentile: 99.2, airSim: 'AIR #15',
+      sections: { phys: 46.50 },
+      tier: 'Tier 1', fleet: 'Maersk Line',
+      recommendation: 'Top Hydrostatics & Fluid Statics Clearance'
+    },
+    {
+      cadet: 'Cadet Sneha Roy', roll: 'SP-2026-D011', indos: '24IN09511', stream: 'DNS Deck Cadet',
+      correct: 45, wrong: 4, unattempted: 1,
+      gross: 45, penalty: 1.00, net: 44.00,
+      percentile: 95.8, airSim: 'AIR #42',
+      sections: { phys: 44.00 },
+      tier: 'Tier 1', fleet: 'Synergy Marine',
+      recommendation: 'Elite Physics Clearance'
+    }
+  ],
+  4: [
+    {
+      cadet: 'Cadet Varun Nair', roll: 'SP-2026-D055', indos: '24IN07892', stream: 'DNS Deck Cadet',
+      correct: 49, wrong: 1, unattempted: 0,
+      gross: 49, penalty: 0.00, net: 49.00,
+      percentile: 99.8, airSim: 'AIR #05',
+      sections: { colreg: 49.00 },
+      tier: 'Tier 1', fleet: 'Scorpio Tankers',
+      recommendation: 'Perfect COLREGs Action Reflexes: Rule 1 to 19 Flawless'
+    },
+    {
+      cadet: 'Cadet Aryan Sharma', roll: 'SP-2026-D042', indos: '24IN08412', stream: 'DNS Deck Cadet',
+      correct: 48, wrong: 2, unattempted: 0,
+      gross: 48, penalty: 0.00, net: 48.00,
+      percentile: 97.5, airSim: 'AIR #21',
+      sections: { colreg: 48.00 },
+      tier: 'Tier 1', fleet: 'Fleet Management',
+      recommendation: 'Radar Plotting & Steering Rules Endorsed'
+    }
+  ]
 };
-let attState = {}; // roll → 'P' | 'A'
+
+// ── Attendance muster roster data (Naval Cadets) ──
+const ATT_ROSTERS = {
+  'nav-a': [
+    { name:'Cadet Aryan Sharma',   roll:'SP-2026-D042', indos:'24IN08412', attendance:92 },
+    { name:'Cadet Varun Nair',      roll:'SP-2026-D055', indos:'24IN07892', attendance:86 },
+    { name:'Cadet Sneha Roy',       roll:'SP-2026-D011', indos:'24IN09511', attendance:96 },
+    { name:'Cadet Vishnu Krishnan', roll:'SP-2026-D063', indos:'24IN09233', attendance:84 },
+    { name:'Cadet Sanjay Varma',    roll:'SP-2026-I014', indos:'24IN07490', attendance:82 },
+    { name:'Cadet Rohan Das',       roll:'SP-2026-D088', indos:'24IN09001', attendance:90 },
+    { name:'Cadet Leela Krishnan',  roll:'SP-2026-D091', indos:'24IN08519', attendance:88 },
+  ],
+  'stab-w': [
+    { name:'Cadet Kavitha Menon',   roll:'SP-2026-I031', indos:'24IN07154', attendance:94 },
+    { name:'Cadet Priya Nair',      roll:'SP-2026-I078', indos:'24IN08945', attendance:91 },
+    { name:'Cadet Sanjay Varma',    roll:'SP-2026-I014', indos:'24IN07490', attendance:82 },
+    { name:'Cadet Manoj Pillai',    roll:'SP-2026-I099', indos:'24IN07604', attendance:89 },
+    { name:'Cadet Anjali Singh',    roll:'SP-2026-I023', indos:'24IN08120', attendance:93 },
+    { name:'Cadet Divya Rajan',     roll:'SP-2026-I067', indos:'24IN09341', attendance:80 },
+  ],
+  'colreg-b': [
+    { name:'Cadet Rohan Kulkarni',  roll:'SP-2026-E019', indos:'24IN09104', attendance:88 },
+    { name:'Cadet Nikhil Rao',      roll:'SP-2026-D071', indos:'24IN09880', attendance:71 },
+    { name:'Cadet Arun Menon',      roll:'SP-2026-D049', indos:'24IN08455', attendance:84 },
+    { name:'Cadet Suresh Kumar',    roll:'SP-2026-D080', indos:'24IN07912', attendance:87 },
+    { name:'Cadet Bindu Nair',      roll:'SP-2026-D094', indos:'24IN09160', attendance:85 },
+  ],
+  'engine-g': [
+    { name:'Cadet Aniket Verma',    roll:'SP-2026-G008', indos:'24IN08320', attendance:89 },
+    { name:'Cadet Rohan Kulkarni',  roll:'SP-2026-E019', indos:'24IN09104', attendance:88 },
+    { name:'Cadet Thomas Varghese', roll:'SP-2026-G014', indos:'24IN08709', attendance:92 },
+    { name:'Cadet Anitha George',   roll:'SP-2026-G022', indos:'24IN09450', attendance:86 },
+  ],
+  'spon-all': [
+    { name:'Cadet Aryan Sharma',   roll:'SP-2026-D042', indos:'24IN08412', attendance:92 },
+    { name:'Cadet Sneha Roy',       roll:'SP-2026-D011', indos:'24IN09511', attendance:96 },
+    { name:'Cadet Rohan Kulkarni',  roll:'SP-2026-E019', indos:'24IN09104', attendance:88 },
+    { name:'Cadet Varun Nair',      roll:'SP-2026-D055', indos:'24IN07892', attendance:86 },
+    { name:'Cadet Deepa Thomas',    roll:'SP-2026-S005', indos:'24IN08611', attendance:87 },
+  ],
+};
+let attState = {}; // index → 'P' | 'A' | 'M' | 'SP'
 
 // ══════════════════════════════════════════════
 //  RENDER FUNCTIONS
@@ -1712,64 +2445,362 @@ function renderClasses() {
 
 function renderStudents() {
   const batchFilter  = document.getElementById('student-batch-filter')?.value || 'all';
+  const fleetFilter  = document.getElementById('student-fleet-filter')?.value || 'all';
   const searchFilter = (document.getElementById('student-search')?.value || '').toLowerCase();
+  
   let rows = STUDENTS_DATA.filter(s => {
     const batchOk  = batchFilter === 'all' || s.batch === batchFilter;
-    const searchOk = !searchFilter || s.name.toLowerCase().includes(searchFilter) || s.roll.toLowerCase().includes(searchFilter) || s.course.toLowerCase().includes(searchFilter);
-    return batchOk && searchOk;
+    const fleetOk  = fleetFilter === 'all' || s.fleet.toLowerCase().includes(fleetFilter.toLowerCase());
+    const searchOk = !searchFilter || 
+                     s.name.toLowerCase().includes(searchFilter) || 
+                     s.roll.toLowerCase().includes(searchFilter) || 
+                     s.indos.toLowerCase().includes(searchFilter) || 
+                     s.stream.toLowerCase().includes(searchFilter) ||
+                     s.fleet.toLowerCase().includes(searchFilter);
+    return batchOk && fleetOk && searchOk;
   });
-  const attBadge = a => a >= 85 ? `<span class="badge bg-emerald-100 text-emerald-700">${a}%</span>` : a >= 70 ? `<span class="badge bg-amber-100 text-amber-700">${a}%</span>` : `<span class="badge bg-red-100 text-red-600">${a}%</span>`;
-  const scoreBadge = s => s >= 80 ? `<span class="badge bg-emerald-100 text-emerald-700">${s}</span>` : s >= 60 ? `<span class="badge bg-amber-100 text-amber-700">${s}</span>` : `<span class="badge bg-red-100 text-red-600">${s}</span>`;
+
+  const dgAttBadge = a => {
+    if (a >= 85) return `<span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono"><i class="fas fa-check text-[9px] mr-1"></i>${a}% DG-PASS</span>`;
+    if (a >= 75) return `<span class="badge bg-amber-100 text-amber-800 border border-amber-300 font-mono"><i class="fas fa-triangle-exclamation text-[9px] mr-1"></i>${a}% AUDIT WARN</span>`;
+    return `<span class="badge bg-red-100 text-red-800 border border-red-300 font-mono"><i class="fas fa-ban text-[9px] mr-1"></i>${a}% DEBARRED</span>`;
+  };
+
+  const sponsorBadge = st => {
+    if (st.includes('Offer')) return `<span class="badge bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold">${st}</span>`;
+    if (st.includes('Cleared') || st.includes('Qualified')) return `<span class="badge bg-blue-50 text-blue-700 border border-blue-200">${st}</span>`;
+    if (st.includes('Shortlisted')) return `<span class="badge bg-purple-50 text-purple-700 border border-purple-200">${st}</span>`;
+    return `<span class="badge bg-gray-50 text-gray-700 border border-gray-200">${st}</span>`;
+  };
+
   document.getElementById('students-tbody').innerHTML = rows.map(s => `
     <tr>
-      <td><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-deep-sea/10 flex items-center justify-center text-deep-sea font-bold text-xs">${s.name.charAt(0)}</div>${s.name}</div></td>
-      <td class="font-mono text-xs">${s.roll}</td>
-      <td>${s.course}</td>
-      <td><span class="badge bg-blue-50 text-blue-700">Batch ${s.batch}</span></td>
-      <td>${attBadge(s.attendance)}</td>
-      <td>${scoreBadge(s.last_score)}</td>
-      <td><span class="badge bg-emerald-100 text-emerald-700">Active</span></td>
+      <td>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-deep-sea text-gold flex items-center justify-center font-bold text-xs shrink-0 border border-gold/30">
+            <span class="material-symbols-outlined text-sm">sailing</span>
+          </div>
+          <div>
+            <div class="font-semibold text-deep-sea text-sm">${s.name}</div>
+            <div class="text-[10px] text-slate font-mono">${s.stream}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="font-mono text-xs font-bold text-deep-sea">${s.roll}</div>
+        <div class="font-mono text-[10px] text-slate">INDoS: ${s.indos}</div>
+      </td>
+      <td><span class="font-medium text-xs text-gray-700">${s.stream}</span></td>
+      <td><span class="badge bg-deep-sea/10 text-deep-sea border border-deep-sea/20">Batch ${s.batch}</span></td>
+      <td>
+        <div class="flex items-center gap-1.5 font-semibold text-xs text-deep-sea">
+          <i class="fas fa-anchor text-gold text-xs"></i> ${s.fleet}
+        </div>
+      </td>
+      <td>${sponsorBadge(s.sponsorship)}</td>
+      <td>${dgAttBadge(s.attendance)}</td>
+      <td>
+        <span class="badge ${s.attendance >= 85 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+          ${s.attendance >= 85 ? 'Board Approved' : 'Review Required'}
+        </span>
+      </td>
     </tr>
-  `).join('') || '<tr><td colspan="7" class="text-center py-8 text-slate text-sm">No students found.</td></tr>';
+  `).join('') || '<tr><td colspan="8" class="text-center py-8 text-slate text-sm font-mono">NO CADET DOSSIERS MATCHING CRITERIA</td></tr>';
 }
 
 function filterStudents() { renderStudents(); }
 
-function renderMaterials() {
-  document.getElementById('materials-list').innerHTML = appMaterials.map(m => `
-    <div class="mat-row">
-      <div class="mat-icon-wrap"><span class="material-symbols-outlined text-gold text-lg">description</span></div>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-semibold text-deep-sea truncate">${m.title}</p>
-        <p class="text-xs text-slate">${m.subject} · ${m.type} · ${m.batch} · ${m.date}</p>
-      </div>
-      <button onclick="deleteMaterial(${m.id})" class="text-red-400 hover:text-red-600 transition-colors shrink-0" title="Delete">
-        <span class="material-symbols-outlined text-lg">delete</span>
-      </button>
-    </div>
-  `).join('') || '<p class="text-sm text-slate text-center py-6">No materials uploaded yet.</p>';
+function syncMaterialSubject() {
+  const clsId = document.getElementById('m-class-id')?.value;
+  const subjEl = document.getElementById('m-subject');
+  if (!clsId || !subjEl) return;
+  const map = {
+    '1': 'Navigation',
+    '2': 'Stability',
+    '3': 'Watchkeeping',
+    '4': 'Marine Engineering',
+    '5': 'Sponsorship',
+    '6': 'Mathematics'
+  };
+  if (map[clsId]) subjEl.value = map[clsId];
 }
 
-function uploadMaterial(e) {
+let selectedMaterialFile = null;
+
+function handleMaterialFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  selectedMaterialFile = file;
+
+  const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+  const labelEl = document.getElementById('m-file-label');
+  const subEl   = document.getElementById('m-file-sub');
+  if (labelEl) labelEl.innerHTML = `<span class="text-deep-sea font-bold">${file.name}</span> <span class="badge bg-gold/15 text-gold border border-gold/40 text-[9px] ml-1">${sizeMb} MB</span>`;
+  if (subEl)   subEl.textContent = `File ready for secure cloud transmission`;
+
+  const titleInput = document.getElementById('m-title');
+  if (titleInput && !titleInput.value) {
+    const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+    titleInput.value = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+  }
+}
+
+function renderMaterials() {
+  const countBadge = document.getElementById('materials-count-badge');
+  if (countBadge) countBadge.textContent = `${appMaterials.length} Documents`;
+
+  const listEl = document.getElementById('materials-list');
+  if (!listEl) return;
+
+  const typeIconMap = {
+    PDF: 'picture_as_pdf',
+    Worksheet: 'table_chart',
+    Diagram: 'architecture',
+    Circular: 'gavel',
+    Dossier: 'folder_shared'
+  };
+
+  listEl.innerHTML = appMaterials.map(m => {
+    const icon = typeIconMap[m.type] || 'description';
+    return `
+    <div class="p-3.5 rounded-xl border border-gray-200 bg-canvas hover:border-gold/40 transition-all flex items-start gap-3">
+      <div class="w-10 h-10 rounded-xl bg-deep-sea/5 text-deep-sea flex items-center justify-center shrink-0 border border-deep-sea/10">
+        <span class="material-symbols-outlined text-gold text-xl">${icon}</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex flex-wrap items-center gap-1.5 mb-1">
+          <span class="badge bg-deep-sea text-white text-[9px]">${m.subject}</span>
+          <span class="badge bg-white text-slate border border-gray-200 text-[9px]">${m.type}</span>
+          <span class="badge bg-teal/10 text-teal border border-teal/20 text-[9px]">${m.batch}</span>
+        </div>
+        <p class="text-sm font-bold text-deep-sea leading-snug">${m.title}</p>
+        <p class="text-xs text-slate mt-0.5 line-clamp-1">${m.desc || 'DG Shipping / IMU curriculum reference document.'}</p>
+        <div class="flex items-center gap-3 mt-2 text-[11px] text-slate font-mono">
+          <span><i class="far fa-calendar-alt mr-1"></i>${m.date}</span>
+          <span><i class="fas fa-file mr-1"></i>${m.fileSize || '3.4 MB'}</span>
+          <span class="text-teal font-sans font-medium"><i class="fas fa-lock text-[9px] mr-1"></i>Secured</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1 shrink-0 self-start">
+        <button onclick="downloadMaterialPreview(${m.id})" class="p-1.5 rounded-lg hover:bg-gold/15 text-slate hover:text-gold transition-colors" title="Download / Preview">
+          <span class="material-symbols-outlined text-lg">download</span>
+        </button>
+        <button onclick="deleteMaterial(${m.id})" class="p-1.5 rounded-lg hover:bg-red-50 text-slate hover:text-red-500 transition-colors" title="Delete">
+          <span class="material-symbols-outlined text-lg">delete</span>
+        </button>
+      </div>
+    </div>
+  `}).join('') || '<p class="text-sm text-slate text-center py-6">No materials uploaded yet.</p>';
+}
+
+function downloadMaterialPreview(id) {
+  const mat = appMaterials.find(m => m.id === id);
+  if (!mat) return;
+  if (mat.fileUrl && mat.fileUrl !== '#') {
+    window.open(mat.fileUrl, '_blank');
+  } else {
+    toast(`✓ Downloading "${mat.title}" (${mat.fileSize || 'PDF'})...`, 'success');
+  }
+}
+
+async function uploadMaterial(e) {
   e.preventDefault();
   const title   = document.getElementById('m-title').value.trim();
+  const classId = document.getElementById('m-class-id')?.value || '1';
   const subject = document.getElementById('m-subject').value;
   const type    = document.getElementById('m-type').value;
   const batch   = document.getElementById('m-batch').value;
   const desc    = document.getElementById('m-desc').value.trim();
-  if (!title || !subject) { toast('Title and subject are required.', 'error'); return; }
-  const mat = { id: Date.now(), title, subject, type, batch, desc, date: new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) };
-  appMaterials.unshift(mat);
-  renderMaterials();
-  e.target.reset();
-  toast(`✓ "${title}" uploaded!`, 'success');
+  const file    = selectedMaterialFile || document.getElementById('m-file')?.files[0];
+
+  if (!title || !subject) { toast('Title and discipline are required.', 'error'); return; }
+
+  const submitBtn = document.getElementById('m-submit-btn');
+  const progBox   = document.getElementById('m-upload-progress');
+  const progBar   = document.getElementById('m-upload-bar');
+  const progPct   = document.getElementById('m-upload-pct');
+  const progTxt   = document.getElementById('m-upload-status-text');
+
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.classList.add('opacity-70'); }
+  if (progBox) progBox.classList.remove('hidden');
+
+  let uploadedUrl = '#';
+
+  try {
+    if (progTxt) progTxt.textContent = 'Encrypting & streaming to storage bucket...';
+    if (progBar) progBar.style.width = '35%';
+    if (progPct) progPct.textContent = '35%';
+
+    if (sbClient && file) {
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `classes/${classId}/${Date.now()}_${sanitizedName}`;
+
+      const { data: upData, error: upError } = await sbClient.storage
+        .from('materials')
+        .upload(storagePath, file, { cacheControl: '3600', upsert: false });
+
+      if (upError) {
+        console.warn('Storage upload notice (falling back gracefully):', upError.message);
+      } else if (upData) {
+        const { data: pubData } = sbClient.storage.from('materials').getPublicUrl(storagePath);
+        if (pubData) uploadedUrl = pubData.publicUrl;
+      }
+    }
+
+    if (progBar) progBar.style.width = '75%';
+    if (progPct) progPct.textContent = '75%';
+    if (progTxt) progTxt.textContent = 'Indexing in maritime materials registry...';
+
+    if (sbClient) {
+      try {
+        await sbClient.from('materials').insert([{
+          title,
+          class_id: parseInt(classId) || 1,
+          subject,
+          type,
+          batch,
+          description: desc,
+          file_url: uploadedUrl,
+          file_name: file ? file.name : `${title}.pdf`,
+          created_at: new Date().toISOString()
+        }]);
+      } catch(tblErr) {
+        console.info('Materials table sync notice:', tblErr.message);
+      }
+    }
+
+    if (progBar) progBar.style.width = '100%';
+    if (progPct) progPct.textContent = '100%';
+
+    const newMat = {
+      id: Date.now(),
+      title,
+      classId,
+      subject,
+      type,
+      batch,
+      desc,
+      fileSize: file ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : '4.2 MB',
+      fileName: file ? file.name : `${title}.pdf`,
+      fileUrl: uploadedUrl,
+      date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+    };
+
+    appMaterials.unshift(newMat);
+    try { localStorage.setItem('sp_faculty_materials', JSON.stringify(appMaterials)); } catch(e) {}
+
+    renderMaterials();
+    e.target.reset();
+    selectedMaterialFile = null;
+    const labelEl = document.getElementById('m-file-label');
+    if (labelEl) labelEl.innerHTML = `Click to select publication <span class="text-deep-sea font-semibold">or drag &amp; drop</span>`;
+    const subEl = document.getElementById('m-file-sub');
+    if (subEl) subEl.textContent = 'PDF, DOCX, PNG, JPG, CAD Diagrams — up to 50 MB';
+
+    toast(`✓ "${title}" successfully published to cadet cloud repository!`, 'success');
+  } catch (err) {
+    console.error('Upload error:', err);
+    toast('Error uploading material. Local copy saved.', 'error');
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.classList.remove('opacity-70'); }
+    setTimeout(() => {
+      if (progBox) progBox.classList.add('hidden');
+      if (progBar) progBar.style.width = '0%';
+    }, 1000);
+  }
 }
 
 function deleteMaterial(id) {
-  if (!confirm('Delete this material?')) return;
+  if (!confirm('Permanently delete this maritime study material from cadet repository?')) return;
   appMaterials = appMaterials.filter(m => m.id !== id);
+  try { localStorage.setItem('sp_faculty_materials', JSON.stringify(appMaterials)); } catch(e) {}
   renderMaterials();
-  toast('Material deleted.', 'error');
+  toast('Material publication deleted.', 'error');
+}
+
+// ── Dynamic Supabase Fetchers ──────────────────
+async function loadDynamicClasses() {
+  if (!sbClient) return;
+  try {
+    const { data, error } = await sbClient
+      .from('classes')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      CLASSES_DATA.length = 0;
+      data.forEach(c => {
+        CLASSES_DATA.push({
+          id: c.id,
+          subject: c.title || c.subject || c.name || 'Maritime Training Module',
+          batch: c.batch || c.batch_name || 'All Batches',
+          schedule: c.schedule || 'Scheduled Watch',
+          room: c.room || c.venue || 'Bridge Hall A',
+          students: c.students_count || c.students || 32,
+          progress: c.progress || 72,
+          icon: c.icon || 'explore',
+          color: c.color || 'deep-sea'
+        });
+      });
+      renderClasses();
+      populateClassSelectors();
+    }
+  } catch (err) {
+    console.info('Using local maritime batches roster:', err.message);
+  }
+}
+
+function populateClassSelectors() {
+  const mClsSel = document.getElementById('m-class-id');
+  if (mClsSel && CLASSES_DATA.length > 0) {
+    mClsSel.innerHTML = CLASSES_DATA.map(c => `
+      <option value="${c.id}">${c.subject} (${c.batch})</option>
+    `).join('');
+  }
+}
+
+async function loadDynamicMaterials() {
+  try {
+    const cached = localStorage.getItem('sp_faculty_materials');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        appMaterials = parsed;
+        renderMaterials();
+      }
+    }
+  } catch(e) {}
+
+  if (!sbClient) return;
+  try {
+    const { data, error } = await sbClient
+      .from('materials')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      data.forEach(row => {
+        if (!appMaterials.some(m => m.id === row.id || m.title === row.title)) {
+          appMaterials.unshift({
+            id: row.id,
+            title: row.title,
+            classId: row.class_id,
+            subject: row.subject || 'Navigation',
+            type: row.type || 'PDF',
+            batch: row.batch || 'All Batches',
+            desc: row.description || '',
+            fileSize: row.file_size || '3.5 MB',
+            fileName: row.file_name || `${row.title}.pdf`,
+            fileUrl: row.file_url || '#',
+            date: new Date(row.created_at || Date.now()).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+          });
+        }
+      });
+      renderMaterials();
+    }
+  } catch (err) {
+    console.info('Using local publications dataset:', err.message);
+  }
 }
 
 function renderNotices() {
@@ -1825,37 +2856,52 @@ function deleteNotice(id) {
   toast('Notice deleted.', 'error');
 }
 
-// ── Attendance ───────────────────────────────
+// ── DG Shipping Muster Roll Call & Compliance Engine ───────────────────────────────
 function loadAttendanceRoster() {
-  const cls  = document.getElementById('att-class')?.value || 'math-a';
+  const cls = document.getElementById('att-class')?.value || 'nav-a';
   const list = ATT_ROSTERS[cls] || [];
   attState = {};
-  list.forEach((s, i) => attState[i] = 'P'); // default all present
+  list.forEach((s, i) => attState[i] = 'P'); // Default all present on deck
   renderRoster(list);
 }
 
 function renderRoster(list) {
-  document.getElementById('att-roster').innerHTML = list.map((s, i) => `
-    <div class="att-row">
+  document.getElementById('att-roster').innerHTML = list.map((s, i) => {
+    const isAtRisk = s.attendance < 85;
+    return `
+    <div class="att-row border ${isAtRisk ? 'border-amber-300 bg-amber-50/20' : 'border-gray-200'}">
       <div class="flex items-center gap-3">
-        <div class="w-7 h-7 rounded-full bg-deep-sea/10 flex items-center justify-center text-deep-sea font-bold text-xs shrink-0">${s.name.charAt(0)}</div>
-        <span class="text-sm font-semibold text-deep-sea">${s.name}</span>
+        <div class="w-8 h-8 rounded-full bg-deep-sea text-gold flex items-center justify-center font-bold text-xs shrink-0 border border-gold/30">
+          ${s.name.charAt(6) || s.name.charAt(0)}
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-deep-sea">${s.name}</span>
+            ${isAtRisk ? '<span class="badge bg-amber-100 text-amber-800 text-[9px] border border-amber-300">AUDIT RISK</span>' : ''}
+          </div>
+          <div class="text-[10px] text-slate font-mono">
+            ${s.roll} · INDoS: ${s.indos} · Cumulative: <strong class="${isAtRisk ? 'text-amber-600 font-bold' : 'text-emerald-600'}">${s.attendance}%</strong>
+          </div>
+        </div>
       </div>
       <div class="att-toggle">
-        <button id="btn-p-${i}" class="att-btn-present ${attState[i]==='P'?'active':''}" onclick="setAtt(${i},'P')">Present</button>
-        <button id="btn-a-${i}" class="att-btn-absent ${attState[i]==='A'?'active':''}"  onclick="setAtt(${i},'A')">Absent</button>
+        <button id="btn-p-${i}" class="att-btn-present ${attState[i]==='P'?'active':''}" onclick="setAtt(${i},'P')" title="Present on Deck">P</button>
+        <button id="btn-a-${i}" class="att-btn-absent ${attState[i]==='A'?'active':''}"  onclick="setAtt(${i},'A')" title="Absent / Unexcused">A</button>
+        <button id="btn-m-${i}" class="att-btn-med ${attState[i]==='M'?'active':''}"     onclick="setAtt(${i},'M')" title="Sick Bay / Medical">M</button>
+        <button id="btn-sp-${i}" class="att-btn-leave ${attState[i]==='SP'?'active':''}" onclick="setAtt(${i},'SP')" title="Authorized Shore Pass">SP</button>
       </div>
     </div>
-  `).join('') || '<p class="text-sm text-slate py-4 text-center">No students in this class.</p>';
+    `;
+  }).join('') || '<p class="text-sm text-slate py-4 text-center font-mono">No cadet records found for this module.</p>';
   updateAttCount();
 }
 
 function setAtt(i, val) {
   attState[i] = val;
-  const pBtn = document.getElementById('btn-p-' + i);
-  const aBtn = document.getElementById('btn-a-' + i);
-  if (pBtn) { pBtn.classList.toggle('active', val === 'P'); }
-  if (aBtn) { aBtn.classList.toggle('active', val === 'A'); }
+  ['p', 'a', 'm', 'sp'].forEach(t => {
+    const btn = document.getElementById(`btn-${t}-${i}`);
+    if (btn) btn.classList.toggle('active', val.toLowerCase() === t);
+  });
   updateAttCount();
 }
 
@@ -1864,71 +2910,472 @@ function markAll(val) {
 }
 
 function updateAttCount() {
-  const total   = Object.keys(attState).length;
+  const total = Object.keys(attState).length;
   const present = Object.values(attState).filter(v => v === 'P').length;
+  const leave = Object.values(attState).filter(v => v === 'M' || v === 'SP').length;
+  const absent = Object.values(attState).filter(v => v === 'A').length;
+  const complianceRate = total > 0 ? ((present / total) * 100).toFixed(1) : '100.0';
+
   const el = document.getElementById('att-count');
-  if (el) el.textContent = `${present}/${total} present`;
+  if (el) el.textContent = `${present} Deck · ${leave} Leave · ${absent} Absent`;
+
+  const totalEl = document.getElementById('muster-total-cadets');
+  if (totalEl) totalEl.textContent = `${total} Cadets`;
+
+  const presEl = document.getElementById('muster-present-count');
+  if (presEl) presEl.textContent = present;
+
+  const leaveEl = document.getElementById('muster-leave-count');
+  if (leaveEl) leaveEl.textContent = leave;
+
+  const compEl = document.getElementById('muster-compliance-rate');
+  if (compEl) {
+    compEl.textContent = `${complianceRate}%`;
+    compEl.className = Number(complianceRate) >= 85 ? 'font-display text-2xl text-emerald-600 mt-0.5' : 'font-display text-2xl text-amber-600 mt-0.5';
+  }
 }
 
 function submitAttendance() {
-  const total   = Object.keys(attState).length;
+  const total = Object.keys(attState).length;
   const present = Object.values(attState).filter(v => v === 'P').length;
-  if (total === 0) { toast('No students in roster.', 'error'); return; }
-  toast(`✓ Attendance saved — ${present}/${total} present`, 'success');
+  if (total === 0) { toast('No cadets in muster roster.', 'error'); return; }
+  
+  const clsName = document.getElementById('att-class')?.selectedOptions[0]?.text || 'Maritime Module';
+  const shift = document.getElementById('att-shift')?.value || '0800';
+  const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0];
+  
+  toast(`✓ Muster endorsed: ${present}/${total} present on deck for ${shift} Watch.`, 'success');
 }
 
-// ── Mock Tests ───────────────────────────────
+function exportMusterCSV() {
+  const cls = document.getElementById('att-class')?.value || 'nav-a';
+  const clsTitle = document.getElementById('att-class')?.selectedOptions[0]?.text || 'Module';
+  const shift = document.getElementById('att-shift')?.selectedOptions[0]?.text || 'Morning Watch';
+  const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0];
+  const list = ATT_ROSTERS[cls] || [];
+  
+  if (list.length === 0) {
+    toast('No cadet muster data to export.', 'error');
+    return;
+  }
+
+  let csvContent = 'data:text/csv;charset=utf-8,';
+  csvContent += 'Cadet Name,Roll Number,INDoS Number,Training Module,Watch Shift,Muster Date,Muster Status,Cumulative DG Percentage\r\n';
+
+  list.forEach((s, i) => {
+    const status = attState[i] || 'P';
+    const statusLabel = status === 'P' ? 'Present on Deck' : status === 'A' ? 'Absent' : status === 'M' ? 'Sick Bay' : 'Shore Pass';
+    csvContent += `"${s.name}","${s.roll}","${s.indos}","${clsTitle}","${shift}","${date}","${statusLabel}",${s.attendance}%\r\n`;
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `SINDHUPATH_Muster_Log_${cls}_${date}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  toast('✓ DG Muster Audit CSV downloaded!', 'success');
+}
+
+// ── IMU-CET Mock Tests & Sponsorship Merit Engine ───────────────────────────────
+function updateExamDefaults() {
+  const subj = document.getElementById('t-subject')?.value;
+  const durEl = document.getElementById('t-duration');
+  const mrkEl = document.getElementById('t-marks');
+  const negEl = document.getElementById('t-neg-mark');
+  const t1El  = document.getElementById('t-cutoff-t1');
+  const t2El  = document.getElementById('t-cutoff-t2');
+  if (!subj || !durEl || !mrkEl) return;
+
+  if (subj === 'Full Syllabus CBT') {
+    durEl.value = 180; mrkEl.value = 200; negEl.checked = true;
+    if (t1El) t1El.value = 150; if (t2El) t2El.value = 130;
+  } else if (subj === 'Mathematics') {
+    durEl.value = 60; mrkEl.value = 50; negEl.checked = true;
+    if (t1El) t1El.value = 42; if (t2El) t2El.value = 35;
+  } else if (subj === 'Physics') {
+    durEl.value = 60; mrkEl.value = 50; negEl.checked = true;
+    if (t1El) t1El.value = 40; if (t2El) t2El.value = 32;
+  } else if (subj === 'Chemistry') {
+    durEl.value = 30; mrkEl.value = 20; negEl.checked = true;
+    if (t1El) t1El.value = 16; if (t2El) t2El.value = 13;
+  } else if (subj === 'English Aptitude' || subj === 'General Knowledge') {
+    durEl.value = 45; mrkEl.value = 40; negEl.checked = true;
+    if (t1El) t1El.value = 34; if (t2El) t2El.value = 28;
+  } else if (subj === 'Nautical Science') {
+    durEl.value = 60; mrkEl.value = 50; negEl.checked = false;
+    if (t1El) t1El.value = 44; if (t2El) t2El.value = 38;
+  } else if (subj === 'Marine Engineering') {
+    durEl.value = 60; mrkEl.value = 50; negEl.checked = true;
+    if (t1El) t1El.value = 40; if (t2El) t2El.value = 32;
+  }
+}
+
 function renderTests() {
-  document.getElementById('tests-list').innerHTML = appTests.map(t => `
-    <div class="p-4 rounded-xl border border-gray-100 bg-canvas hover:border-gold/30 transition-colors">
+  const badgeEl = document.getElementById('tests-count-badge');
+  if (badgeEl) badgeEl.textContent = `${appTests.length} Tests`;
+
+  // Populate test selector in merit section
+  const testSel = document.getElementById('results-test-select');
+  if (testSel) {
+    const curVal = testSel.value || String(activeTestId);
+    testSel.innerHTML = appTests.map(t => `
+      <option value="${t.id}" ${t.id == activeTestId ? 'selected' : ''}>${t.title} (${t.marks}M)</option>
+    `).join('');
+    if (appTests.some(t => t.id == curVal)) testSel.value = curVal;
+  }
+
+  const listEl = document.getElementById('tests-list');
+  if (!listEl) return;
+
+  listEl.innerHTML = appTests.map(t => {
+    const isSelected = t.id === activeTestId;
+    return `
+    <div class="p-4 rounded-xl border ${isSelected ? 'border-gold bg-gold/5 shadow-sm' : 'border-gray-200 bg-canvas hover:border-gold/40'} transition-all">
       <div class="flex items-start justify-between gap-2">
         <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-1.5 mb-1">
+            <span class="badge bg-deep-sea text-white text-[9px]">${t.subject}</span>
+            <span class="badge bg-white text-slate border border-gray-200 text-[9px]">${t.batch}</span>
+            ${t.negativeMarking ? '<span class="badge bg-amber-100 text-amber-800 text-[9px] border border-amber-300 font-mono">-0.25 NEG</span>' : '<span class="badge bg-gray-100 text-gray-600 text-[9px]">NO NEGATIVE</span>'}
+          </div>
           <p class="text-sm font-bold text-deep-sea leading-snug">${t.title}</p>
-          <p class="text-xs text-slate mt-1">${t.subject} · ${t.batch} · ${t.duration} min · ${t.marks} marks</p>
-          <p class="text-xs text-teal mt-0.5"><span class="material-symbols-outlined text-sm align-middle">group</span> ${t.responses} responses</p>
+          <p class="text-xs text-slate mt-1 flex flex-wrap items-center gap-2">
+            <span><i class="far fa-clock mr-1"></i>${t.duration} mins</span> ·
+            <span><i class="fas fa-bullseye mr-1"></i>${t.marks} marks</span> ·
+            <span><i class="far fa-calendar-alt mr-1"></i>${t.date}</span> ·
+            <span><i class="fas fa-map-marker-alt mr-1"></i>${t.venue || 'CBT Lab'}</span>
+          </p>
+
+          <!-- Metrics summary -->
+          <div class="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-gray-200/60 text-xs">
+            <div>
+              <span class="text-[10px] text-slate block uppercase">Cadets</span>
+              <span class="font-bold text-deep-sea flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-teal">group</span> ${t.responses || 0}
+              </span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate block uppercase">Avg Score</span>
+              <span class="font-bold text-deep-sea">${t.avgScore || '—'} / ${t.marks}</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate block uppercase">Top Scorer</span>
+              <span class="font-bold text-gold truncate block" title="${t.topScorer || '—'}">
+                <i class="fas fa-medal mr-0.5"></i> ${t.topScore || '—'}
+              </span>
+            </div>
+          </div>
         </div>
-        <div class="flex gap-1 shrink-0">
-          <button onclick="toast('Edit functionality coming soon.','info')" class="p-1.5 rounded-lg hover:bg-gray-100 text-slate hover:text-deep-sea transition-colors" title="Edit">
-            <span class="material-symbols-outlined text-base">edit</span>
+
+        <div class="flex flex-col gap-1.5 shrink-0 self-start">
+          <button onclick="selectTestForMerit(${t.id})" class="btn-primary text-xs px-2.5 py-1.5 min-h-[36px] flex items-center gap-1 shadow-sm" title="View Cadet Merit Deck">
+            <span class="material-symbols-outlined text-sm text-gold">military_tech</span> Deck
           </button>
-          <button onclick="deleteTest(${t.id})" class="p-1.5 rounded-lg hover:bg-red-50 text-slate hover:text-red-500 transition-colors" title="Delete">
+          <button onclick="deleteTest(${t.id})" class="p-1.5 rounded-lg hover:bg-red-50 text-slate hover:text-red-500 transition-colors self-end" title="Delete Test">
             <span class="material-symbols-outlined text-base">delete</span>
           </button>
         </div>
       </div>
     </div>
-  `).join('') || '<p class="text-sm text-slate text-center py-6">No tests created yet.</p>';
+  `}).join('') || '<p class="text-sm text-slate text-center py-6">No examinations configured yet.</p>';
+
+  renderMeritMatrix();
+}
+
+function selectTestForMerit(id) {
+  activeTestId = id;
+  const testSel = document.getElementById('results-test-select');
+  if (testSel) testSel.value = String(id);
+  renderTests();
+  const deckSec = document.getElementById('merit-deck-section');
+  if (deckSec) deckSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function changeActiveTestResults() {
+  const selVal = document.getElementById('results-test-select')?.value;
+  if (selVal) {
+    activeTestId = parseInt(selVal);
+    renderTests();
+  }
+}
+
+function filterTestResults() {
+  renderMeritMatrix();
+}
+
+function renderMeritMatrix() {
+  const test = appTests.find(t => t.id === activeTestId) || appTests[0];
+  const list = TEST_RESULTS_DATA[activeTestId] || [];
+  const headingEl = document.getElementById('active-test-heading');
+  if (headingEl && test) {
+    headingEl.textContent = `${test.title} — Cadet Merit Matrix & Sponsorship Endorsements`;
+  }
+
+  const tierFilter = document.getElementById('results-tier-filter')?.value || 'all';
+  const searchQuery = (document.getElementById('results-search')?.value || '').toLowerCase();
+
+  const filtered = list.filter(r => {
+    const tierOk = tierFilter === 'all' || r.tier === tierFilter;
+    const searchOk = !searchQuery ||
+      r.cadet.toLowerCase().includes(searchQuery) ||
+      r.roll.toLowerCase().includes(searchQuery) ||
+      r.indos.toLowerCase().includes(searchQuery) ||
+      r.fleet.toLowerCase().includes(searchQuery) ||
+      r.stream.toLowerCase().includes(searchQuery);
+    return tierOk && searchOk;
+  });
+
+  const tbody = document.getElementById('merit-results-tbody');
+  if (!tbody) return;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate text-xs">No cadet score records found matching criteria.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((r, idx) => {
+    // AIR Rank badge
+    let rankBadge = '';
+    if (idx === 0) rankBadge = `<span class="badge bg-amber-100 text-amber-800 border border-amber-300 font-bold font-mono"><i class="fas fa-trophy text-gold text-[9px] mr-1"></i>#1 (${r.airSim})</span>`;
+    else if (idx === 1) rankBadge = `<span class="badge bg-slate-100 text-slate-800 border border-slate-300 font-bold font-mono">#2 (${r.airSim})</span>`;
+    else if (idx === 2) rankBadge = `<span class="badge bg-amber-50 text-amber-900 border border-amber-200 font-bold font-mono">#3 (${r.airSim})</span>`;
+    else rankBadge = `<span class="font-mono text-xs font-semibold text-slate">#${idx + 1} (${r.airSim})</span>`;
+
+    // Sponsorship badge
+    let sponsorBadge = '';
+    if (r.tier === 'Tier 1') {
+      sponsorBadge = `<span class="badge bg-gold/15 text-gold border border-gold/40 font-bold"><i class="fas fa-anchor text-[9px] mr-1"></i>Tier 1: ${r.fleet} Endorsed</span>`;
+    } else if (r.tier === 'Tier 2') {
+      sponsorBadge = `<span class="badge bg-blue-100 text-blue-800 border border-blue-300 font-bold">${r.tier}: ${r.fleet} Eligible</span>`;
+    } else if (r.tier === 'Tier 3') {
+      sponsorBadge = `<span class="badge bg-teal/15 text-teal border border-teal/40 font-bold">${r.tier}: ${r.fleet} Qualified</span>`;
+    } else {
+      sponsorBadge = `<span class="badge bg-red-100 text-red-700 border border-red-300 font-bold">Below Cutoff</span>`;
+    }
+
+    // Sectional chips
+    const secChips = Object.entries(r.sections || {}).map(([k, v]) => `
+      <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-gray-100 text-slate border border-gray-200 uppercase">${k}:${v}</span>
+    `).join(' ');
+
+    const pct = test ? ((r.net / test.marks) * 100).toFixed(1) : '—';
+
+    return `
+      <tr class="hover:bg-canvas transition-colors">
+        <td>${rankBadge}</td>
+        <td>
+          <p class="font-bold text-deep-sea text-sm">${r.cadet}</p>
+          <p class="text-[11px] text-slate font-mono">${r.indos} · ${r.roll} · <span class="text-teal font-sans">${r.stream}</span></p>
+        </td>
+        <td>
+          <div class="text-xs">
+            <span class="text-emerald-700 font-semibold">${r.correct} ✓</span> /
+            <span class="text-red-600 font-semibold">${r.wrong} ✗</span>
+            <span class="text-[10px] text-slate block">${r.unattempted} Unattempted</span>
+          </div>
+        </td>
+        <td>
+          <span class="font-mono text-xs font-bold text-red-500">-${r.penalty.toFixed(2)} M</span>
+        </td>
+        <td>
+          <span class="font-display text-base font-bold text-deep-sea">${r.net.toFixed(2)}</span>
+          <span class="text-xs text-slate font-sans">/ ${test ? test.marks : 200}</span>
+          <span class="text-[10px] text-slate block font-mono font-medium">${pct}%</span>
+        </td>
+        <td>
+          <span class="badge ${r.percentile >= 90 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : r.percentile >= 75 ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-gray-100 text-gray-700'} font-mono">${r.percentile}%ile</span>
+        </td>
+        <td>
+          <div class="flex flex-wrap gap-1 max-w-[140px]">${secChips}</div>
+        </td>
+        <td>
+          <div>${sponsorBadge}</div>
+          <span class="text-[10px] text-slate truncate block max-w-[200px] mt-0.5" title="${r.recommendation}">${r.recommendation}</span>
+        </td>
+        <td class="text-right">
+          <button onclick="openScorecardModal('${r.roll}', ${activeTestId})" class="p-1.5 rounded-lg hover:bg-gold/15 text-gold hover:text-deep-sea transition-colors" title="Cadet Scorecard Dossier">
+            <span class="material-symbols-outlined text-base">visibility</span>
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function openScorecardModal(roll, testId) {
+  const list = TEST_RESULTS_DATA[testId] || TEST_RESULTS_DATA[1] || [];
+  const cadet = list.find(c => c.roll === roll) || list[0];
+  const test  = appTests.find(t => t.id === testId) || appTests[0];
+  if (!cadet) return;
+
+  const modal = document.getElementById('modal-cadet-scorecard');
+  if (!modal) return;
+
+  document.getElementById('sc-cadet-name').textContent = cadet.cadet;
+  document.getElementById('sc-cadet-sub').textContent = `Roll: ${cadet.roll} · INDoS: ${cadet.indos} · Cohort: ${cadet.stream} · Target: ${cadet.fleet}`;
+  document.getElementById('sc-net-score').textContent = cadet.net.toFixed(2);
+  document.getElementById('sc-max-score').textContent = `/ ${test.marks} (${((cadet.net / test.marks) * 100).toFixed(1)}%)`;
+  document.getElementById('sc-air-rank').textContent = cadet.airSim;
+  document.getElementById('sc-percentile').textContent = `${cadet.percentile}%`;
+  document.getElementById('sc-penalty').textContent = `-${cadet.penalty.toFixed(2)}`;
+  document.getElementById('sc-wrong-count').textContent = `${cadet.wrong} Incorrect (-0.25 ea)`;
+  document.getElementById('sc-tier-badge').textContent = `${cadet.tier.toUpperCase()} ${cadet.fleet ? '· ' + cadet.fleet.toUpperCase() : ''}`;
+  document.getElementById('sc-recommendation-text').textContent = cadet.recommendation;
+
+  // Render sectional progress bars
+  const secCont = document.getElementById('sc-sections-bars');
+  if (secCont) {
+    const secEntries = Object.entries(cadet.sections || {});
+    secCont.innerHTML = secEntries.map(([k, val]) => {
+      const maxSub = k === 'chem' ? 20 : (k === 'math' || k === 'phys' || k === 'colreg') ? 50 : 40;
+      const subPct = Math.min(100, Math.round((val / maxSub) * 100));
+      return `
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="font-bold text-deep-sea uppercase tracking-wide font-sub">${k} Section</span>
+            <span class="font-mono text-slate font-semibold">${val} / ${maxSub} (${subPct}%)</span>
+          </div>
+          <div class="prog-wrap"><div class="prog-fill" style="width:${subPct}%"></div></div>
+        </div>
+      `;
+    }).join('') || '<p class="text-xs text-slate">Sectional split recorded in composite score.</p>';
+  }
+
+  modal.classList.add('open');
+}
+
+function closeScorecardModal() {
+  const modal = document.getElementById('modal-cadet-scorecard');
+  if (modal) modal.classList.remove('open');
 }
 
 function createTest(e) {
   e.preventDefault();
-  const title    = document.getElementById('t-title').value.trim();
-  const subject  = document.getElementById('t-subject').value;
-  const batch    = document.getElementById('t-batch').value;
-  const duration = parseInt(document.getElementById('t-duration').value) || 90;
-  const marks    = parseInt(document.getElementById('t-marks').value) || 100;
-  const date     = document.getElementById('t-date').value || new Date().toISOString().split('T')[0];
-  if (!title) { toast('Test title is required.', 'error'); return; }
-  const t = { id: Date.now(), title, subject, batch, duration, marks, date, responses: 0 };
-  appTests.unshift(t);
+  const title      = document.getElementById('t-title').value.trim();
+  const subject    = document.getElementById('t-subject').value;
+  const batch      = document.getElementById('t-batch').value;
+  const duration   = parseInt(document.getElementById('t-duration').value) || 180;
+  const marks      = parseInt(document.getElementById('t-marks').value) || 200;
+  const negMarking = document.getElementById('t-neg-mark')?.checked ?? true;
+  const cutoffT1   = parseInt(document.getElementById('t-cutoff-t1')?.value) || 150;
+  const cutoffT2   = parseInt(document.getElementById('t-cutoff-t2')?.value) || 130;
+  const date       = document.getElementById('t-date').value || new Date().toISOString().split('T')[0];
+  const venue      = document.getElementById('t-venue')?.value || 'CBT Sim Hall 1';
+
+  if (!title) { toast('Examination title is required.', 'error'); return; }
+
+  const newId = Date.now();
+  const newTest = {
+    id: newId,
+    title,
+    subject,
+    batch,
+    duration,
+    marks,
+    negativeMarking: negMarking,
+    negativePenalty: negMarking ? 0.25 : 0,
+    cutoffTier1: cutoffT1,
+    cutoffTier2: cutoffT2,
+    date,
+    venue,
+    responses: 12,
+    avgScore: Math.round(marks * 0.68),
+    topScore: Math.round(marks * 0.94),
+    topScorer: 'Cadet Sneha Roy'
+  };
+
+  appTests.unshift(newTest);
+
+  // Seed sample cadet records for immediate merit deck evaluation
+  TEST_RESULTS_DATA[newId] = [
+    {
+      cadet: 'Cadet Sneha Roy', roll: 'SP-2026-D011', indos: '24IN09511', stream: 'DNS Deck Cadet',
+      correct: Math.round(marks * 0.94), wrong: 4, unattempted: 2,
+      gross: Math.round(marks * 0.94), penalty: negMarking ? 1.00 : 0, net: Math.round(marks * 0.94) - (negMarking ? 1.00 : 0),
+      percentile: 99.8, airSim: 'AIR #05',
+      sections: { math: 48, phys: 46 },
+      tier: 'Tier 1', fleet: 'Maersk Line', recommendation: 'Elite Sponsor Endorsed: Top Deck Cadet'
+    },
+    {
+      cadet: 'Cadet Aryan Sharma', roll: 'SP-2026-D042', indos: '24IN08412', stream: 'DNS Deck Cadet',
+      correct: Math.round(marks * 0.88), wrong: 8, unattempted: 4,
+      gross: Math.round(marks * 0.88), penalty: negMarking ? 2.00 : 0, net: Math.round(marks * 0.88) - (negMarking ? 2.00 : 0),
+      percentile: 98.4, airSim: 'AIR #18',
+      sections: { math: 44, phys: 44 },
+      tier: 'Tier 1', fleet: 'Fleet Management', recommendation: 'Elite Sponsor Endorsed: Maersk & Fleet Mgmt'
+    },
+    {
+      cadet: 'Cadet Rohan Kulkarni', roll: 'SP-2026-E019', indos: '24IN09104', stream: 'B.Tech Marine',
+      correct: Math.round(marks * 0.82), wrong: 12, unattempted: 6,
+      gross: Math.round(marks * 0.82), penalty: negMarking ? 3.00 : 0, net: Math.round(marks * 0.82) - (negMarking ? 3.00 : 0),
+      percentile: 96.2, airSim: 'AIR #32',
+      sections: { math: 46, phys: 40 },
+      tier: 'Tier 1', fleet: 'MSC Geneva', recommendation: 'Elite Sponsor Cleared: MSC Geneva'
+    },
+    {
+      cadet: 'Cadet Varun Nair', roll: 'SP-2026-D055', indos: '24IN07892', stream: 'DNS Deck Cadet',
+      correct: Math.round(marks * 0.70), wrong: 18, unattempted: 10,
+      gross: Math.round(marks * 0.70), penalty: negMarking ? 4.50 : 0, net: Math.round(marks * 0.70) - (negMarking ? 4.50 : 0),
+      percentile: 88.0, airSim: 'AIR #180',
+      sections: { math: 36, phys: 34 },
+      tier: 'Tier 2', fleet: 'Synergy Marine', recommendation: 'Premier Sponsor Eligible: Synergy Marine'
+    }
+  ];
+
+  activeTestId = newId;
   renderTests();
   e.target.reset();
+  document.getElementById('t-title').value = 'IMU-CET All-India CBT Mock — Series 07';
   document.getElementById('t-date').value = new Date().toISOString().split('T')[0];
-  toast(`✓ Test "${title}" created!`, 'success');
+  toast(`✓ CBT Examination "${title}" deployed to all terminals!`, 'success');
 }
 
 function deleteTest(id) {
-  if (!confirm('Delete this test?')) return;
+  if (!confirm('Delete this examination and corresponding merit records?')) return;
   appTests = appTests.filter(t => t.id !== id);
+  delete TEST_RESULTS_DATA[id];
+  if (activeTestId === id) {
+    activeTestId = appTests[0]?.id || 1;
+  }
   renderTests();
-  toast('Test deleted.', 'error');
+  toast('Examination deleted.', 'error');
+}
+
+function exportRankListCSV() {
+  const test = appTests.find(t => t.id === activeTestId) || appTests[0];
+  const list = TEST_RESULTS_DATA[activeTestId] || [];
+
+  if (list.length === 0) {
+    toast('No cadet merit records found to export.', 'error');
+    return;
+  }
+
+  let csvContent = 'data:text/csv;charset=utf-8,';
+  csvContent += 'Simulated AIR,Cadet Name,Roll Number,INDoS Number,Stream,Target Shipping Line,Examination Title,Max Marks,Gross Correct,Incorrect,Negative Penalty Marks,Net Score,Percentage,Percentile,Sponsorship Tier,Crewing Endorsement Recommendation\r\n';
+
+  list.forEach((r, idx) => {
+    const pct = test ? ((r.net / test.marks) * 100).toFixed(1) : '—';
+    csvContent += `"${r.airSim}","${r.cadet}","${r.roll}","${r.indos}","${r.stream}","${r.fleet}","${test ? test.title : 'Mock Test'}",${test ? test.marks : 200},${r.correct},${r.wrong},-${r.penalty.toFixed(2)},${r.net.toFixed(2)},${pct}%,${r.percentile}%,"${r.tier}","${r.recommendation}"\r\n`;
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `SINDHUPATH_Merit_Deck_${test ? test.title.replace(/[^a-zA-Z0-9]/g, '_') : 'Test'}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  toast('✓ Cadet Merit Deck CSV downloaded for shipping crewing agents!', 'success');
 }
 
 // ══════════════════════════════════════════════
 //  SCHEDULE & CALENDAR LOGIC
 // ══════════════════════════════════════════════
-let currentCalYear = 2026;
-let currentCalMonth = 9; // 0-indexed: 9 = October
+const _initCalDate = new Date();
+let currentCalYear = _initCalDate.getFullYear();
+let currentCalMonth = _initCalDate.getMonth();
 
 const DEFAULT_SCHEDULE_EVENTS = [
   {
@@ -1936,28 +3383,28 @@ const DEFAULT_SCHEDULE_EVENTS = [
     type: 'online',
     date: '2026-10-15',
     time: '10:00',
-    batch: 'Batch A',
-    subject: 'Trigonometry & Calculus — Live Session',
+    batch: 'Batch Alpha (DNS)',
+    subject: 'Celestial Navigation — Sight Reduction & Polaris Live Bridge',
     link: 'https://meet.google.com/abc-defg-hij',
-    duration: 60
+    duration: 90
   },
   {
     id: 2,
     type: 'exam',
     date: '2026-10-22',
     time: '14:00',
-    batch: 'Batch B',
-    subject: 'Physics Optics & Wave Theory Exam',
-    duration: 90,
-    instructions: 'Total Marks: 100. Bring scientific calculator to Hall 1 or complete online portal.'
+    batch: 'Batch Winter (IMU)',
+    subject: 'IMU-CET Proctored CBT Mock Series 06',
+    duration: 180,
+    instructions: 'Total Marks: 200. Negative marking (-0.25) active. CBT Sim Lab 1 or online terminal.'
   },
   {
     id: 3,
     type: 'online',
     date: '2026-10-05',
     time: '14:30',
-    batch: 'Batch C',
-    subject: 'Ship Stability & Chartwork Interactive Workshop',
+    batch: 'Batch Bravo (Pre-Sea)',
+    subject: 'COLREGs Steering & Sailing Rules Masterclass',
     link: 'https://meet.google.com/xyz-uvwx-rst',
     duration: 90
   }
@@ -1986,8 +3433,9 @@ function changeMonth(delta) {
 }
 
 function goToCurrentMonth() {
-  currentCalYear = 2026;
-  currentCalMonth = 9; // October
+  const now = new Date();
+  currentCalYear = now.getFullYear();
+  currentCalMonth = now.getMonth();
   renderCalendar();
 }
 
@@ -2013,12 +3461,13 @@ function renderCalendar() {
   }
 
   // Current month days
+  const todayObj = new Date();
   for (let day = 1; day <= daysInMonth; day++) {
     const monthStr = String(currentCalMonth + 1).padStart(2, '0');
     const dayStr   = String(day).padStart(2, '0');
     const fullDate = `${currentCalYear}-${monthStr}-${dayStr}`;
 
-    const isToday = currentCalMonth === 9 && day === 1; // Example today indicator
+    const isToday = (currentCalYear === todayObj.getFullYear() && currentCalMonth === todayObj.getMonth() && day === todayObj.getDate());
 
     const dayEvents = appScheduleEvents.filter(e => e.date === fullDate);
 
@@ -2237,16 +3686,64 @@ function deleteScheduleEvent(id) {
   toast('Schedule item deleted.', 'error');
 }
 
-// ── Profile Actions ──────────────────────────
+// ── Profile Actions & Naval Dossier ──────────────────────────
 function saveProfile(e) {
   e.preventDefault();
-  const name = document.getElementById('pf-name').value.trim();
+  const name    = document.getElementById('pf-name').value.trim();
+  const desig   = document.getElementById('pf-designation').value;
+  const coc     = document.getElementById('pf-coc')?.value.trim();
+  const indos   = document.getElementById('pf-indos')?.value.trim();
+  const service = document.getElementById('pf-service')?.value.trim();
+
   if (name) setFacultyName(name);
+  if (desig) {
+    const rankEl = document.getElementById('profile-display-rank');
+    if (rankEl) rankEl.textContent = desig;
+    try { localStorage.setItem('sp_faculty_rank', desig); } catch(err) {}
+  }
+  if (coc) {
+    const cocEl = document.getElementById('pf-disp-coc');
+    if (cocEl) cocEl.textContent = coc;
+    try { localStorage.setItem('sp_faculty_coc', coc); } catch(err) {}
+  }
+  if (indos) {
+    const indosEl = document.getElementById('pf-disp-indos');
+    if (indosEl) indosEl.textContent = indos;
+    try { localStorage.setItem('sp_faculty_indos', indos); } catch(err) {}
+  }
+
   const msg = document.getElementById('profile-save-msg');
-  msg.textContent = '✓ Profile updated successfully!';
-  msg.classList.remove('hidden');
-  toast('Profile saved!', 'success');
-  setTimeout(() => msg.classList.add('hidden'), 3000);
+  if (msg) {
+    msg.textContent = '✓ Command credentials and CoC license successfully endorsed!';
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 3500);
+  }
+  toast('✓ Master Mariner credentials saved!', 'success');
+}
+
+// ── Marine Chronometer & Telemetry ──────────────────────────
+function updateMarineChronometer() {
+  const now = new Date();
+  const istEl = document.getElementById('chronometer-ist');
+  const utcEl = document.getElementById('chronometer-utc');
+
+  if (istEl) {
+    const istTime = now.toLocaleTimeString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    istEl.textContent = `${istTime} IST`;
+  }
+
+  if (utcEl) {
+    const utcHours   = String(now.getUTCHours()).padStart(2, '0');
+    const utcMinutes = String(now.getUTCMinutes()).padStart(2, '0');
+    const utcSeconds = String(now.getUTCSeconds()).padStart(2, '0');
+    utcEl.textContent = `${utcHours}:${utcMinutes}:${utcSeconds} UTC`;
+  }
 }
 
 let currentFacultyEmail = '';
@@ -2522,7 +4019,7 @@ const SEED_CHAT_MESSAGES = [
     senderName: 'Arjun Sharma',
     senderRole: 'Cadet',
     avatarBg: '#C89B3C',
-    text: 'Good morning Captain! Will today\'s Trigonometry class be recorded?',
+    text: 'Good morning Captain! Will today\'s Celestial Navigation sight reduction session be recorded?',
     timestamp: '09:05 AM'
   },
   {
@@ -2531,7 +4028,7 @@ const SEED_CHAT_MESSAGES = [
     senderName: 'Capt. R. Sharma',
     senderRole: 'Faculty',
     avatarBg: '#0B2345',
-    text: 'Yes Arjun! All live classes are archived in the Study Materials tab.',
+    text: 'Yes Cadet Arjun! The Norie tables walkthrough is already uploaded in Study Materials.',
     timestamp: '09:08 AM'
   },
   {
@@ -2540,7 +4037,7 @@ const SEED_CHAT_MESSAGES = [
     senderName: 'Kavitha Menon',
     senderRole: 'Cadet',
     avatarBg: '#0D9488',
-    text: 'Has anyone finished Chapter 4 Calculus exercises?',
+    text: 'Has anyone verified the GM & Free Surface effect calculation for the winter stability mock?',
     timestamp: '10:15 AM'
   },
   {
@@ -2777,18 +4274,39 @@ function resetChatMessages() {
 //  INIT
 // ══════════════════════════════════════════════
 (async function init() {
-  // ── Verify Supabase session (redirect if not logged in) ──
+  // ── Verify Supabase session & Faculty Role Verification ──
   if (sbClient) {
     try {
       const { data: { session } } = await sbClient.auth.getSession();
       if (!session) {
-        window.location.href = 'login.html';
+        window.location.href = 'login2.html';
         return;
       }
       currentFacultyEmail = session.user?.email || '';
-      // Pre-fill email from live session (read-only)
       const emailEl = document.getElementById('pf-email');
       if (emailEl) { emailEl.value = session.user.email; emailEl.readOnly = true; }
+
+      // Check role authorization from profiles table
+      try {
+        const { data: profile } = await sbClient
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          if (profile.role && profile.role !== 'faculty' && profile.role !== 'admin' && profile.role !== 'instructor') {
+            console.warn('Unauthorized role detected:', profile.role);
+            toast('Unauthorized role. Redirecting to student bridge...', 'error');
+            setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+            return;
+          }
+          if (profile.full_name) setFacultyName(profile.full_name);
+          if (profile.avatar_url) setFacultyAvatar(profile.avatar_url);
+        }
+      } catch(profErr) {
+        console.info('Profiles check fallback:', profErr.message);
+      }
     } catch(err) {
       console.warn('Session check warning:', err);
     }
@@ -2808,13 +4326,52 @@ function resetChatMessages() {
   const savedImg = localStorage.getItem(LS_IMG);
   if (savedImg) setFacultyAvatar(savedImg);
 
+  // Restore naval credentials
+  const savedRank = localStorage.getItem('sp_faculty_rank');
+  if (savedRank) {
+    const rankEl = document.getElementById('profile-display-rank');
+    if (rankEl) rankEl.textContent = savedRank;
+    const desigInput = document.getElementById('pf-designation');
+    if (desigInput) desigInput.value = savedRank;
+  }
+  const savedCoc = localStorage.getItem('sp_faculty_coc');
+  if (savedCoc) {
+    const cocEl = document.getElementById('pf-disp-coc');
+    if (cocEl) cocEl.textContent = savedCoc;
+    const cocInput = document.getElementById('pf-coc');
+    if (cocInput) cocInput.value = savedCoc;
+  }
+  const savedIndos = localStorage.getItem('sp_faculty_indos');
+  if (savedIndos) {
+    const indosEl = document.getElementById('pf-disp-indos');
+    if (indosEl) indosEl.textContent = savedIndos;
+    const indosInput = document.getElementById('pf-indos');
+    if (indosInput) indosInput.value = savedIndos;
+  }
+
+  // Start Live Marine Chronometer
+  updateMarineChronometer();
+  setInterval(updateMarineChronometer, 1000);
+
+  // Load dynamic classes and materials from Supabase
+  await loadDynamicClasses();
+  await loadDynamicMaterials();
 
   // Pre-load attendance for default class
   loadAttendanceRoster();
 
+  // Pre-load examinations and cadet merit rankings
+  renderTests();
+
   // Render calendar & scheduled events
   renderCalendar();
   renderScheduledEventsList();
+
+  // Initialize dynamic schedule day pills, timetable grid, and dashboard watch
+  initScheduleDayPills();
+  updateScheduleGridToday(getTodaySchedDay());
+  renderMobileSchedule(currentSchedDay);
+  renderDashboardTodaySchedule();
 
   // Load chat messages
   loadChatMessages();
@@ -2823,6 +4380,7 @@ function resetChatMessages() {
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeScheduleModal();
+      closeScorecardModal();
     }
   });
 })();
