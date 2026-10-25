@@ -227,13 +227,22 @@
     .palette-btn.review { background: #8B5CF6; color: #fff; border-color: #7C3AED; }
     .palette-btn.review-answered { background: #F59E0B; color: #fff; border-color: #D97706; }
 
-    /* Breakpoint Specific Rules */
+    /* Utility: Hide Scrollbar for touch pill carousels */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Breakpoint Specific Rules (Mobile Viewport: 360 x 800px standard) */
     @media (max-width: 768px) {
       #sidebar { display: none !important; }
       #sidebar-overlay { display: none !important; }
       #sidebar-toggle { display: none !important; }
       #main-content { margin-left: 0 !important; padding-bottom: 5.5rem !important; }
-      .tab-content { padding: 14px 16px !important; }
+      #main-content main { padding: 12px !important; }
+      .tab-content { padding: 0 !important; }
+      .stat-card { padding: 12px 14px !important; border-radius: 14px !important; }
+      .stat-card .text-3xl { font-size: 1.5rem !important; }
+      .card { padding: 14px 14px !important; border-radius: 14px !important; }
+      header { height: 56px !important; padding: 0 12px !important; }
       .cbt-modal-box {
         position: fixed !important; inset: 0 !important; width: 100vw !important; max-width: 100vw !important;
         height: 100% !important; max-height: 100% !important; border-radius: 0 !important;
@@ -365,9 +374,9 @@
   <div id="main-content" class="flex-1 flex flex-col min-w-0">
 
     <!-- Top Bar -->
-    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm flex items-center justify-between px-4 sm:px-6 py-3">
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 h-14 sm:h-16">
       <!-- Left: Mobile anchor logo + Title -->
-      <div class="flex items-center gap-2.5 sm:gap-3">
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
         <!-- Desktop collapse toggle -->
         <button id="sidebar-toggle" class="hidden md:flex text-gray-500 hover:text-deep-sea transition-colors" onclick="toggleSidebar()" title="Toggle Sidebar">
           <span class="material-symbols-outlined text-2xl">menu</span>
@@ -376,27 +385,26 @@
         <div class="md:hidden w-8 h-8 rounded-xl bg-deep-sea flex items-center justify-center text-gold border border-gold/30 shrink-0 shadow-sm">
           <span class="material-symbols-outlined fill-icon text-gold text-lg">anchor</span>
         </div>
-        <div>
-          <h1 id="page-title" class="font-sub text-base sm:text-lg font-semibold text-deep-sea uppercase tracking-wide leading-tight">Dashboard</h1>
-          <p class="text-[11px] text-slate font-medium" id="page-subtitle">Welcome back, Cadet</p>
+        <div class="min-w-0">
+          <h1 id="page-title" class="font-sub text-sm sm:text-lg font-semibold text-deep-sea uppercase tracking-wide leading-tight truncate">Dashboard</h1>
+          <p class="text-[10px] sm:text-[11px] text-slate font-medium truncate" id="page-subtitle">Welcome back, Cadet</p>
         </div>
       </div>
 
       <!-- Right: actions -->
-      <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <!-- Notification bell -->
-        <button class="relative w-9 h-9 rounded-full bg-canvas hover:bg-gray-100 flex items-center justify-center text-gray-600 hover:text-deep-sea transition-colors" onclick="switchTab('notices')" title="Academy Bulletins">
+        <button class="relative w-9 h-9 rounded-full bg-canvas hover:bg-gray-100 flex items-center justify-center text-gray-600 hover:text-deep-sea transition-colors shrink-0" onclick="switchTab('notices')" title="Academy Bulletins">
           <span class="material-symbols-outlined text-xl">notifications</span>
           <span id="notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full hidden"></span>
         </button>
 
-        <!-- Cadet avatar chip (clickable to open More Sheet on mobile or Profile) -->
-        <button onclick="openMoreSheet()" class="flex items-center gap-2 px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-canvas hover:bg-gold/10 border border-gray-200 hover:border-gold/40 transition-colors" title="Cadet Menu">
+        <!-- Cadet avatar chip (clickable to open Profile) -->
+        <button onclick="switchTab('profile')" class="flex items-center gap-2 px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-canvas hover:bg-gold/10 border border-gray-200 hover:border-gold/40 transition-colors shrink-0" title="Cadet Profile">
           <div id="top-avatar-wrap" class="w-7 h-7 rounded-full bg-deep-sea flex items-center justify-center overflow-hidden border border-gold/40 shrink-0">
             <span class="material-symbols-outlined fill-icon text-gold text-sm" id="top-avatar-icon">person</span>
           </div>
-          <span id="header-name" class="text-xs font-semibold text-deep-sea hidden sm:inline">Cadet</span>
-          <span class="material-symbols-outlined text-gray-400 text-sm hidden sm:inline">expand_more</span>
+          <span id="header-name" class="text-xs font-semibold text-deep-sea hidden sm:inline max-w-[100px] truncate">Cadet</span>
         </button>
 
         <!-- Back to site -->
@@ -407,82 +415,82 @@
     </header>
 
     <!-- Tab Content Area -->
-    <main class="flex-1 p-5 md:p-7 overflow-y-auto">
+    <main class="flex-1 p-3 sm:p-5 md:p-7 overflow-y-auto">
 
       <!-- ════════════ TAB: DASHBOARD ════════════ -->
       <section id="tab-dashboard" class="tab-content active">
 
         <!-- Welcome Card (Maritime Cadet Deck) -->
-        <div class="rounded-2xl bg-gradient-to-br from-deep-sea via-navy-mid to-[#071322] text-white p-4 sm:p-6 mb-5 relative overflow-hidden border border-gold/20 shadow-md">
+        <div class="rounded-2xl bg-gradient-to-br from-deep-sea via-navy-mid to-[#071322] text-white p-4 sm:p-6 mb-4 sm:mb-5 relative overflow-hidden border border-gold/20 shadow-md">
           <div class="absolute right-0 top-0 bottom-0 w-48 opacity-15 pointer-events-none"
                style="background: radial-gradient(circle at right, #C89B3C 0%, transparent 70%)"></div>
           <div class="flex items-center justify-between gap-2 mb-1">
-            <p class="text-gold text-[11px] font-sub uppercase tracking-widest flex items-center gap-1.5 font-semibold">
+            <p class="text-gold text-[10px] sm:text-[11px] font-sub uppercase tracking-widest flex items-center gap-1.5 font-semibold">
               <span class="material-symbols-outlined text-sm">sailing</span> Cadet Quarterdeck
             </p>
             <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">Active Cadet</span>
           </div>
-          <h2 class="font-sub text-2xl sm:text-3xl font-bold tracking-wide mb-2" id="dash-welcome-name">LOADING...</h2>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
+          <h2 class="font-sub text-xl sm:text-3xl font-bold tracking-wide mb-2 truncate" id="dash-welcome-name">LOADING...</h2>
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3">
             <span class="badge bg-gold/25 text-gold border border-gold/30 text-[10px]">IMU-CET 2026</span>
             <span class="badge bg-white/10 text-white/80 border border-white/20 text-[10px]">Batch A · Morning</span>
           </div>
           <div class="flex items-center justify-between pt-2.5 border-t border-white/10 text-xs">
-            <span class="text-white/60 text-[11px]">Examination Readiness</span>
-            <span class="text-gold font-bold flex items-center gap-1 text-[11px]">
+            <span class="text-white/60 text-[10px] sm:text-[11px]">Examination Readiness</span>
+            <span class="text-gold font-bold flex items-center gap-1 text-[10px] sm:text-[11px]">
               <span class="material-symbols-outlined text-xs">timer</span> 47 Days Left
             </span>
           </div>
         </div>
 
         <!-- Stat Cards (Interactive Mobile Touch Tiles) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5">
-          <div onclick="switchTab('schedule')" class="stat-card cursor-pointer p-3.5 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Schedule">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-4 sm:mb-5">
+          <div onclick="switchTab('schedule')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Schedule">
             <div class="flex items-center justify-between">
               <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Attendance</span>
               <span class="material-symbols-outlined fill-icon text-deep-sea text-xl">event_available</span>
             </div>
             <div class="my-1.5">
-              <p class="text-2xl font-display text-deep-sea leading-none">84%</p>
-              <p class="text-[10px] text-slate mt-0.5 font-medium">42 Classes Attended</p>
+              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">84%</p>
+              <p class="text-[10px] text-slate mt-0.5 font-medium truncate">42 Attended</p>
             </div>
             <div class="progress-bar"><div class="progress-fill" style="width:84%"></div></div>
           </div>
 
-          <div onclick="switchTab('materials')" class="stat-card cursor-pointer p-3.5 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Materials">
+          <div onclick="switchTab('materials')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Materials">
             <div class="flex items-center justify-between">
               <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Materials</span>
               <span class="material-symbols-outlined fill-icon text-gold text-xl">download</span>
             </div>
             <div class="my-1.5">
-              <p class="text-2xl font-display text-deep-sea leading-none">18</p>
-              <p class="text-[10px] text-emerald-600 font-semibold mt-0.5">↑ 3 new files</p>
+              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">18</p>
+              <p class="text-[10px] text-emerald-600 font-semibold mt-0.5 truncate">↑ 3 new files</p>
             </div>
-            <p class="text-[10px] text-slate">PDFs &amp; Notes</p>
+            <p class="text-[10px] text-slate truncate">PDFs &amp; Notes</p>
           </div>
 
-          <div onclick="switchTab('mocktests')" class="stat-card cursor-pointer p-3.5 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="Take Mock Test">
+          <div onclick="switchTab('mocktests')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="Take Mock Test">
             <div class="flex items-center justify-between">
               <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Mock Tests</span>
               <span class="material-symbols-outlined fill-icon text-purple-600 text-xl">quiz</span>
             </div>
             <div class="my-1.5">
-              <p class="text-2xl font-display text-deep-sea leading-none">9</p>
-              <p class="text-[10px] text-slate mt-0.5">Last: <strong class="text-deep-sea">78/100</strong></p>
+              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">9</p>
+              <p class="text-[10px] text-slate mt-0.5 truncate">Last: <strong class="text-deep-sea">78/100</strong></p>
             </div>
-            <p class="text-[10px] text-purple-700 font-semibold">Series 5 Ready</p>
+            <p class="text-[10px] text-purple-700 font-semibold truncate">Series 5 Ready</p>
           </div>
 
-          <div onclick="switchTab('results')" class="stat-card cursor-pointer p-3.5 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Analytics">
+          <div onclick="switchTab('results')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Analytics">
             <div class="flex items-center justify-between">
               <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Batch Rank</span>
               <span class="material-symbols-outlined fill-icon text-amber-500 text-xl">military_tech</span>
             </div>
             <div class="my-1.5">
-              <p class="text-2xl font-display text-deep-sea leading-none">#12</p>
-              <p class="text-[10px] text-emerald-600 font-semibold mt-0.5">Top 20% in Batch</p>
+              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">#12</p>
+              <p class="text-[10px] text-emerald-600 font-semibold mt-0.5 truncate">Top 20%</p>
             </div>
-            <p class="text-[10px] text-slate">76% Aggregate</p>
+            <p class="text-[10px] text-slate truncate">76% Aggregate</p>
           </div>
         </div>
 
@@ -583,14 +591,14 @@
               </div>
               <div class="mb-1 flex justify-between text-xs"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">68%</span></div>
               <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
-              <button onclick="showCourseDetail('IMU-CET Coaching')" class="mt-4 w-full py-2 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors">View Details</button>
+              <button onclick="showCourseDetail('IMU-CET Coaching')" class="mt-4 w-full py-2.5 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors min-h-[44px] flex items-center justify-center shadow-xs">View Details</button>
             </div>
           </div>
 
           <!-- Course Card 2 -->
           <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
             <div class="h-2 bg-gradient-to-r from-gold to-amber-400"></div>
-            <div class="p-5">
+            <div class="p-4 sm:p-5">
               <div class="flex items-start justify-between mb-3">
                 <div class="w-11 h-11 rounded-xl bg-gold/10 flex items-center justify-center">
                   <span class="material-symbols-outlined text-gold text-2xl">sailing</span>
@@ -607,14 +615,14 @@
               </div>
               <div class="mb-1 flex justify-between text-xs"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">45%</span></div>
               <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
-              <button onclick="showCourseDetail('DNS Sponsorship Prep')" class="mt-4 w-full py-2 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors">View Details</button>
+              <button onclick="showCourseDetail('DNS Sponsorship Prep')" class="mt-4 w-full py-2.5 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors min-h-[44px] flex items-center justify-center shadow-xs">View Details</button>
             </div>
           </div>
 
           <!-- Course Card 3 -->
           <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
             <div class="h-2 bg-gradient-to-r from-purple-600 to-purple-400"></div>
-            <div class="p-5">
+            <div class="p-4 sm:p-5">
               <div class="flex items-start justify-between mb-3">
                 <div class="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center">
                   <span class="material-symbols-outlined text-purple-600 text-2xl">groups</span>
@@ -631,7 +639,7 @@
               </div>
               <div class="mb-1 flex justify-between text-xs"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">0%</span></div>
               <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-              <button onclick="showCourseDetail('Aptitude Test Prep')" class="mt-4 w-full py-2 rounded-xl bg-gray-200 text-gray-600 text-xs font-bold uppercase tracking-wider">Not Started</button>
+              <button onclick="showCourseDetail('Aptitude Test Prep')" class="mt-4 w-full py-2.5 rounded-xl bg-gray-200 text-gray-600 text-xs font-bold uppercase tracking-wider min-h-[44px] flex items-center justify-center">Not Started</button>
             </div>
           </div>
         </div>
@@ -641,13 +649,13 @@
       <!-- ════════════ TAB: SCHEDULE ════════════ -->
       <section id="tab-schedule" class="tab-content">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
           <div>
             <h2 class="font-sub text-xl sm:text-2xl text-deep-sea uppercase tracking-wide">Schedule &amp; Timetable</h2>
             <p id="sched-live-date-header" class="text-xs sm:text-sm text-slate mt-0.5">Maritime Cadet Academy Agenda · Batch Alpha</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="goToCurrentWeek(); goToCurrentMonth();" class="px-3.5 py-2 rounded-xl border border-gold/40 text-deep-sea bg-gold/10 hover:bg-gold hover:text-deep-sea text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm min-h-[38px]">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button onclick="goToCurrentWeek(); goToCurrentMonth();" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gold/40 text-deep-sea bg-gold/10 hover:bg-gold hover:text-deep-sea text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]">
               <span class="material-symbols-outlined text-base text-gold">today</span> Jump to Today
             </button>
           </div>
@@ -785,27 +793,27 @@
 
       <!-- ════════════ TAB: STUDY MATERIALS ════════════ -->
       <section id="tab-materials" class="tab-content">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
           <div>
             <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Study Materials</h2>
-            <p class="text-sm text-slate mt-1">Download notes, PDFs, and reference materials.</p>
+            <p class="text-xs sm:text-sm text-slate mt-0.5">Download notes, PDFs, and reference materials.</p>
           </div>
           <input type="text" id="materials-search" placeholder="Search materials..." onkeyup="filterMaterials()"
-            class="border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold w-full sm:w-60">
+            class="border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold w-full sm:w-60 min-h-[44px]">
         </div>
 
         <!-- Filters -->
-        <div class="flex flex-wrap gap-2 mb-5" id="material-filters">
-          <button class="filter-pill active" onclick="setFilter(this,'all')">All</button>
-          <button class="filter-pill" onclick="setFilter(this,'math')">Mathematics</button>
-          <button class="filter-pill" onclick="setFilter(this,'physics')">Physics</button>
-          <button class="filter-pill" onclick="setFilter(this,'english')">English</button>
-          <button class="filter-pill" onclick="setFilter(this,'gk')">General Knowledge</button>
-          <button class="filter-pill" onclick="setFilter(this,'dns')">DNS / Nautical</button>
+        <div class="flex overflow-x-auto sm:flex-wrap gap-2 mb-4 sm:mb-5 pb-1 no-scrollbar" id="material-filters">
+          <button class="filter-pill active shrink-0" onclick="setFilter(this,'all')">All</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'math')">Mathematics</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'physics')">Physics</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'english')">English</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'gk')">General Knowledge</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'dns')">DNS / Nautical</button>
         </div>
 
         <!-- Materials List -->
-        <div id="materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <!-- Populated by JS -->
         </div>
       </section>
@@ -1689,10 +1697,11 @@ function switchTab(id) {
   const [title, sub] = TAB_TITLES[id] || ['Portal', ''];
   document.getElementById('page-title').textContent = title;
   document.getElementById('page-subtitle').textContent = sub;
-  // Close sidebar on mobile if present
+  // Close sidebar and more action sheet on mobile if present
   if (window.innerWidth < 768) {
     document.getElementById('sidebar')?.classList.add('collapsed');
     document.getElementById('sidebar-overlay')?.classList.remove('show');
+    closeMoreSheet();
   }
   if (id === 'notices') {
     document.getElementById('notice-dot')?.classList.add('hidden');
@@ -2533,8 +2542,8 @@ function renderMaterials() {
         </div>
       </div>
       <button onclick="downloadMaterial(${m.id})"
-        class="shrink-0 flex items-center gap-1 text-[11px] font-bold text-gold hover:text-deep-sea bg-gold/10 hover:bg-gold/20 px-3 py-1.5 rounded-xl transition-colors">
-        <span class="material-symbols-outlined text-sm">download</span>
+        class="shrink-0 flex items-center justify-center gap-1 text-[11px] font-bold text-gold hover:text-deep-sea bg-gold/10 hover:bg-gold/20 px-3.5 py-2.5 rounded-xl transition-colors min-h-[44px] min-w-[44px] shadow-xs active:scale-95" title="Download Material">
+        <span class="material-symbols-outlined text-base">download</span>
       </button>
     </div>
   `).join('');
@@ -3606,6 +3615,7 @@ function openMoreSheet() {
   if (!sheet) return;
   if (btn) btn.classList.add('active');
   bd.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
   requestAnimationFrame(() => {
     bd.classList.remove('opacity-0');
     sheet.classList.remove('translate-y-full');
@@ -3620,6 +3630,7 @@ function closeMoreSheet() {
   if (btn) btn.classList.remove('active');
   bd.classList.add('opacity-0');
   sheet.classList.add('translate-y-full');
+  document.body.style.overflow = '';
   setTimeout(() => { bd.classList.add('hidden'); }, 300);
 }
 
