@@ -443,54 +443,25 @@
           </div>
         </div>
 
-        <!-- Stat Cards (Interactive Mobile Touch Tiles) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-4 sm:mb-5">
-          <div onclick="switchTab('schedule')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Schedule">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Attendance</span>
-              <span class="material-symbols-outlined fill-icon text-deep-sea text-xl">event_available</span>
+        <!-- Study Materials Quick Access Card -->
+        <div onclick="switchTab('materials')" class="cursor-pointer p-4 rounded-2xl bg-white border border-gray-200 hover:border-gold/40 transition-all shadow-sm flex items-center justify-between gap-3 active:scale-[0.99] mb-4 sm:mb-5" title="Access Study Materials">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold shrink-0">
+              <span class="material-symbols-outlined text-2xl">menu_book</span>
             </div>
-            <div class="my-1.5">
-              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">84%</p>
-              <p class="text-[10px] text-slate mt-0.5 font-medium truncate">42 Attended</p>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate font-sub uppercase tracking-wider font-semibold">Study Materials</span>
+                <span class="badge bg-emerald-100 text-emerald-700 text-[9px] font-bold">18 Files</span>
+              </div>
+              <p class="text-sm font-bold text-deep-sea mt-0.5 truncate">Lecture Notes, PDFs &amp; Books</p>
+              <p class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span> 3 new uploads available
+              </p>
             </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:84%"></div></div>
           </div>
-
-          <div onclick="switchTab('materials')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Materials">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Materials</span>
-              <span class="material-symbols-outlined fill-icon text-gold text-xl">download</span>
-            </div>
-            <div class="my-1.5">
-              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">18</p>
-              <p class="text-[10px] text-emerald-600 font-semibold mt-0.5 truncate">↑ 3 new files</p>
-            </div>
-            <p class="text-[10px] text-slate truncate">PDFs &amp; Notes</p>
-          </div>
-
-          <div onclick="switchTab('mocktests')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="Take Mock Test">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Mock Tests</span>
-              <span class="material-symbols-outlined fill-icon text-purple-600 text-xl">quiz</span>
-            </div>
-            <div class="my-1.5">
-              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">9</p>
-              <p class="text-[10px] text-slate mt-0.5 truncate">Last: <strong class="text-deep-sea">78/100</strong></p>
-            </div>
-            <p class="text-[10px] text-purple-700 font-semibold truncate">Series 5 Ready</p>
-          </div>
-
-          <div onclick="switchTab('results')" class="stat-card cursor-pointer p-3 sm:p-4 rounded-xl flex flex-col justify-between active:scale-[0.98] transition-all hover:border-gold/40 shadow-sm" title="View Analytics">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] text-slate font-sub uppercase tracking-wider font-semibold">Batch Rank</span>
-              <span class="material-symbols-outlined fill-icon text-amber-500 text-xl">military_tech</span>
-            </div>
-            <div class="my-1.5">
-              <p class="text-xl sm:text-2xl font-display text-deep-sea leading-none">#12</p>
-              <p class="text-[10px] text-emerald-600 font-semibold mt-0.5 truncate">Top 20%</p>
-            </div>
-            <p class="text-[10px] text-slate truncate">76% Aggregate</p>
+          <div class="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-canvas border border-gray-200 text-deep-sea hover:text-gold hover:border-gold/40 transition-colors">
+            <span class="material-symbols-outlined text-lg">arrow_forward</span>
           </div>
         </div>
 
