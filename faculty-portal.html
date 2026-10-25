@@ -89,6 +89,38 @@
     }
     .mobile-dock-btn.active { color: #0D9488; }
     .mobile-dock-btn.active .material-symbols-outlined { color: #0D9488; font-variation-settings: 'FILL' 1; }
+    .mobile-dock-btn:active { transform: scale(0.92); }
+
+    /* ── Mobile Action Sheet ── */
+    #more-sheet-backdrop {
+      position: fixed; inset: 0; background: rgba(7, 19, 34, 0.65);
+      backdrop-filter: blur(3px); z-index: 50; opacity: 0;
+      pointer-events: none; transition: opacity 0.25s ease;
+    }
+    #more-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+    #more-action-sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 51;
+      background: #FFFFFF; border-top-left-radius: 24px; border-top-right-radius: 24px;
+      box-shadow: 0 -10px 30px rgba(7, 19, 34, 0.25);
+      transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+      max-height: 85vh; overflow-y: auto; overscroll-behavior: contain;
+    }
+    #more-action-sheet.open { transform: translateY(0); }
+
+    /* ── Segmented Touch Attendance Bar ── */
+    .att-touch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; }
+    .att-touch-btn {
+      min-height: 44px; border-radius: 10px; border: 1px solid #CBD5E1;
+      font-size: 11px; font-weight: 700; font-family: 'Oswald', sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s ease; background: #F8FAFC; color: #64748B;
+      touch-action: manipulation;
+    }
+    .att-touch-btn:active { transform: scale(0.94); }
+    .att-touch-btn.active-p { background: #16A34A !important; color: #fff !important; border-color: #16A34A !important; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35); }
+    .att-touch-btn.active-a { background: #DC2626 !important; color: #fff !important; border-color: #DC2626 !important; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35); }
+    .att-touch-btn.active-m { background: #D97706 !important; color: #fff !important; border-color: #D97706 !important; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35); }
+    .att-touch-btn.active-sp { background: #475569 !important; color: #fff !important; border-color: #475569 !important; box-shadow: 0 2px 6px rgba(71, 85, 105, 0.35); }
 
     /* ── Filter & Day Pills ── */
     .filter-pill {
@@ -103,12 +135,16 @@
 
     /* ── Media Queries ── */
     @media (max-width: 767px) {
-      #sidebar { transform: translateX(-260px); width: 260px; }
-      #sidebar.open { transform: translateX(0); }
-      #main { margin-left: 0 !important; padding-bottom: 5rem !important; }
-      .tab-content { padding: 16px !important; }
+      #sidebar { display: none !important; }
+      #sidebar-overlay { display: none !important; }
+      #main { margin-left: 0 !important; padding-bottom: 5.5rem !important; }
+      .tab-content { padding: 14px 14px !important; }
       .modal-backdrop { padding: 0 !important; }
       .modal-box { max-height: 100vh !important; height: 100% !important; border-radius: 0 !important; }
+      #topbar { padding: 0 14px !important; height: 56px !important; }
+      .stat-card { padding: 12px 14px !important; border-radius: 14px !important; }
+      .stat-card .text-3xl { font-size: 1.5rem !important; }
+      .card { padding: 14px 14px !important; border-radius: 14px !important; }
     }
 
     @media (min-width: 768px) and (max-width: 1024px) {
@@ -278,12 +314,13 @@
 
   <!-- Top Bar: Bridge Command Deck -->
   <div id="topbar">
-    <button class="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors" onclick="openSidebar()">
-      <span class="material-symbols-outlined text-deep-sea">menu</span>
-    </button>
-    <div class="flex-1 min-w-0">
-      <h1 id="page-title" class="font-sub text-deep-sea text-lg uppercase tracking-wide leading-none">Dashboard</h1>
-      <p id="page-subtitle" class="text-slate text-xs mt-0.5">Welcome back</p>
+    <!-- Mobile Brand / Anchor Emblem (< 768px) -->
+    <div class="md:hidden flex items-center justify-center w-8 h-8 rounded-xl bg-deep-sea text-gold shrink-0 border border-gold/30">
+      <span class="material-symbols-outlined text-lg">anchor</span>
+    </div>
+    <div class="flex-1 min-w-0 pl-1">
+      <h1 id="page-title" class="font-sub text-deep-sea text-base sm:text-lg uppercase tracking-wide leading-none truncate">Dashboard</h1>
+      <p id="page-subtitle" class="text-slate text-[11px] sm:text-xs mt-0.5 truncate">Welcome back</p>
     </div>
 
     <!-- Live Marine Chronometer (IST & UTC) -->
@@ -306,15 +343,16 @@
       <span class="text-[10px] uppercase font-bold text-teal">CHENNAI FLEET BASE</span>
     </div>
 
-    <div class="flex items-center gap-3 shrink-0">
-      <button class="relative p-2 rounded-xl hover:bg-gray-100 transition-colors" title="Bridge Notifications">
-        <span class="material-symbols-outlined text-slate">notifications</span>
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <button class="relative p-2 rounded-xl hover:bg-gray-100 transition-colors" title="Bridge Notifications" onclick="switchTab('notice')">
+        <span class="material-symbols-outlined text-slate text-xl">notifications</span>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gold"></span>
       </button>
-      <div class="hidden sm:flex items-center gap-2 bg-canvas border border-gray-200 rounded-xl px-3 py-1.5">
-        <div class="w-6 h-6 rounded-full bg-teal/20 border border-teal/30 flex items-center justify-center overflow-hidden" id="header-avatar-wrap">
+      <div id="top-avatar-wrap" class="flex items-center gap-2 bg-canvas border border-gray-200 rounded-xl px-2 sm:px-3 py-1 cursor-pointer hover:bg-gray-100 transition-colors" onclick="switchTab('profile')" title="Faculty Profile">
+        <div class="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-teal/20 border border-teal/30 flex items-center justify-center overflow-hidden shrink-0" id="header-avatar-wrap">
           <span class="material-symbols-outlined fill-icon text-teal text-sm" id="header-avatar-icon">person</span>
         </div>
-        <span id="header-name" class="text-deep-sea text-xs font-semibold">Faculty</span>
+        <span id="header-name" class="hidden sm:inline text-deep-sea text-xs font-semibold max-w-[100px] truncate">Faculty</span>
       </div>
     </div>
   </div>
@@ -322,17 +360,17 @@
   <!-- ════════ TAB: DASHBOARD ════════ -->
   <section id="tab-dashboard" class="tab-content active">
     <!-- Welcome Banner -->
-    <div class="bg-gradient-to-r from-deep-sea to-navy-mid rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-      <div class="w-14 h-14 rounded-xl bg-teal/20 border border-teal/30 flex items-center justify-center shrink-0 overflow-hidden" id="dash-avatar">
-        <span class="material-symbols-outlined fill-icon text-teal text-3xl" id="dash-avatar-icon">person</span>
+    <div class="bg-gradient-to-r from-deep-sea to-navy-mid rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-teal/20 border border-teal/30 flex items-center justify-center shrink-0 overflow-hidden" id="dash-avatar">
+        <span class="material-symbols-outlined fill-icon text-teal text-2xl sm:text-3xl" id="dash-avatar-icon">person</span>
       </div>
-      <div class="flex-1">
-        <p class="text-gold/80 text-xs font-sub uppercase tracking-widest">Bridge Command Watch</p>
-        <h2 class="font-sub text-3xl font-bold text-white tracking-wide mt-0.5"><span id="dash-welcome-name">FACULTY OFFICER</span></h2>
-        <p class="text-white/50 text-xs mt-1">SINDHUPATH NAVAL COMMAND · HEADQUARTERS BENGALURU / CHENNAI FLEET</p>
+      <div class="flex-1 min-w-0">
+        <p class="text-gold/80 text-[10px] sm:text-xs font-sub uppercase tracking-widest">Bridge Command Watch</p>
+        <h2 class="font-sub text-2xl sm:text-3xl font-bold text-white tracking-wide mt-0.5 truncate"><span id="dash-welcome-name">FACULTY OFFICER</span></h2>
+        <p class="text-white/50 text-[11px] sm:text-xs mt-0.5 leading-snug">SINDHUPATH NAVAL COMMAND · HEADQUARTERS BENGALURU / CHENNAI FLEET</p>
       </div>
-      <div class="shrink-0 flex gap-2">
-        <button onclick="switchTab('attendance')" class="btn-gold text-xs flex items-center gap-1.5">
+      <div class="w-full sm:w-auto shrink-0 flex gap-2">
+        <button onclick="switchTab('attendance')" class="btn-gold text-xs flex-1 sm:flex-none justify-center flex items-center gap-1.5 w-full sm:w-auto">
           <span class="material-symbols-outlined text-sm">fact_check</span> Muster Attendance
         </button>
       </div>
@@ -492,14 +530,14 @@
         <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Commissioned Cadet Roster</h2>
         <p class="text-sm text-slate mt-1">Official cadet dossier, INDoS registration, sponsorship status, and DG compliance.</p>
       </div>
-      <div class="flex flex-wrap gap-2">
-        <select id="student-batch-filter" onchange="filterStudents()" class="form-input text-xs w-44">
+      <div class="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto">
+        <select id="student-batch-filter" onchange="filterStudents()" class="form-input text-xs w-full sm:w-44">
           <option value="all">All Cadet Batches</option>
           <option value="A">Batch Alpha (DNS Deck)</option>
           <option value="B">Batch Winter (IMU Rankers)</option>
           <option value="C">Batch Bravo (Sponsorship)</option>
         </select>
-        <select id="student-fleet-filter" onchange="filterStudents()" class="form-input text-xs w-40">
+        <select id="student-fleet-filter" onchange="filterStudents()" class="form-input text-xs w-full sm:w-40">
           <option value="all">All Shipping Lines</option>
           <option value="Maersk">Maersk Line</option>
           <option value="Fleet">Fleet Management</option>
@@ -507,10 +545,11 @@
           <option value="Synergy">Synergy Marine</option>
           <option value="Anglo">Anglo-Eastern</option>
         </select>
-        <input id="student-search" type="text" placeholder="Search cadet or INDoS..." onkeyup="filterStudents()" class="form-input text-xs w-48">
+        <input id="student-search" type="text" placeholder="Search cadet or INDoS..." onkeyup="filterStudents()" class="form-input text-xs w-full sm:w-48">
       </div>
     </div>
-    <div class="card overflow-x-auto">
+    <!-- Desktop Data Table (md:block) -->
+    <div class="card overflow-x-auto hidden md:block">
       <table class="data-table" id="students-table">
         <thead>
           <tr>
@@ -526,6 +565,11 @@
         </thead>
         <tbody id="students-tbody"><!-- JS --></tbody>
       </table>
+    </div>
+
+    <!-- Mobile Cadet Cards (md:hidden) -->
+    <div id="students-cards-mobile" class="md:hidden space-y-3">
+      <!-- Populated by renderStudents() -->
     </div>
   </section>
 
@@ -730,21 +774,21 @@
 
   <!-- ════════ TAB: ATTENDANCE (DG SHIPPING MUSTER) ════════ -->
   <section id="tab-attendance" class="tab-content">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
       <div>
         <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">DG Shipping Muster &amp; Roll Call</h2>
-        <p class="text-sm text-slate mt-1">Official watch-shift muster log. Cadets below 85% attendance face DG debarment.</p>
+        <p class="text-xs sm:text-sm text-slate mt-0.5">Official watch-shift muster log. Cadets below 85% attendance face DG debarment.</p>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="exportMusterCSV()" class="btn-outline text-xs flex items-center gap-1.5 bg-white shadow-sm">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button onclick="exportMusterCSV()" class="btn-outline text-xs flex items-center justify-center gap-1.5 bg-white shadow-sm w-full sm:w-auto">
           <span class="material-symbols-outlined text-sm text-gold">download</span> Export Audit CSV
         </button>
       </div>
     </div>
 
     <!-- Muster Controls -->
-    <div class="card mb-5">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card mb-4 sm:mb-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div>
           <label class="form-label">Training Module / Class</label>
           <select id="att-class" class="form-input" onchange="loadAttendanceRoster()">
@@ -775,41 +819,41 @@
       </div>
     </div>
 
-    <!-- DG Compliance Telemetry Strip -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
-      <div class="p-3 bg-white border border-gray-200 rounded-xl">
-        <div class="text-[10px] font-mono text-slate uppercase">Deck Muster Count</div>
-        <div class="font-display text-2xl text-deep-sea mt-0.5" id="muster-total-cadets">0 Cadets</div>
+    <!-- DG Compliance Telemetry Strip (2x2 on Mobile) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 mb-4 sm:mb-5">
+      <div class="p-2.5 sm:p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase truncate">Deck Muster</div>
+        <div class="font-display text-xl sm:text-2xl text-deep-sea mt-0.5 truncate" id="muster-total-cadets">0 Cadets</div>
       </div>
-      <div class="p-3 bg-white border border-gray-200 rounded-xl">
-        <div class="text-[10px] font-mono text-slate uppercase">On-Watch Present</div>
-        <div class="font-display text-2xl text-emerald-600 mt-0.5" id="muster-present-count">0</div>
+      <div class="p-2.5 sm:p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase truncate">On-Watch</div>
+        <div class="font-display text-xl sm:text-2xl text-emerald-600 mt-0.5 truncate" id="muster-present-count">0</div>
       </div>
-      <div class="p-3 bg-white border border-gray-200 rounded-xl">
-        <div class="text-[10px] font-mono text-slate uppercase">Sick Bay / Leave</div>
-        <div class="font-display text-2xl text-amber-600 mt-0.5" id="muster-leave-count">0</div>
+      <div class="p-2.5 sm:p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase truncate">Sick Bay / Leave</div>
+        <div class="font-display text-xl sm:text-2xl text-amber-600 mt-0.5 truncate" id="muster-leave-count">0</div>
       </div>
-      <div class="p-3 bg-white border border-gray-200 rounded-xl">
-        <div class="text-[10px] font-mono text-slate uppercase">DG Compliance</div>
-        <div class="font-display text-2xl text-gold mt-0.5" id="muster-compliance-rate">100%</div>
+      <div class="p-2.5 sm:p-3 bg-white border border-gray-200 rounded-xl">
+        <div class="text-[10px] font-mono text-slate uppercase truncate">DG Compliance</div>
+        <div class="font-display text-xl sm:text-2xl text-gold mt-0.5 truncate" id="muster-compliance-rate">100%</div>
       </div>
     </div>
 
     <!-- Roster -->
-    <div class="card mb-5">
-      <div class="flex items-center justify-between mb-4">
+    <div class="card mb-4 sm:mb-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div>
           <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide">Cadet Roll Call (Deck Muster)</h3>
-          <p class="text-xs text-slate mt-0.5">Legend: [P] Present on Deck · [A] Absent · [M] Sick Bay / Quarantine · [SP] Shore Pass</p>
+          <p class="text-xs text-slate mt-0.5">Legend: [P] Present · [A] Absent · [M] Sick · [SP] Shore Pass</p>
         </div>
-        <span id="att-count" class="text-xs text-slate font-mono bg-canvas px-3 py-1 rounded-lg border border-gray-200">0 evaluated</span>
+        <span id="att-count" class="text-xs text-slate font-mono bg-canvas px-3 py-1 rounded-lg border border-gray-200 self-start sm:self-auto">0 evaluated</span>
       </div>
-      <div class="space-y-2.5" id="att-roster"><!-- JS --></div>
+      <div class="space-y-3" id="att-roster"><!-- JS --></div>
       <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="text-xs text-slate font-mono">
+        <div class="text-xs text-slate font-mono text-center sm:text-left">
           <i class="fas fa-shield-halved text-gold mr-1"></i> Endorsed records synchronize with company sponsorship boards.
         </div>
-        <button onclick="submitAttendance()" class="btn-gold flex items-center gap-2 px-6">
+        <button onclick="submitAttendance()" class="btn-gold flex items-center justify-center gap-2 px-6 w-full sm:w-auto">
           <span class="material-symbols-outlined text-sm">verified</span> Endorse &amp; Save Muster Log
         </button>
       </div>
@@ -1716,12 +1760,20 @@ const LS_SCHEDULE = 'sp_faculty_schedule_events';
 // ── Set faculty name everywhere ──────────────
 function setFacultyName(name) {
   const formatted = name ? (name.charAt(0).toUpperCase() + name.slice(1)) : 'Faculty';
-  document.getElementById('sb-faculty-name').textContent    = formatted;
-  document.getElementById('header-name').textContent         = formatted;
-  document.getElementById('dash-welcome-name').textContent   = formatted.toUpperCase();
-  document.getElementById('profile-display-name').textContent = formatted;
-  document.getElementById('pf-name').value                   = formatted;
-  document.getElementById('quick-name-input').value          = formatted !== 'Faculty' ? formatted : '';
+  const sbName = document.getElementById('sb-faculty-name');
+  if (sbName) sbName.textContent = formatted;
+  const hdrName = document.getElementById('header-name');
+  if (hdrName) hdrName.textContent = formatted;
+  const dashName = document.getElementById('dash-welcome-name');
+  if (dashName) dashName.textContent = formatted.toUpperCase();
+  const pfName = document.getElementById('profile-display-name');
+  if (pfName) pfName.textContent = formatted;
+  const pfInput = document.getElementById('pf-name');
+  if (pfInput) pfInput.value = formatted;
+  const quickInput = document.getElementById('quick-name-input');
+  if (quickInput) quickInput.value = formatted !== 'Faculty' ? formatted : '';
+  const sheetName = document.getElementById('sheet-faculty-name');
+  if (sheetName) sheetName.textContent = formatted.toUpperCase();
   localStorage.setItem(LS_NAME, formatted);
 }
 
@@ -1730,13 +1782,13 @@ function setFacultyAvatar(dataUrl) {
   // Sidebar
   const sbWrap = document.getElementById('sb-avatar-wrap');
   const sbIcon = document.getElementById('sb-avatar-icon');
-  const oldSb  = sbWrap.querySelector('img');
+  const oldSb  = sbWrap ? sbWrap.querySelector('img') : null;
   if (oldSb) oldSb.remove();
-  if (dataUrl) {
-    sbIcon.style.display = 'none';
+  if (dataUrl && sbWrap) {
+    if (sbIcon) sbIcon.style.display = 'none';
     const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Avatar', className: 'w-full h-full object-cover' });
     sbWrap.appendChild(img);
-  } else { sbIcon.style.display = ''; }
+  } else if (sbIcon) { sbIcon.style.display = ''; }
 
   // Header chip
   const hdrWrap = document.getElementById('header-avatar-wrap');
@@ -1744,25 +1796,36 @@ function setFacultyAvatar(dataUrl) {
   const oldHdr  = hdrWrap ? hdrWrap.querySelector('img') : null;
   if (oldHdr) oldHdr.remove();
   if (dataUrl && hdrWrap) {
-    hdrIcon.style.display = 'none';
+    if (hdrIcon) hdrIcon.style.display = 'none';
     const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Avatar', className: 'w-full h-full object-cover' });
     hdrWrap.appendChild(img);
   } else if (hdrIcon) { hdrIcon.style.display = ''; }
+
+  // Slide-up More Action Sheet
+  const sheetWrap = document.getElementById('sheet-avatar-wrap');
+  const sheetIcon = document.getElementById('sheet-avatar-icon');
+  const oldSheet  = sheetWrap ? sheetWrap.querySelector('img') : null;
+  if (oldSheet) oldSheet.remove();
+  if (dataUrl && sheetWrap) {
+    if (sheetIcon) sheetIcon.style.display = 'none';
+    const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Avatar', className: 'w-full h-full object-cover' });
+    sheetWrap.appendChild(img);
+  } else if (sheetIcon) { sheetIcon.style.display = ''; }
 
   // Profile card
   const pfWrap   = document.getElementById('profile-avatar-wrap');
   const pfIcon   = document.getElementById('profile-avatar-icon');
   const removeBtn = document.getElementById('remove-photo-btn');
-  const oldPf    = pfWrap.querySelector('img');
+  const oldPf    = pfWrap ? pfWrap.querySelector('img') : null;
   if (oldPf) oldPf.remove();
-  if (dataUrl) {
-    pfIcon.style.display = 'none';
+  if (dataUrl && pfWrap) {
+    if (pfIcon) pfIcon.style.display = 'none';
     const img = Object.assign(document.createElement('img'), { src: dataUrl, alt: 'Profile', className: 'w-full h-full object-cover' });
     pfWrap.appendChild(img);
-    removeBtn.classList.remove('hidden');
-  } else {
+    if (removeBtn) removeBtn.classList.remove('hidden');
+  } else if (pfIcon) {
     pfIcon.style.display = '';
-    removeBtn.classList.add('hidden');
+    if (removeBtn) removeBtn.classList.add('hidden');
   }
 
   // Dashboard avatar
@@ -1813,9 +1876,34 @@ async function doLogout() {
   window.location.href = 'login2.html';
 }
 
-// ── Sidebar ──────────────────────────────────
+// ── Sidebar & Action Sheet ───────────────────
 function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('show'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('show'); }
+
+function openMoreSheet() {
+  const backdrop = document.getElementById('more-sheet-backdrop');
+  const sheet = document.getElementById('more-action-sheet');
+  const moreBtn = document.getElementById('mobile-dock-more-btn');
+  if (backdrop) backdrop.classList.add('open');
+  if (sheet) sheet.classList.add('open');
+  if (moreBtn) moreBtn.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMoreSheet() {
+  const backdrop = document.getElementById('more-sheet-backdrop');
+  const sheet = document.getElementById('more-action-sheet');
+  const moreBtn = document.getElementById('mobile-dock-more-btn');
+  if (backdrop) backdrop.classList.remove('open');
+  if (sheet) sheet.classList.remove('open');
+  if (moreBtn) moreBtn.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleSheetNavigate(tabId) {
+  closeMoreSheet();
+  switchTab(tabId);
+}
 
 // ── Tab switching ────────────────────────────
 const TAB_META = {
@@ -1844,7 +1932,10 @@ function switchTab(id) {
   const [title, sub] = TAB_META[id] || ['Portal', ''];
   document.getElementById('page-title').textContent    = title;
   document.getElementById('page-subtitle').textContent = sub;
-  if (window.innerWidth < 768) closeSidebar();
+  if (window.innerWidth < 768) {
+    closeSidebar();
+    closeMoreSheet();
+  }
   if (id === 'students')   renderStudents();
   if (id === 'classes')    renderClasses();
   if (id === 'materials')  renderMaterials();
@@ -2506,6 +2597,45 @@ function renderStudents() {
       </td>
     </tr>
   `).join('') || '<tr><td colspan="8" class="text-center py-8 text-slate text-sm font-mono">NO CADET DOSSIERS MATCHING CRITERIA</td></tr>';
+
+  // Render Mobile Cadet Cards (< 768px)
+  const mobileContainer = document.getElementById('students-cards-mobile');
+  if (mobileContainer) {
+    mobileContainer.innerHTML = rows.map(s => `
+      <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-xs">
+        <div class="flex items-start justify-between gap-2 mb-2.5">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-full bg-deep-sea text-gold flex items-center justify-center font-bold text-xs shrink-0 border border-gold/30">
+              <span class="material-symbols-outlined text-sm">sailing</span>
+            </div>
+            <div class="min-w-0">
+              <div class="font-semibold text-deep-sea text-sm truncate">${s.name}</div>
+              <div class="text-[10px] text-slate font-mono">${s.stream} · Batch ${s.batch}</div>
+            </div>
+          </div>
+          <div class="shrink-0">${dgAttBadge(s.attendance)}</div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs py-2 border-t border-b border-gray-100 my-2">
+          <div>
+            <span class="text-[10px] text-slate uppercase font-mono block">INDoS / Roll</span>
+            <span class="font-mono font-semibold text-deep-sea text-xs">${s.roll}</span>
+            <span class="text-[10px] text-slate block">${s.indos}</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate uppercase font-mono block">Target Fleet</span>
+            <span class="font-semibold text-deep-sea text-xs flex items-center gap-1">
+              <i class="fas fa-anchor text-gold text-[10px]"></i> ${s.fleet}
+            </span>
+            <span class="text-[10px] text-slate block">Batch ${s.batch}</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-xs pt-1">
+          <span class="text-[10px] text-slate font-mono uppercase">Sponsorship Stage</span>
+          <div>${sponsorBadge(s.sponsorship)}</div>
+        </div>
+      </div>
+    `).join('') || '<div class="bg-white border border-gray-200 rounded-2xl p-6 text-center text-slate text-sm font-mono">NO CADET DOSSIERS MATCHING CRITERIA</div>';
+  }
 }
 
 function filterStudents() { renderStudents(); }
@@ -2868,27 +2998,31 @@ function loadAttendanceRoster() {
 function renderRoster(list) {
   document.getElementById('att-roster').innerHTML = list.map((s, i) => {
     const isAtRisk = s.attendance < 85;
+    const curVal = attState[i] || 'P';
     return `
-    <div class="att-row border ${isAtRisk ? 'border-amber-300 bg-amber-50/20' : 'border-gray-200'}">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-full bg-deep-sea text-gold flex items-center justify-center font-bold text-xs shrink-0 border border-gold/30">
-          ${s.name.charAt(6) || s.name.charAt(0)}
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold text-deep-sea">${s.name}</span>
-            ${isAtRisk ? '<span class="badge bg-amber-100 text-amber-800 text-[9px] border border-amber-300">AUDIT RISK</span>' : ''}
+    <div class="bg-white rounded-2xl p-3 sm:p-4 border ${isAtRisk ? 'border-amber-300 bg-amber-50/15' : 'border-gray-200'} shadow-xs transition-shadow">
+      <div class="flex items-start justify-between gap-2 mb-3">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-full bg-deep-sea text-gold flex items-center justify-center font-bold text-xs shrink-0 border border-gold/30">
+            ${s.name.charAt(6) || s.name.charAt(0)}
           </div>
-          <div class="text-[10px] text-slate font-mono">
-            ${s.roll} · INDoS: ${s.indos} · Cumulative: <strong class="${isAtRisk ? 'text-amber-600 font-bold' : 'text-emerald-600'}">${s.attendance}%</strong>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-sm font-semibold text-deep-sea truncate">${s.name}</span>
+              ${isAtRisk ? '<span class="badge bg-amber-100 text-amber-800 text-[9px] border border-amber-300">AUDIT RISK</span>' : ''}
+            </div>
+            <div class="text-[11px] text-slate font-mono mt-0.5 truncate">
+              ${s.roll} · INDoS: ${s.indos} · Cum: <strong class="${isAtRisk ? 'text-amber-600 font-bold' : 'text-emerald-600'}">${s.attendance}%</strong>
+            </div>
           </div>
         </div>
+        <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-gray-100 text-slate shrink-0">#${i+1}</span>
       </div>
-      <div class="att-toggle">
-        <button id="btn-p-${i}" class="att-btn-present ${attState[i]==='P'?'active':''}" onclick="setAtt(${i},'P')" title="Present on Deck">P</button>
-        <button id="btn-a-${i}" class="att-btn-absent ${attState[i]==='A'?'active':''}"  onclick="setAtt(${i},'A')" title="Absent / Unexcused">A</button>
-        <button id="btn-m-${i}" class="att-btn-med ${attState[i]==='M'?'active':''}"     onclick="setAtt(${i},'M')" title="Sick Bay / Medical">M</button>
-        <button id="btn-sp-${i}" class="att-btn-leave ${attState[i]==='SP'?'active':''}" onclick="setAtt(${i},'SP')" title="Authorized Shore Pass">SP</button>
+      <div class="att-touch-grid">
+        <button type="button" id="btn-p-${i}" class="att-touch-btn ${curVal==='P' ? 'active-p' : ''}" onclick="setAtt(${i},'P')" title="Present on Deck">[P] Present</button>
+        <button type="button" id="btn-a-${i}" class="att-touch-btn ${curVal==='A' ? 'active-a' : ''}" onclick="setAtt(${i},'A')" title="Absent / Unexcused">[A] Absent</button>
+        <button type="button" id="btn-m-${i}" class="att-touch-btn ${curVal==='M' ? 'active-m' : ''}" onclick="setAtt(${i},'M')" title="Sick Bay / Medical">[M] Sick</button>
+        <button type="button" id="btn-sp-${i}" class="att-touch-btn ${curVal==='SP' ? 'active-sp' : ''}" onclick="setAtt(${i},'SP')" title="Authorized Shore Pass">[SP] Shore</button>
       </div>
     </div>
     `;
@@ -2898,9 +3032,12 @@ function renderRoster(list) {
 
 function setAtt(i, val) {
   attState[i] = val;
+  const valLower = val.toLowerCase();
   ['p', 'a', 'm', 'sp'].forEach(t => {
     const btn = document.getElementById(`btn-${t}-${i}`);
-    if (btn) btn.classList.toggle('active', val.toLowerCase() === t);
+    if (btn) {
+      btn.className = `att-touch-btn ${valLower === t ? 'active-' + t : ''}`;
+    }
   });
   updateAttCount();
 }
@@ -4376,17 +4513,18 @@ function resetChatMessages() {
   // Load chat messages
   loadChatMessages();
 
-  // Close modal on Escape key
+  // Close modal or action sheet on Escape key
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeScheduleModal();
       closeScorecardModal();
+      closeMoreSheet();
     }
   });
 })();
 </script>
 
-<!-- Mobile Bottom Dock (md:hidden) -->
+<!-- Mobile Bottom Navigation Dock (md:hidden) -->
 <nav id="mobile-bottom-dock" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 px-1 py-1 flex items-center justify-around shadow-lg pb-[max(0.5rem,env(safe-area-inset-bottom))] select-none">
   <button type="button" class="mobile-dock-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
     <span class="material-symbols-outlined text-xl">dashboard</span>
@@ -4396,23 +4534,116 @@ function resetChatMessages() {
     <span class="material-symbols-outlined text-xl">fact_check</span>
     <span>Attendance</span>
   </button>
-  <button type="button" class="mobile-dock-btn" data-tab="materials" onclick="switchTab('materials')">
-    <span class="material-symbols-outlined text-xl">upload_file</span>
-    <span>Materials</span>
-  </button>
   <button type="button" class="mobile-dock-btn" data-tab="schedule" onclick="switchTab('schedule')">
     <span class="material-symbols-outlined text-xl">calendar_month</span>
     <span>Schedule</span>
   </button>
-  <button type="button" class="mobile-dock-btn" data-tab="chat" onclick="switchTab('chat')">
-    <span class="material-symbols-outlined text-xl">forum</span>
-    <span>Chat</span>
+  <button type="button" class="mobile-dock-btn" data-tab="classes" onclick="switchTab('classes')">
+    <span class="material-symbols-outlined text-xl">class</span>
+    <span>Classes</span>
   </button>
-  <button type="button" class="mobile-dock-btn" onclick="openSidebar()">
-    <span class="material-symbols-outlined text-xl">menu</span>
+  <button type="button" class="mobile-dock-btn" id="mobile-dock-more-btn" onclick="openMoreSheet()">
+    <span class="material-symbols-outlined text-xl">widgets</span>
     <span>More</span>
   </button>
 </nav>
+
+<!-- Slide-Up "More" Action Sheet for Mobile (< 768px) -->
+<div id="more-sheet-backdrop" onclick="closeMoreSheet()"></div>
+<div id="more-action-sheet" class="md:hidden">
+  <div class="px-5 pt-3 pb-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    <!-- Pull Drag Handle -->
+    <div class="w-12 h-1.5 rounded-full bg-gray-300 mx-auto mb-4 cursor-pointer" onclick="closeMoreSheet()"></div>
+
+    <!-- Faculty Credentials Header -->
+    <div class="flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-deep-sea to-navy-mid text-white mb-5 shadow-sm">
+      <div id="sheet-avatar-wrap" class="w-12 h-12 rounded-full bg-teal/20 border-2 border-teal/40 flex items-center justify-center shrink-0 overflow-hidden">
+        <span class="material-symbols-outlined fill-icon text-teal text-2xl" id="sheet-avatar-icon">person</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 id="sheet-faculty-name" class="font-sub text-base font-bold text-white truncate">FACULTY OFFICER</h3>
+        <p class="text-gold text-[11px] font-mono tracking-wide">Sindhupath Naval Command</p>
+      </div>
+      <button type="button" onclick="handleSheetNavigate('profile')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors" title="Edit Profile">
+        <span class="material-symbols-outlined text-base">edit</span>
+      </button>
+    </div>
+
+    <!-- Module Quick Tiles Grid (2 columns) -->
+    <div class="text-[11px] font-mono uppercase tracking-wider text-slate font-semibold mb-2.5 px-1">Navigation &amp; Operations</div>
+    <div class="grid grid-cols-2 gap-2.5 mb-5">
+      <button type="button" onclick="handleSheetNavigate('students')" class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-canvas hover:bg-gray-100 transition-colors text-left">
+        <div class="w-9 h-9 rounded-lg bg-deep-sea/10 text-deep-sea flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">groups</span>
+        </div>
+        <div class="min-w-0">
+          <div class="font-sub text-xs font-bold text-deep-sea uppercase">Students</div>
+          <div class="text-[10px] text-slate truncate">Cadet Directory</div>
+        </div>
+      </button>
+
+      <button type="button" onclick="handleSheetNavigate('materials')" class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-canvas hover:bg-gray-100 transition-colors text-left">
+        <div class="w-9 h-9 rounded-lg bg-teal/10 text-teal flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">upload_file</span>
+        </div>
+        <div class="min-w-0">
+          <div class="font-sub text-xs font-bold text-deep-sea uppercase">Materials</div>
+          <div class="text-[10px] text-slate truncate">Notes &amp; PDFs</div>
+        </div>
+      </button>
+
+      <button type="button" onclick="handleSheetNavigate('notice')" class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-canvas hover:bg-gray-100 transition-colors text-left">
+        <div class="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">campaign</span>
+        </div>
+        <div class="min-w-0">
+          <div class="font-sub text-xs font-bold text-deep-sea uppercase">Notices</div>
+          <div class="text-[10px] text-slate truncate">Command Orders</div>
+        </div>
+      </button>
+
+      <button type="button" onclick="handleSheetNavigate('mocktests')" class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-canvas hover:bg-gray-100 transition-colors text-left">
+        <div class="w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">quiz</span>
+        </div>
+        <div class="min-w-0">
+          <div class="font-sub text-xs font-bold text-deep-sea uppercase">Mock Tests</div>
+          <div class="text-[10px] text-slate truncate">CBT Engine</div>
+        </div>
+      </button>
+
+      <button type="button" onclick="handleSheetNavigate('chat')" class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-canvas hover:bg-gray-100 transition-colors text-left">
+        <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">forum</span>
+        </div>
+        <div class="min-w-0">
+          <div class="font-sub text-xs font-bold text-deep-sea uppercase">Messages</div>
+          <div class="text-[10px] text-slate truncate">Faculty Comms</div>
+        </div>
+      </button>
+
+      <button type="button" onclick="handleSheetNavigate('profile')" class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-canvas hover:bg-gray-100 transition-colors text-left">
+        <div class="w-9 h-9 rounded-lg bg-gold/15 text-gold flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">person</span>
+        </div>
+        <div class="min-w-0">
+          <div class="font-sub text-xs font-bold text-deep-sea uppercase">Profile</div>
+          <div class="text-[10px] text-slate truncate">Officer Settings</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Direct Actions: Sign Out & Close -->
+    <div class="space-y-2 pt-2 border-t border-gray-100">
+      <button type="button" onclick="doLogout()" class="w-full min-h-[44px] flex items-center justify-center gap-2 p-3 rounded-xl bg-red-50 text-red-600 font-sub text-xs font-bold uppercase tracking-wider hover:bg-red-100 transition-colors">
+        <span class="material-symbols-outlined text-base">logout</span> Sign Out of Command Deck
+      </button>
+      <button type="button" onclick="closeMoreSheet()" class="w-full min-h-[44px] flex items-center justify-center p-2 rounded-xl text-slate text-xs font-semibold hover:bg-gray-100 transition-colors">
+        Dismiss
+      </button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
