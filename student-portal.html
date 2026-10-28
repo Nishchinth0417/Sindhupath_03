@@ -312,7 +312,6 @@
         <p id="sb-student-name" class="text-white text-sm font-semibold truncate">Cadet</p>
         <span class="badge bg-gold/20 text-gold border border-gold/30">Cadet</span>
       </div>
-      <span class="material-symbols-outlined text-white/30 text-base shrink-0 student-info-wrap">edit</span>
     </div>
 
     <!-- Nav Items -->
@@ -393,12 +392,6 @@
 
       <!-- Right: actions -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <!-- Notification bell -->
-        <button class="relative w-9 h-9 rounded-full bg-canvas hover:bg-gray-100 flex items-center justify-center text-gray-600 hover:text-deep-sea transition-colors shrink-0" onclick="switchTab('notices')" title="Academy Bulletins">
-          <span class="material-symbols-outlined text-xl">notifications</span>
-          <span id="notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full hidden"></span>
-        </button>
-
         <!-- Cadet avatar chip (clickable to open Profile) -->
         <button onclick="switchTab('profile')" class="flex items-center gap-2 px-1.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-canvas hover:bg-gold/10 border border-gray-200 hover:border-gold/40 transition-colors shrink-0" title="Cadet Profile">
           <div id="top-avatar-wrap" class="w-7 h-7 rounded-full bg-deep-sea flex items-center justify-center overflow-hidden border border-gold/40 shrink-0">
@@ -407,9 +400,9 @@
           <span id="header-name" class="text-xs font-semibold text-deep-sea hidden sm:inline max-w-[100px] truncate">Cadet</span>
         </button>
 
-        <!-- Back to site -->
-        <a href="../index.html" class="hidden lg:inline-flex items-center gap-1 text-xs text-slate hover:text-deep-sea transition-colors ml-1">
-          <span class="material-symbols-outlined text-base">open_in_new</span> Main Site
+        <!-- Back to site (icon only) -->
+        <a href="../index.html" class="w-9 h-9 rounded-full bg-canvas hover:bg-gray-100 border border-gray-200 hover:border-gold/40 flex items-center justify-center text-slate hover:text-deep-sea transition-colors shrink-0" title="Main Site" aria-label="Main Site">
+          <span class="material-symbols-outlined text-lg">open_in_new</span>
         </a>
       </div>
     </header>
@@ -428,12 +421,10 @@
             <p class="text-gold text-[10px] sm:text-[11px] font-sub uppercase tracking-widest flex items-center gap-1.5 font-semibold">
               <span class="material-symbols-outlined text-sm">sailing</span> Cadet Quarterdeck
             </p>
-            <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">Active Cadet</span>
           </div>
           <h2 class="font-sub text-xl sm:text-3xl font-bold tracking-wide mb-2 truncate" id="dash-welcome-name">LOADING...</h2>
           <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3">
             <span class="badge bg-gold/25 text-gold border border-gold/30 text-[10px]">IMU-CET 2026</span>
-            <span class="badge bg-white/10 text-white/80 border border-white/20 text-[10px]">Batch A · Morning</span>
           </div>
           <div class="flex items-center justify-between pt-2.5 border-t border-white/10 text-xs">
             <span class="text-white/60 text-[10px] sm:text-[11px]">Examination Readiness</span>
@@ -468,19 +459,28 @@
         <!-- 2-col: Upcoming (Dynamic) + Quick Actions -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
 
-          <!-- Upcoming Classes (Dynamic to today) -->
+          <!-- Upcoming Classes (2-Day Online Schedule) -->
           <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 shadow-sm">
-            <div class="flex items-center justify-between gap-2 mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div class="min-w-0">
-                <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide flex items-center gap-1.5 truncate">
-                  <span class="material-symbols-outlined text-gold text-lg shrink-0">calendar_today</span>
-                  <span class="truncate">Today's Classes</span>
-                </h3>
-                <p id="dash-today-date-text" class="text-xs text-slate mt-0.5 truncate">Loading today's schedule...</p>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-sub text-base font-semibold text-deep-sea uppercase tracking-wide flex items-center gap-1.5 truncate">
+                    <span class="material-symbols-outlined text-gold text-lg shrink-0">calendar_today</span>
+                    <span id="dash-classes-title" class="truncate">Today's Classes</span>
+                  </h3>
+                </div>
+                <p id="dash-today-date-text" class="text-xs text-slate mt-0.5 truncate">Loading schedule...</p>
               </div>
-              <button onclick="switchTab('schedule')" class="text-[10px] font-medium text-gold flex items-center gap-0.5 shrink-0 whitespace-nowrap opacity-60 hover:opacity-100 transition-opacity" title="View Full Weekly Schedule">
-                Full Week <span class="material-symbols-outlined text-[11px]">arrow_forward</span>
-              </button>
+
+              <!-- 2-Day Selector: Students can only check 2 days (Today & Tomorrow) -->
+              <div class="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200/80 shrink-0 self-start sm:self-center">
+                <button id="btn-dash-sched-today" onclick="setDashboardScheduleDay('today')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs">
+                  Today
+                </button>
+                <button id="btn-dash-sched-tomorrow" onclick="setDashboardScheduleDay('tomorrow')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all">
+                  Tomorrow
+                </button>
+              </div>
             </div>
             <div id="dash-today-schedule" class="space-y-2.5">
               <!-- Dynamically populated by JS renderDashboardTodaySchedule() -->
@@ -536,83 +536,41 @@
 
       <!-- ════════════ TAB: MY COURSES ════════════ -->
       <section id="tab-courses" class="tab-content">
-        <div class="mb-6">
-          <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">My Enrolled Courses</h2>
-          <p class="text-sm text-slate mt-1">Track your progress across all training modules.</p>
+        <!-- 1. Primary Enrolled Courses Overview -->
+        <div id="courses-main-view">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <div>
+              <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">My Enrolled Courses</h2>
+              <p class="text-sm text-slate mt-1">Track your progress across all training modules.</p>
+            </div>
+            <!-- Quick Simulation / Preview Switcher -->
+            <div class="flex items-center gap-1.5 p-1.5 rounded-xl bg-canvas border border-gray-200 self-start sm:self-auto shadow-2xs">
+              <span class="text-[10px] font-bold text-slate uppercase tracking-wider px-2 flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-gold">admin_panel_settings</span> Access:
+              </span>
+              <button id="sim-unlocked-btn" onclick="setSimMode('unlocked')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs">
+                All Unlocked (Default)
+              </button>
+              <button id="sim-locked-btn" onclick="setSimMode('locked')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all">
+                Simulate CET-Only (Locked)
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Courses Grid -->
+          <div id="cadet-courses-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <!-- Populated and dynamically managed by renderCadetCourses() -->
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          <!-- Course Card 1 -->
-          <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-            <div class="h-2 bg-gradient-to-r from-deep-sea to-blue-600"></div>
-            <div class="p-5">
-              <div class="flex items-start justify-between mb-3">
-                <div class="w-11 h-11 rounded-xl bg-deep-sea/8 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-deep-sea text-2xl">anchor</span>
-                </div>
-                <span class="badge bg-emerald-100 text-emerald-700">Active</span>
-              </div>
-              <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">IMU-CET Coaching</h3>
-              <p class="text-xs text-slate mt-1 mb-3">Comprehensive preparation for Indian Maritime University Common Entrance Test.</p>
-              <div class="grid grid-cols-2 gap-2 text-xs mb-4">
-                <div><p class="text-slate">Faculty</p><p class="font-semibold text-gray-700">Capt. R. Sharma</p></div>
-                <div><p class="text-slate">Batch</p><p class="font-semibold text-gray-700">Batch A · 2026</p></div>
-                <div><p class="text-slate">Next Class</p><p class="font-semibold text-gold">Mon, 10:00 AM</p></div>
-                <div><p class="text-slate">Duration</p><p class="font-semibold text-gray-700">6 Months</p></div>
-              </div>
-              <div class="mb-1 flex justify-between text-xs"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">68%</span></div>
-              <div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div>
-              <button onclick="showCourseDetail('IMU-CET Coaching')" class="mt-4 w-full py-2.5 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors min-h-[44px] flex items-center justify-center shadow-xs">View Details</button>
-            </div>
-          </div>
+        <!-- 2. IMU-CET Course Curriculum Hub (6 Subjects) -->
+        <div id="imu-cet-hub-view" class="hidden">
+          <!-- Populated dynamically by renderImuCetHub() -->
+        </div>
 
-          <!-- Course Card 2 -->
-          <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-            <div class="h-2 bg-gradient-to-r from-gold to-amber-400"></div>
-            <div class="p-4 sm:p-5">
-              <div class="flex items-start justify-between mb-3">
-                <div class="w-11 h-11 rounded-xl bg-gold/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-gold text-2xl">sailing</span>
-                </div>
-                <span class="badge bg-emerald-100 text-emerald-700">Active</span>
-              </div>
-              <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">DNS Sponsorship Prep</h3>
-              <p class="text-xs text-slate mt-1 mb-3">Diploma in Nautical Science — Company sponsorship & interview mastery.</p>
-              <div class="grid grid-cols-2 gap-2 text-xs mb-4">
-                <div><p class="text-slate">Faculty</p><p class="font-semibold text-gray-700">Capt. Arun Pillai</p></div>
-                <div><p class="text-slate">Batch</p><p class="font-semibold text-gray-700">Batch A · 2026</p></div>
-                <div><p class="text-slate">Next Class</p><p class="font-semibold text-gold">Tue, 2:00 PM</p></div>
-                <div><p class="text-slate">Duration</p><p class="font-semibold text-gray-700">3 Months</p></div>
-              </div>
-              <div class="mb-1 flex justify-between text-xs"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">45%</span></div>
-              <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
-              <button onclick="showCourseDetail('DNS Sponsorship Prep')" class="mt-4 w-full py-2.5 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors min-h-[44px] flex items-center justify-center shadow-xs">View Details</button>
-            </div>
-          </div>
-
-          <!-- Course Card 3 -->
-          <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-            <div class="h-2 bg-gradient-to-r from-purple-600 to-purple-400"></div>
-            <div class="p-4 sm:p-5">
-              <div class="flex items-start justify-between mb-3">
-                <div class="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-purple-600 text-2xl">groups</span>
-                </div>
-                <span class="badge bg-blue-100 text-blue-700">Starting Soon</span>
-              </div>
-              <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Aptitude Test Prep</h3>
-              <p class="text-xs text-slate mt-1 mb-3">Psychometric, logical reasoning, and spatial awareness for maritime recruitment.</p>
-              <div class="grid grid-cols-2 gap-2 text-xs mb-4">
-                <div><p class="text-slate">Faculty</p><p class="font-semibold text-gray-700">Mr. Vikas Menon</p></div>
-                <div><p class="text-slate">Batch</p><p class="font-semibold text-gray-700">Batch B · Oct</p></div>
-                <div><p class="text-slate">Starts</p><p class="font-semibold text-gold">05 Oct 2026</p></div>
-                <div><p class="text-slate">Duration</p><p class="font-semibold text-gray-700">2 Months</p></div>
-              </div>
-              <div class="mb-1 flex justify-between text-xs"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">0%</span></div>
-              <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-              <button onclick="showCourseDetail('Aptitude Test Prep')" class="mt-4 w-full py-2.5 rounded-xl bg-gray-200 text-gray-600 text-xs font-bold uppercase tracking-wider min-h-[44px] flex items-center justify-center">Not Started</button>
-            </div>
-          </div>
+        <!-- 3. IMU-CET Subject Deep-Dive View (Study Materials, Exams, Online Class History) -->
+        <div id="imu-cet-subject-view" class="hidden">
+          <!-- Populated dynamically by renderImuCetSubjectView() -->
         </div>
       </section>
 
@@ -626,26 +584,44 @@
             <p id="sched-live-date-header" class="text-xs sm:text-sm text-slate mt-0.5">Maritime Cadet Academy Agenda · Batch Alpha</p>
           </div>
           <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button onclick="goToCurrentWeek(); goToCurrentMonth();" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gold/40 text-deep-sea bg-gold/10 hover:bg-gold hover:text-deep-sea text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]">
+            <button onclick="goToCurrentMonth();" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gold/40 text-deep-sea bg-gold/10 hover:bg-gold hover:text-deep-sea text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm min-h-[44px]">
               <span class="material-symbols-outlined text-base text-gold">today</span> Jump to Today
             </button>
           </div>
         </div>
 
-        <!-- 1. Scheduled Online Classes & Proctored Exams (Synced with Faculty) -->
+        <!-- 1. Today's & Tomorrow's Online Class Information (With Direct Faculty Join Links) -->
         <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 shadow-sm mb-6">
-          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-teal text-xl">devices</span>
-              <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Scheduled Online Classes &amp; Exams</h3>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-teal text-xl">devices</span>
+                <h3 id="scheduled-events-title" class="font-sub text-base sm:text-lg font-bold text-deep-sea uppercase tracking-wide">Today &amp; Tomorrow's Class Schedule</h3>
+              </div>
             </div>
+            
+            <!-- Day Switcher Tabs (Today vs Tomorrow) -->
             <div class="flex items-center gap-2">
-              <span id="scheduled-events-count" class="badge bg-teal/10 text-teal border border-teal/30">Loading...</span>
-              <button id="btn-clear-date-filter" onclick="clearDateFilter()" class="hidden text-[11px] font-bold text-red-600 hover:text-red-700 underline flex items-center gap-0.5">
-                <span class="material-symbols-outlined text-sm">clear</span> Clear Filter
+              <div class="flex items-center bg-canvas p-1 rounded-xl border border-gray-200 shrink-0">
+                <button id="btn-sched-day-today" onclick="setScheduleViewMode('today')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-deep-sea text-white transition-all shadow-xs flex items-center gap-1 min-h-[34px]">
+                  <span class="material-symbols-outlined text-sm">today</span> Today
+                </button>
+                <button id="btn-sched-day-tomorrow" onclick="setScheduleViewMode('tomorrow')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all flex items-center gap-1 min-h-[34px]">
+                  <span class="material-symbols-outlined text-sm">event_upcoming</span> Tomorrow
+                </button>
+              </div>
+              <button id="btn-clear-date-filter" onclick="clearDateFilter()" class="hidden text-xs font-bold text-teal hover:underline flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-teal/30 bg-teal/5">
+                <span class="material-symbols-outlined text-sm">arrow_back</span> Return to Today
               </button>
             </div>
           </div>
+
+          <!-- Date Context Banner -->
+          <div class="flex items-center p-3 rounded-xl bg-canvas border border-gray-100 mb-4">
+            <span id="sched-view-date-text" class="text-xs font-bold text-deep-sea">Loading schedule...</span>
+          </div>
+
+          <!-- Class List (Populated by JS with 2 classes & Join buttons) -->
           <div id="scheduled-events-list" class="space-y-3">
             <!-- Dynamically populated by JS renderScheduledEventsList() -->
           </div>
@@ -683,80 +659,16 @@
           <!-- Calendar Grid (Populated by JS) -->
           <div id="calendar-grid" class="grid grid-cols-7 gap-1 sm:gap-1.5"></div>
           
-          <div class="flex flex-wrap items-center justify-between text-[11px] text-slate mt-3 pt-2 border-t border-gray-100 gap-2">
-            <div class="flex items-center gap-3">
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-teal"></span> Online Class</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Proctored Exam</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-gold border border-gold"></span> Today</span>
+          <div class="flex flex-wrap items-center justify-between text-[11px] text-slate mt-3 pt-2.5 border-t border-gray-100 gap-2">
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3.5">
+              <span class="flex items-center gap-1 font-semibold text-emerald-700"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> Completed</span>
+              <span class="flex items-center gap-1 font-semibold text-rose-700"><span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> Cancelled</span>
+              <span class="flex items-center gap-1 font-semibold text-amber-700"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Postponed</span>
+              <span class="flex items-center gap-1 font-semibold text-deep-sea"><span class="w-2.5 h-2.5 rounded-full bg-deep-sea"></span> Scheduled Online</span>
+              <span class="flex items-center gap-1 font-semibold text-orange-700"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Proctored Exam</span>
+              <span class="flex items-center gap-1 font-semibold text-gold"><span class="w-2.5 h-2.5 rounded-full bg-gold border border-gold"></span> Today</span>
             </div>
-            <span class="text-slate/80">Tap any date to view scheduled online sessions</span>
-          </div>
-        </div>
-
-        <!-- 3. Weekly Timetable & Daily Agenda -->
-        <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 shadow-sm mb-6">
-          <!-- Timetable Top Bar: Title, Week Navigator, and View Switcher -->
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4 pb-4 border-b border-gray-100">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-deep-sea text-xl">access_time</span>
-                <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Weekly Timetable</h3>
-              </div>
-              <p id="sched-week-subtitle" class="text-xs text-slate mt-0.5">Week of 12 Oct – 17 Oct 2026</p>
-            </div>
-
-            <!-- Week Navigator Controls & View Switcher -->
-            <div class="flex flex-wrap items-center gap-2">
-              <div class="flex items-center bg-canvas p-1 rounded-xl border border-gray-200">
-                <button onclick="changeWeek(-1)" class="p-1.5 rounded-lg text-slate hover:text-deep-sea hover:bg-white transition-all" title="Previous Week">
-                  <span class="material-symbols-outlined text-base">chevron_left</span>
-                </button>
-                <span id="sched-week-nav-label" class="px-2.5 text-xs font-bold text-deep-sea font-sub uppercase">Current Week</span>
-                <button onclick="changeWeek(1)" class="p-1.5 rounded-lg text-slate hover:text-deep-sea hover:bg-white transition-all" title="Next Week">
-                  <span class="material-symbols-outlined text-base">chevron_right</span>
-                </button>
-              </div>
-
-              <!-- Day View / Grid View Switcher -->
-              <div class="flex items-center bg-canvas p-1 rounded-xl border border-gray-200">
-                <button id="btn-sched-dayview" onclick="toggleScheduleView('day')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-deep-sea text-white transition-all flex items-center gap-1 min-h-[36px]">
-                  <span class="material-symbols-outlined text-sm">view_day</span> Day View
-                </button>
-                <button id="btn-sched-gridview" onclick="toggleScheduleView('grid')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all flex items-center gap-1 min-h-[36px]">
-                  <span class="material-symbols-outlined text-sm">calendar_view_week</span> Full Grid
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dynamic Day Selector Pills with Real Dates -->
-          <div id="sched-day-pills" class="flex overflow-x-auto gap-2 mb-4 pb-1 no-scrollbar">
-            <!-- Dynamically populated by JS initScheduleDayPills() -->
-          </div>
-
-          <!-- Day Timeline Cards View -->
-          <div id="schedule-day-container" class="space-y-3">
-            <!-- Dynamically populated by JS renderCadetDaySchedule() -->
-          </div>
-
-          <!-- Full Table Grid View -->
-          <div id="schedule-grid-container" class="hidden overflow-x-auto rounded-xl border border-gray-200">
-            <table class="w-full min-w-[700px] text-xs">
-              <thead id="schedule-grid-head">
-                <!-- Dynamically populated by JS -->
-              </thead>
-              <tbody id="schedule-grid-body" class="divide-y divide-gray-100">
-                <!-- Dynamically populated by JS -->
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Legend -->
-          <div class="mt-4 flex flex-wrap gap-4 text-xs pt-3 border-t border-gray-100">
-            <div class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-emerald-500"></div><span class="text-slate">Live Now</span></div>
-            <div class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-blue-600"></div><span class="text-slate">Next Up</span></div>
-            <div class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-gold"></div><span class="text-slate">Today's Column</span></div>
-            <div class="flex items-center gap-2"><div class="w-3.5 h-3.5 rounded bg-gray-300"></div><span class="text-slate">Concluded / Past</span></div>
+            <span class="text-slate/80 text-[10px] sm:text-[11px]">Tap any calendar date to inspect class records &amp; status</span>
           </div>
         </div>
       </section>
@@ -779,8 +691,9 @@
           <button class="filter-pill shrink-0" onclick="setFilter(this,'math')">Mathematics</button>
           <button class="filter-pill shrink-0" onclick="setFilter(this,'physics')">Physics</button>
           <button class="filter-pill shrink-0" onclick="setFilter(this,'english')">English</button>
-          <button class="filter-pill shrink-0" onclick="setFilter(this,'gk')">General Knowledge</button>
-          <button class="filter-pill shrink-0" onclick="setFilter(this,'dns')">DNS / Nautical</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'chemistry')">Chemistry</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'aptitude')">General Aptitude / Reasoning</button>
+          <button class="filter-pill shrink-0" onclick="setFilter(this,'gk')">General Knowledge / General Science</button>
         </div>
 
         <!-- Materials List -->
@@ -1060,12 +973,12 @@
                   <span class="hidden sm:inline">Channels</span>
                 </button>
                 <div class="w-10 h-10 rounded-full bg-deep-sea flex items-center justify-center text-gold font-bold text-sm shrink-0 overflow-hidden" id="chat-header-avatar">
-                  <span class="material-symbols-outlined text-gold">forum</span>
+                  <span class="material-symbols-outlined text-gold">calculate</span>
                 </div>
                 <div>
-                  <h3 id="chat-active-title" class="font-bold text-sm text-deep-sea leading-tight">General Academy Discussion</h3>
+                  <h3 id="chat-active-title" class="font-bold text-sm text-deep-sea leading-tight">Mathematics</h3>
                   <p id="chat-active-sub" class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active Channel · All Cadets &amp; Faculty
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Faculty: Capt. R. Sharma · All Cadets &amp; Faculty
                   </p>
                 </div>
               </div>
@@ -1499,6 +1412,130 @@
   </div>
 </div>
 
+<!-- Class Recording Player Modal -->
+<div id="class-recording-modal" class="modal-overlay hidden" onclick="if(event.target===this)closeClassRecordingModal();" role="dialog" aria-modal="true" aria-labelledby="recording-modal-topic">
+  <div class="modal-box p-0 max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-200">
+    <!-- Top Player Header -->
+    <div class="bg-navy-dark p-3.5 sm:p-4 flex items-center justify-between text-white border-b border-navy-mid">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-red-500"></span>
+        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+        <span id="recording-modal-badge" class="ml-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-gold text-deep-sea font-sub">Recorded Class</span>
+      </div>
+      <button onclick="closeClassRecordingModal()" class="text-gray-300 hover:text-white transition-colors" aria-label="Close recording player">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <!-- Video Canvas Simulation -->
+    <div class="relative bg-slate-950 aspect-video flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden group">
+      <div class="absolute inset-0 bg-gradient-to-br from-deep-sea/40 via-slate-950 to-deep-sea/20 opacity-90"></div>
+      
+      <div class="relative z-10 flex flex-col items-center">
+        <div class="w-16 h-16 rounded-full bg-gold/90 hover:bg-gold text-deep-sea flex items-center justify-center cursor-pointer shadow-lg hover:scale-105 transition-all mb-3 group-hover:scale-110 active:scale-95" onclick="toast('Lecture video playback playing...', 'info')">
+          <span class="material-symbols-outlined text-4xl ml-1">play_arrow</span>
+        </div>
+        <p id="recording-modal-player-title" class="text-white font-bold text-sm sm:text-base max-w-md drop-shadow px-4">Lecture Video Player</p>
+        <p id="recording-modal-player-sub" class="text-slate-300 text-xs mt-1">Faculty: Capt. R. Sharma · Recorded Session</p>
+        <div class="flex items-center gap-2 mt-3">
+          <span class="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-semibold">1080p Full HD</span>
+          <span id="recording-modal-player-duration" class="badge bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[10px] font-semibold">58 mins</span>
+        </div>
+      </div>
+
+      <!-- Video Control Bar Simulation -->
+      <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 flex items-center justify-between text-white text-xs z-10">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="toast('Toggled playback', 'info')" class="hover:text-gold transition-colors">
+            <span class="material-symbols-outlined text-gold text-base">pause</span>
+          </button>
+          <span id="recording-modal-time-display" class="font-mono text-[11px]">18:40 / 58:00</span>
+        </div>
+        <div class="flex-1 mx-3 sm:mx-4 h-1.5 bg-white/20 rounded-full overflow-hidden relative cursor-pointer" onclick="toast('Seek position updated', 'info')">
+          <div class="h-full bg-gold rounded-full" style="width: 32%"></div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <span class="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-bold">1.25x</span>
+          <span class="material-symbols-outlined text-base hover:text-gold cursor-pointer" onclick="toast('Volume: 100%', 'info')">volume_up</span>
+          <span class="material-symbols-outlined text-base hover:text-gold cursor-pointer" onclick="toast('Fullscreen mode', 'info')">fullscreen</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class Details & Resources Footer -->
+    <div class="p-4 sm:p-5 bg-white">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+        <div>
+          <h4 id="recording-modal-topic" class="font-sub text-base font-bold text-deep-sea">Class Topic</h4>
+          <p id="recording-modal-meta" class="text-xs text-slate mt-0.5">Maritime Cadet Academy Archive</p>
+        </div>
+        <button onclick="toast('Downloading lecture notes & formula sheet...', 'success')" class="px-3.5 py-2 rounded-xl bg-gold/15 hover:bg-gold/25 text-deep-sea text-xs font-bold flex items-center gap-1.5 transition-colors self-start sm:self-auto min-h-[38px] shadow-2xs">
+          <span class="material-symbols-outlined text-sm text-gold-dark">download</span> Lecture Notes (PDF)
+        </button>
+      </div>
+      <p id="recording-modal-desc" class="text-xs text-slate leading-relaxed">Recorded session covering exam-focused problem solving and syllabus fundamentals for IMU-CET.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Course Locked / Upgrade Modal -->
+<div id="modal-course-locked" class="modal-overlay hidden" onclick="if(event.target===this)closeCourseLockedModal();" role="dialog" aria-modal="true" aria-labelledby="locked-modal-title">
+  <div class="modal-box p-6 max-w-md">
+    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+          <span class="material-symbols-outlined text-xl">lock</span>
+        </div>
+        <div>
+          <h3 id="locked-modal-title" class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Course Access Locked</h3>
+          <p class="text-[11px] text-amber-700 font-semibold">Sponsorship &amp; Interview Specialization</p>
+        </div>
+      </div>
+      <button onclick="closeCourseLockedModal()" class="text-slate hover:text-deep-sea" aria-label="Close modal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="space-y-4">
+      <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/60 text-xs text-amber-950 leading-relaxed">
+        <p class="font-bold text-amber-900 mb-1 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-amber-600">info</span>
+          Exclusive to IMU-CET + Sponsorship Batch
+        </p>
+        This module is reserved for cadets enrolled in the combined <strong>Sponsorship Track</strong>. Your profile is currently enrolled in <strong>IMU-CET Only</strong>.
+      </div>
+
+      <div>
+        <p class="text-xs font-bold text-deep-sea uppercase tracking-wider mb-2">What's Included When Unlocked:</p>
+        <ul class="space-y-2 text-xs text-slate">
+          <li class="flex items-start gap-2">
+            <span class="material-symbols-outlined text-emerald-600 text-sm mt-0.5 shrink-0">check_circle</span>
+            <span><strong>1-on-1 Mock Interview Sessions</strong> with Master Mariners &amp; Chief Engineers.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="material-symbols-outlined text-emerald-600 text-sm mt-0.5 shrink-0">check_circle</span>
+            <span><strong>Company-Specific Question Banks</strong> (Anglo-Eastern, Synergy, Fleet, Scorpio).</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="material-symbols-outlined text-emerald-600 text-sm mt-0.5 shrink-0">check_circle</span>
+            <span><strong>Psychometric Profiling</strong> &amp; Technical Viva grooming.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="pt-2 flex flex-col sm:flex-row gap-2">
+        <button onclick="switchTab('chat'); closeCourseLockedModal();" class="flex-1 py-2.5 px-3 rounded-xl bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+          <span class="material-symbols-outlined text-sm text-gold">chat</span> Chat with Admin
+        </button>
+        <a href="https://wa.me/919876543210?text=Hi%20Sindhupath%20Admin,%20I%20would%20like%20to%20upgrade%20my%20enrollment%20to%20the%20Sponsorship%20%2B%20Interview%20Batch." target="_blank" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 shadow-xs">
+          <span class="material-symbols-outlined text-sm">support_agent</span> WhatsApp Upgrade
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- ════════════════════════════════════════
      JAVASCRIPT
@@ -1682,6 +1719,11 @@ function switchTab(id) {
   if (id === 'dashboard') {
     renderDashboardTodaySchedule();
   }
+  if (id === 'courses') {
+    // If returning to courses from another tab, ensure main view is available
+    closeImuCetCourseHub(false);
+    renderCadetCourses();
+  }
   if (id === 'schedule') {
     loadScheduleEvents();
     renderCadetSchedule();
@@ -1690,7 +1732,7 @@ function switchTab(id) {
   }
   if (id === 'materials') renderMaterials('all');
   if (id === 'mocktests') renderAvailableTests();
-  if (id === 'chat')      { loadChatMessages(); selectChatChannel('general'); }
+  if (id === 'chat')      { loadChatMessages(); selectChatChannel(activeChatChannelId || 'math'); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1702,53 +1744,55 @@ function toast(msg, type='info') {
   }).showToast();
 }
 
-// ── SCHEDULE EVENTS & ONLINE MEETINGS DATA (SHARED WITH FACULTY PORTAL) ──
-const LS_SCHEDULE = 'fp_schedule_events';
-const DEFAULT_SCHEDULE_EVENTS = [
+// ── SCHEDULE EVENTS, OVERRIDES & CLASS STATUS ENGINE ─────────────
+const LS_SCHEDULE_OVERRIDES = 'sp_schedule_status_records_v1';
+
+// Seeded real-world records:
+// Every past class defaults to "completed" unless listed here as cancelled or postponed.
+const DEFAULT_SCHEDULE_OVERRIDES = [
   {
-    id: 1,
-    type: 'online',
-    date: '2026-10-15',
-    time: '10:00',
-    batch: 'Batch Alpha (DNS)',
-    subject: 'Celestial Navigation — Sight Reduction & Polaris Live Bridge',
-    link: 'https://meet.google.com/abc-defg-hij',
-    duration: 90
+    date: '2026-10-14',
+    time: '08:15 PM',
+    status: 'cancelled',
+    subject: 'English — Grammar',
+    faculty: 'Ms. Priya Nair',
+    reason: 'Faculty on Emergency Leave · Class Cancelled',
+    note: 'Syllabus will be merged into the upcoming revision session.'
   },
   {
-    id: 2,
-    type: 'exam',
+    date: '2026-10-20',
+    time: '07:00 PM',
+    status: 'postponed',
+    subject: 'Physics — Mechanics',
+    faculty: 'Dr. Meera Iyer',
+    reason: 'Postponed due to Maritime Portal System Maintenance',
+    rescheduledTo: 'Wednesday, 28 Oct at 07:00 PM'
+  },
+  {
     date: '2026-10-22',
-    time: '14:00',
-    batch: 'Batch Winter (IMU)',
+    time: '07:00 PM',
+    endTime: '08:30 PM',
+    type: 'exam',
+    status: 'exam',
     subject: 'IMU-CET Proctored CBT Mock Series 06',
-    duration: 180,
-    instructions: 'Total Marks: 200. Negative marking (-0.25) active. CBT Sim Lab 1 or online terminal.'
-  },
-  {
-    id: 3,
-    type: 'online',
-    date: '2026-10-05',
-    time: '14:30',
-    batch: 'Batch Bravo (Pre-Sea)',
-    subject: 'COLREGs Steering & Sailing Rules Masterclass',
-    link: 'https://meet.google.com/xyz-uvwx-rst',
-    duration: 90
+    faculty: 'Exam Cell',
+    instructions: 'Total Marks: 200. Negative marking (-0.25). Online CBT proctored portal.'
   }
 ];
 
-let appScheduleEvents = [];
+let appScheduleOverrides = [];
+
 function loadScheduleEvents() {
   try {
-    const saved = localStorage.getItem(LS_SCHEDULE);
+    const saved = localStorage.getItem(LS_SCHEDULE_OVERRIDES);
     if (saved) {
-      appScheduleEvents = JSON.parse(saved);
+      appScheduleOverrides = JSON.parse(saved);
     } else {
-      appScheduleEvents = [...DEFAULT_SCHEDULE_EVENTS];
-      localStorage.setItem(LS_SCHEDULE, JSON.stringify(appScheduleEvents));
+      appScheduleOverrides = [...DEFAULT_SCHEDULE_OVERRIDES];
+      localStorage.setItem(LS_SCHEDULE_OVERRIDES, JSON.stringify(appScheduleOverrides));
     }
   } catch(e) {
-    appScheduleEvents = [...DEFAULT_SCHEDULE_EVENTS];
+    appScheduleOverrides = [...DEFAULT_SCHEDULE_OVERRIDES];
   }
 }
 
@@ -1756,7 +1800,88 @@ function loadScheduleEvents() {
 let currentCalYear = new Date().getFullYear();
 let currentCalMonth = new Date().getMonth();
 let selectedCalDate = null;
+let currentCalStatusFilter = 'all'; // 'all' | 'completed' | 'cancelled' | 'postponed' | 'scheduled'
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function getClassesForDate(dateStr) {
+  loadScheduleEvents();
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const targetDate = new Date(y, m - 1, d);
+  const dayIdx = targetDate.getDay();
+  const dayKey = DAY_KEYS[dayIdx]; // 'sun', 'mon', ...
+
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const isPastDay = (dateStr < todayStr);
+  const isToday = (dateStr === todayStr);
+
+  const events = [];
+
+  // 1. Any proctored exam on this date
+  const examItem = appScheduleOverrides.find(o => o.date === dateStr && (o.type === 'exam' || o.status === 'exam'));
+  if (examItem) {
+    events.push({
+      id: `exam-${dateStr}`,
+      date: dateStr,
+      time: examItem.time || '07:00 PM',
+      endTime: examItem.endTime || '08:30 PM',
+      subject: examItem.subject,
+      faculty: examItem.faculty || 'Exam Cell',
+      room: 'Online CBT Portal',
+      status: isPastDay ? 'completed' : 'exam',
+      type: 'exam',
+      instructions: examItem.instructions || ''
+    });
+  }
+
+  // 2. Regular 2 online sessions for Mon-Sat
+  if (dayKey !== 'sun') {
+    const dayClasses = WEEKLY_SCHEDULE_DATA[dayKey] || [];
+    dayClasses.forEach(c => {
+      // Check if this specific session has an override (e.g. cancelled or postponed)
+      const override = appScheduleOverrides.find(o => o.date === dateStr && o.time === c.time);
+
+      let status = 'scheduled';
+      let reason = '';
+      let rescheduledTo = '';
+      let note = '';
+
+      if (override) {
+        status = override.status; // 'cancelled' | 'postponed' | 'completed'
+        reason = override.reason || '';
+        rescheduledTo = override.rescheduledTo || '';
+        note = override.note || '';
+      } else if (isPastDay) {
+        status = 'completed'; // Every past session is marked completed
+      } else if (isToday) {
+        const liveStat = getLiveClassStatus(c.time, targetDate);
+        if (liveStat.status === 'completed') status = 'completed';
+        else if (liveStat.status === 'live') status = 'live';
+        else status = 'scheduled';
+      } else {
+        status = 'scheduled';
+      }
+
+      events.push({
+        id: `${dateStr}-${c.time}`,
+        date: dateStr,
+        time: c.time,
+        endTime: c.endTime || (c.time === '07:00 PM' ? '08:00 PM' : '09:15 PM'),
+        subject: c.subject,
+        faculty: c.faculty,
+        room: 'Live Online',
+        status: status,
+        reason: reason,
+        rescheduledTo: rescheduledTo,
+        note: note,
+        type: 'online',
+        link: 'https://meet.google.com/abc-defg-hij'
+      });
+    });
+  }
+
+  return events;
+}
 
 function changeMonth(delta) {
   currentCalMonth += delta;
@@ -1765,23 +1890,44 @@ function changeMonth(delta) {
   renderCalendar();
 }
 
+let schedTabMode = 'today'; // 'today' | 'tomorrow' | 'custom'
+
+function setScheduleViewMode(mode) {
+  schedTabMode = mode;
+  selectedCalDate = null;
+  const btnToday = document.getElementById('btn-sched-day-today');
+  const btnTomorrow = document.getElementById('btn-sched-day-tomorrow');
+  const clearBtn = document.getElementById('btn-clear-date-filter');
+
+  if (clearBtn) clearBtn.classList.add('hidden');
+
+  if (mode === 'today') {
+    btnToday?.classList.add('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnToday?.classList.remove('text-slate', 'hover:text-deep-sea');
+    btnTomorrow?.classList.remove('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnTomorrow?.classList.add('text-slate', 'hover:text-deep-sea');
+  } else {
+    btnTomorrow?.classList.add('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnTomorrow?.classList.remove('text-slate', 'hover:text-deep-sea');
+    btnToday?.classList.remove('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnToday?.classList.add('text-slate', 'hover:text-deep-sea');
+  }
+
+  renderCalendar();
+  renderScheduledEventsList();
+}
+
 function goToCurrentMonth() {
   const now = new Date();
   currentCalYear = now.getFullYear();
   currentCalMonth = now.getMonth();
   selectedCalDate = null;
-  const clearBtn = document.getElementById('btn-clear-date-filter');
-  if (clearBtn) clearBtn.classList.add('hidden');
-  renderCalendar();
-  renderScheduledEventsList();
+  setScheduleViewMode('today');
 }
 
 function clearDateFilter() {
   selectedCalDate = null;
-  const clearBtn = document.getElementById('btn-clear-date-filter');
-  if (clearBtn) clearBtn.classList.add('hidden');
-  renderCalendar();
-  renderScheduledEventsList();
+  setScheduleViewMode('today');
 }
 
 function selectCalendarDate(dateStr) {
@@ -1790,22 +1936,20 @@ function selectCalendarDate(dateStr) {
     return;
   }
   selectedCalDate = dateStr;
+  schedTabMode = 'custom';
+
+  const btnToday = document.getElementById('btn-sched-day-today');
+  const btnTomorrow = document.getElementById('btn-sched-day-tomorrow');
   const clearBtn = document.getElementById('btn-clear-date-filter');
+
+  btnToday?.classList.remove('bg-deep-sea', 'text-white', 'shadow-xs');
+  btnToday?.classList.add('text-slate', 'hover:text-deep-sea');
+  btnTomorrow?.classList.remove('bg-deep-sea', 'text-white', 'shadow-xs');
+  btnTomorrow?.classList.add('text-slate', 'hover:text-deep-sea');
   if (clearBtn) clearBtn.classList.remove('hidden');
+
   renderCalendar();
   renderScheduledEventsList(dateStr);
-  
-  // Also sync timetable if the clicked day is a weekday/saturday
-  try {
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const clickedDate = new Date(y, m - 1, d);
-    const dayOfWeek = clickedDate.getDay();
-    if (dayOfWeek >= 1 && dayOfWeek <= 6) {
-      const dayKey = DAY_KEYS[dayOfWeek];
-      currentSchedDay = dayKey;
-      renderCadetSchedule();
-    }
-  } catch(e) {}
 }
 
 function renderCalendar() {
@@ -1824,7 +1968,7 @@ function renderCalendar() {
   // Prev month trailing days
   for (let i = firstDay - 1; i >= 0; i--) {
     const dayNum = prevMonthDays - i;
-    html += `<div class="p-1.5 sm:p-2 min-h-[55px] sm:min-h-[75px] rounded-xl bg-gray-50/50 border border-gray-100 opacity-40 text-xs select-none">
+    html += `<div class="p-1 sm:p-1.5 min-h-[60px] sm:min-h-[82px] rounded-xl bg-gray-50/50 border border-gray-100 opacity-40 text-xs select-none">
       <span class="font-semibold text-slate">${dayNum}</span>
     </div>`;
   }
@@ -1838,10 +1982,10 @@ function renderCalendar() {
 
     const isToday = (currentCalYear === todayObj.getFullYear() && currentCalMonth === todayObj.getMonth() && day === todayObj.getDate());
     const isSelected = (selectedCalDate === fullDate);
-    const dayEvents = appScheduleEvents.filter(e => e.date === fullDate);
+    const dayEvents = getClassesForDate(fullDate);
 
     let cellClass = isSelected
-      ? 'bg-deep-sea text-white border-2 border-gold shadow-md'
+      ? 'bg-deep-sea text-white border-2 border-gold shadow-md ring-2 ring-gold/40'
       : isToday
       ? 'bg-gold/10 border-2 border-gold shadow-sm'
       : 'bg-white border-gray-200 hover:border-gold/60 hover:shadow-sm';
@@ -1854,20 +1998,26 @@ function renderCalendar() {
 
     html += `
       <div onclick="selectCalendarDate('${fullDate}')"
-        class="p-1.5 sm:p-2 min-h-[55px] sm:min-h-[75px] rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${cellClass}">
+        class="p-1 sm:p-1.5 min-h-[60px] sm:min-h-[82px] rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${cellClass}">
         <div class="flex items-center justify-between">
           <span class="text-xs ${dayNumClass}">${day}</span>
           ${isToday && !isSelected ? '<span class="text-[8px] font-sub font-bold text-gold uppercase tracking-tighter">Today</span>' : ''}
           ${isSelected ? '<span class="material-symbols-outlined text-xs text-gold">check_circle</span>' : ''}
         </div>
-        <div class="space-y-0.5 mt-1">
+        <div class="space-y-1 mt-1 overflow-hidden">
           ${dayEvents.map(ev => {
-            if (ev.type === 'online') {
-              return `<div class="text-[8px] sm:text-[9px] font-semibold px-1 py-0.5 rounded bg-teal text-white truncate" title="${ev.subject}">🌐 ${ev.time}</div>`;
+            if (ev.status === 'completed') {
+              return `<div class="text-[8px] sm:text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-600 text-white truncate flex items-center gap-0.5" title="${ev.subject} (Completed)"><span class="font-extrabold">✓</span> ${ev.time.split(' ')[0]}</div>`;
+            } else if (ev.status === 'cancelled') {
+              return `<div class="text-[8px] sm:text-[9px] font-bold px-1 py-0.5 rounded bg-rose-600 text-white truncate line-through opacity-90 flex items-center gap-0.5" title="${ev.subject} (Cancelled: ${ev.reason})"><span class="font-extrabold">✕</span> Cancelled</div>`;
+            } else if (ev.status === 'postponed') {
+              return `<div class="text-[8px] sm:text-[9px] font-bold px-1 py-0.5 rounded bg-amber-500 text-slate-900 truncate flex items-center gap-0.5" title="${ev.subject} (Postponed)"><span class="font-extrabold">↻</span> Postponed</div>`;
+            } else if (ev.status === 'live') {
+              return `<div class="text-[8px] sm:text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-500 text-white truncate animate-pulse flex items-center gap-0.5" title="${ev.subject} (Live Now)"><span class="w-1.5 h-1.5 rounded-full bg-white"></span> Live</div>`;
             } else if (ev.type === 'exam') {
-              return `<div class="text-[8px] sm:text-[9px] font-semibold px-1 py-0.5 rounded bg-amber-500 text-white truncate" title="${ev.subject}">📝 ${ev.time}</div>`;
+              return `<div class="text-[8px] sm:text-[9px] font-bold px-1 py-0.5 rounded bg-orange-500 text-white truncate" title="${ev.subject}">📝 Exam</div>`;
             } else {
-              return `<div class="text-[8px] sm:text-[9px] font-semibold px-1 py-0.5 rounded bg-deep-sea text-white truncate" title="${ev.subject}">🏫 ${ev.time}</div>`;
+              return `<div class="text-[8px] sm:text-[9px] font-semibold px-1 py-0.5 rounded bg-deep-sea text-white truncate" title="${ev.subject}">🌐 ${ev.time.split(' ')[0]}</div>`;
             }
           }).join('')}
         </div>
@@ -1879,7 +2029,7 @@ function renderCalendar() {
   const totalCells = firstDay + daysInMonth;
   const remainingCells = (totalCells > 35 ? 42 : 35) - totalCells;
   for (let d = 1; d <= remainingCells; d++) {
-    html += `<div class="p-1.5 sm:p-2 min-h-[55px] sm:min-h-[75px] rounded-xl bg-gray-50/50 border border-gray-100 opacity-40 text-xs select-none">
+    html += `<div class="p-1 sm:p-1.5 min-h-[60px] sm:min-h-[82px] rounded-xl bg-gray-50/50 border border-gray-100 opacity-40 text-xs select-none">
       <span class="font-semibold text-slate">${d}</span>
     </div>`;
   }
@@ -1889,143 +2039,186 @@ function renderCalendar() {
 
 function renderScheduledEventsList(filterDate = null) {
   const container = document.getElementById('scheduled-events-list');
-  const countBadge = document.getElementById('scheduled-events-count');
+  const titleEl = document.getElementById('scheduled-events-title');
+  const dateTextEl = document.getElementById('sched-view-date-text');
   if (!container) return;
 
-  loadScheduleEvents();
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 
-  let list = [...appScheduleEvents];
+  const tomorrowObj = new Date();
+  tomorrowObj.setDate(now.getDate() + 1);
+  const tomorrowStr = `${tomorrowObj.getFullYear()}-${String(tomorrowObj.getMonth()+1).padStart(2,'0')}-${String(tomorrowObj.getDate()).padStart(2,'0')}`;
+
+  let targetDateStr = todayStr;
+  let isToday = true;
+  let isTomorrow = false;
+
   if (filterDate) {
-    list = list.filter(e => e.date === filterDate);
+    targetDateStr = filterDate;
+    isToday = (targetDateStr === todayStr);
+    isTomorrow = (targetDateStr === tomorrowStr);
+  } else if (schedTabMode === 'tomorrow') {
+    targetDateStr = tomorrowStr;
+    isToday = false;
+    isTomorrow = true;
   }
 
-  if (countBadge) {
-    countBadge.textContent = filterDate 
-      ? `${list.length} on ${filterDate}`
-      : `${list.length} Active Events`;
+  const [y, m, d] = targetDateStr.split('-').map(Number);
+  const targetDateObj = new Date(y, m - 1, d);
+  const formattedDate = targetDateObj.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  if (dateTextEl) {
+    dateTextEl.textContent = `${formattedDate} · 2 Online Sessions Scheduled`;
   }
+
+  if (titleEl) {
+    if (isToday) {
+      titleEl.textContent = "Today's Online Classes";
+    } else if (isTomorrow) {
+      titleEl.textContent = "Tomorrow's Online Classes";
+    } else {
+      titleEl.textContent = `Online Classes for ${formattedDate}`;
+    }
+  }
+
+  const list = getClassesForDate(targetDateStr);
 
   if (list.length === 0) {
     container.innerHTML = `
-      <div class="text-center py-6 text-slate text-xs bg-canvas rounded-xl border border-dashed border-gray-200">
-        <span class="material-symbols-outlined text-3xl text-slate/60 block mb-1">event_available</span>
-        ${filterDate ? `No online classes or exams scheduled for <strong>${filterDate}</strong>.` : 'No upcoming online classes or proctored exams scheduled right now.'}
+      <div class="text-center py-8 text-slate text-xs bg-canvas rounded-xl border border-dashed border-gray-200">
+        <span class="material-symbols-outlined text-3xl text-slate/50 block mb-1">event_busy</span>
+        No online classes scheduled for this day (Sunday / Academy holiday).
       </div>`;
     return;
   }
 
-  const sorted = [...list].sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
-  const now = new Date();
+  // Sort by time: 07:00 PM first, then 08:15 PM
+  list.sort((a, b) => a.time.localeCompare(b.time));
 
-  container.innerHTML = sorted.map(ev => {
-    const isOnline = ev.type === 'online';
-    const isExam   = ev.type === 'exam';
+  container.innerHTML = list.map(ev => {
+    let statusBadge = '';
+    let statusCardBorder = 'border-gray-200 bg-white hover:border-gold/50';
+    let actionButtons = '';
+    const facultyLink = ev.link || 'https://meet.google.com/abc-defg-hij';
 
-    const typeBadge = isOnline
-      ? '<span class="badge bg-teal/10 text-teal border border-teal/30">🌐 Online Class</span>'
-      : isExam
-      ? '<span class="badge bg-amber-100 text-amber-700 border border-amber-300">📝 Proctored Exam</span>'
-      : '<span class="badge bg-blue-50 text-blue-700">🏫 Offline Lecture</span>';
-
-    let formattedDate = ev.date;
-    let relativeStr = '';
-    try {
-      const [y, m, d] = ev.date.split('-').map(Number);
-      const evDate = new Date(y, m - 1, d);
-      formattedDate = evDate.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-      
-      const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const evMid = new Date(y, m - 1, d);
-      const diffDays = Math.round((evMid - todayMid) / (1000 * 60 * 60 * 24));
-      
-      if (diffDays === 0) relativeStr = 'Today';
-      else if (diffDays === 1) relativeStr = 'Tomorrow';
-      else if (diffDays === -1) relativeStr = 'Yesterday';
-      else if (diffDays > 1) relativeStr = `In ${diffDays} days`;
-      else relativeStr = `${Math.abs(diffDays)} days ago`;
-    } catch(e){}
+    if (ev.status === 'completed') {
+      statusBadge = '<span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold flex items-center gap-1"><span class="font-extrabold text-[11px]">✓</span> Completed</span>';
+      statusCardBorder = 'border-emerald-200 bg-emerald-50/20';
+      actionButtons = `
+        <div class="flex flex-wrap items-center gap-2">
+          <a href="#" onclick="alert('Opening lecture recording for: ' + '${ev.subject}'); return false;" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1 shadow-xs transition-all">
+            <span class="material-symbols-outlined text-base">play_circle</span> Recording
+          </a>
+          <a href="${facultyLink}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-white hover:bg-gray-100 text-deep-sea border border-gray-200 text-xs font-semibold flex items-center gap-1 transition-all">
+            <span class="material-symbols-outlined text-base">link</span> Class Link
+          </a>
+        </div>
+      `;
+    } else if (ev.status === 'cancelled') {
+      statusBadge = '<span class="badge bg-rose-100 text-rose-800 border border-rose-300 font-bold flex items-center gap-1"><span class="font-extrabold text-[11px]">✕</span> Cancelled</span>';
+      statusCardBorder = 'border-rose-200 bg-rose-50/20';
+      actionButtons = `
+        <div class="text-xs font-semibold text-rose-700 bg-rose-100/70 border border-rose-200 px-3.5 py-2 rounded-xl flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-base text-rose-600">error</span> Rescheduled to makeup slot
+        </div>
+      `;
+    } else if (ev.status === 'postponed') {
+      statusBadge = '<span class="badge bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1"><span class="font-extrabold text-[11px]">↻</span> Postponed</span>';
+      statusCardBorder = 'border-amber-200 bg-amber-50/20';
+      actionButtons = `
+        <div class="text-xs font-semibold text-amber-900 bg-amber-100 border border-amber-300 px-3.5 py-2 rounded-xl flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-base text-amber-700">update</span> ${ev.rescheduledTo || 'Date TBA'}
+        </div>
+      `;
+    } else if (ev.status === 'live') {
+      statusBadge = '<span class="badge bg-emerald-100 text-emerald-800 border border-emerald-400 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span> Live Now</span>';
+      statusCardBorder = 'border-emerald-500 bg-emerald-50/30 ring-2 ring-emerald-400/40 shadow-sm';
+      actionButtons = `
+        <a href="${facultyLink}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-2 shadow-md transition-all min-h-[42px]">
+          <span class="material-symbols-outlined text-lg animate-bounce">videocam</span> Join Live Class
+        </a>
+      `;
+    } else if (ev.type === 'exam') {
+      statusBadge = '<span class="badge bg-orange-100 text-orange-800 border border-orange-300 font-bold flex items-center gap-1">📝 Proctored CBT Exam</span>';
+      statusCardBorder = 'border-orange-200 bg-orange-50/20';
+      actionButtons = `
+        <button onclick="switchTab('mocktests')" class="px-5 py-2.5 rounded-xl bg-deep-sea hover:bg-navy-mid text-white text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm transition-all min-h-[42px]">
+          <span class="material-symbols-outlined text-base">quiz</span> Take CBT Test
+        </button>
+      `;
+    } else {
+      // Regular Scheduled Online session
+      statusBadge = '<span class="badge bg-teal/10 text-teal border border-teal/30 font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Scheduled Online</span>';
+      actionButtons = `
+        <a href="${facultyLink}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold to-amber-500 hover:from-gold-light hover:to-amber-400 text-deep-sea text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm transition-all min-h-[42px]">
+          <span class="material-symbols-outlined text-lg">videocam</span> Join Class
+        </a>
+      `;
+    }
 
     return `
-      <div class="p-4 rounded-xl border border-gray-200 bg-white hover:border-gold/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+      <div class="p-4 sm:p-5 rounded-2xl border ${statusCardBorder} transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
         <div class="flex-1 min-w-0">
-          <div class="flex flex-wrap items-center gap-2 mb-1.5">
-            ${typeBadge}
-            <span class="badge bg-gray-100 text-gray-700">${ev.batch || 'All Cadets'}</span>
-            <span class="text-xs text-slate font-semibold flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">calendar_today</span> ${formattedDate} at ${ev.time}
+          <div class="flex flex-wrap items-center gap-2 mb-2">
+            ${statusBadge}
+            <span class="text-xs text-slate font-bold flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm text-gold">schedule</span> ${ev.time} to ${ev.endTime}
             </span>
-            ${relativeStr ? `<span class="badge bg-deep-sea/10 text-deep-sea font-bold text-[9px]">${relativeStr}</span>` : ''}
           </div>
-          <h4 class="text-sm font-bold text-deep-sea leading-snug">${ev.subject}</h4>
-          ${isOnline && ev.link ? `
-            <div class="mt-2 flex items-center gap-2 text-xs text-slate bg-teal/5 p-2 rounded-lg border border-teal/20">
-              <span class="material-symbols-outlined text-teal text-base shrink-0">link</span>
-              <span class="truncate font-mono text-[11px] text-teal select-all">${ev.link}</span>
+
+          <h4 class="text-sm sm:text-base font-bold text-deep-sea ${ev.status === 'cancelled' ? 'line-through text-gray-500' : ''}">${ev.subject}</h4>
+          
+          <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate">
+            <span class="font-medium text-deep-sea flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm text-teal">person</span> ${ev.faculty}
+            </span>
+            <span class="text-gray-300">•</span>
+            <span class="inline-flex items-center gap-1 font-medium text-emerald-600">
+              <span class="material-symbols-outlined text-sm">videocam</span> Live Online (Google Meet)
+            </span>
+          </div>
+
+          ${ev.reason ? `
+            <div class="mt-2 text-xs p-2.5 rounded-xl ${ev.status === 'cancelled' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-amber-50 text-amber-900 border border-amber-200'}">
+              <strong>Notice:</strong> ${ev.reason}
             </div>
           ` : ''}
-          ${isExam && ev.instructions ? `
-            <p class="text-xs text-slate mt-1 italic"><span class="font-semibold">Notice:</span> ${ev.instructions}</p>
-          ` : ''}
         </div>
-        
-        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-          ${isOnline && ev.link ? `
-            <a href="${ev.link}" target="_blank" rel="noopener noreferrer"
-              class="px-4 py-2 rounded-xl bg-gold hover:bg-gold-light text-deep-sea text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all min-h-[38px]">
-              <span class="material-symbols-outlined text-base">video_call</span> Join Class
-            </a>
-          ` : ''}
-          ${isExam ? `
-            <button onclick="switchTab('mocktests')"
-              class="px-4 py-2 rounded-xl bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all min-h-[38px]">
-              <span class="material-symbols-outlined text-base">quiz</span> Take CBT Test
-            </button>
-          ` : ''}
+
+        <div class="shrink-0 w-full sm:w-auto flex justify-end">
+          ${actionButtons}
         </div>
       </div>
     `;
   }).join('');
 }
 
-// ── WEEKLY TIMETABLE DATA & TIME ENGINE ─────────────────────────
+// ── WEEKLY TIMETABLE DATA & TIME ENGINE (100% ONLINE · 7:00–8:00 PM & 8:15–9:15 PM) ───
 const WEEKLY_SCHEDULE_DATA = {
   mon: [
-    { time: '07:30 AM', subject: 'Mathematics — Trigonometry', faculty: 'Capt. R. Sharma', room: 'Room 201', type: 'class' },
-    { time: '10:00 AM', subject: 'English — Grammar', faculty: 'Ms. Priya Nair', room: 'Room 102', type: 'class' },
-    { time: '12:00 PM', subject: 'Lunch Break & Self Study', faculty: '—', room: 'Cafeteria', type: 'break' },
-    { time: '02:00 PM', subject: 'GK — Maritime Awareness', faculty: 'Mr. Vikas Menon', room: 'Online', type: 'class' },
-    { time: '04:30 PM', subject: 'Doubt Class — Open Q&A', faculty: 'All Faculty', room: 'Room 201', type: 'class' },
+    { time: '07:00 PM', endTime: '08:00 PM', subject: 'Mathematics — Trigonometry', faculty: 'Capt. R. Sharma', room: 'Live Online', type: 'class' },
+    { time: '08:15 PM', endTime: '09:15 PM', subject: 'English — Grammar & Vocabulary', faculty: 'Ms. Priya Nair', room: 'Live Online', type: 'class' },
   ],
   tue: [
-    { time: '07:30 AM', subject: 'Physics — Mechanics', faculty: 'Dr. Meera Iyer', room: 'Room 201', type: 'class' },
-    { time: '10:00 AM', subject: 'DNS Prep — Ship Stability', faculty: 'Capt. Arun Pillai', room: 'Nautical Lab', type: 'class' },
-    { time: '12:00 PM', subject: 'Lunch Break', faculty: '—', room: 'Cafeteria', type: 'break' },
-    { time: '02:00 PM', subject: 'Mathematics — Statistics', faculty: 'Capt. R. Sharma', room: 'Room 201', type: 'class' },
+    { time: '07:00 PM', endTime: '08:00 PM', subject: 'Physics — Mechanics & Motion', faculty: 'Dr. A. Verma', room: 'Live Online', type: 'class' },
+    { time: '08:15 PM', endTime: '09:15 PM', subject: 'Chemistry — Physical & Inorganic', faculty: 'Dr. Meera Iyer', room: 'Live Online', type: 'class' },
   ],
   wed: [
-    { time: '07:30 AM', subject: 'Mathematics — Calculus', faculty: 'Capt. R. Sharma', room: 'Room 201', type: 'class' },
-    { time: '10:00 AM', subject: 'Physics — Optics & Waves', faculty: 'Dr. Meera Iyer', room: 'Online', type: 'class' },
-    { time: '12:00 PM', subject: 'Lunch Break', faculty: '—', room: 'Cafeteria', type: 'break' },
-    { time: '02:00 PM', subject: 'English — Comprehension', faculty: 'Ms. Priya Nair', room: 'Room 102', type: 'class' },
-    { time: '04:30 PM', subject: 'GK — Maritime Awareness', faculty: 'Mr. Vikas Menon', room: 'Online', type: 'class' },
+    { time: '07:00 PM', endTime: '08:00 PM', subject: 'Mathematics — Calculus & Algebra', faculty: 'Capt. R. Sharma', room: 'Live Online', type: 'class' },
+    { time: '08:15 PM', endTime: '09:15 PM', subject: 'General Aptitude / Reasoning — Logic & Series', faculty: 'Mr. Vikas Menon', room: 'Live Online', type: 'class' },
   ],
   thu: [
-    { time: '07:30 AM', subject: 'Physics — Optics', faculty: 'Dr. Meera Iyer', room: 'Room 201', type: 'class' },
-    { time: '10:00 AM', subject: 'English — Comprehension', faculty: 'Ms. Priya Nair', room: 'Room 102', type: 'class' },
-    { time: '12:00 PM', subject: 'Lunch Break', faculty: '—', room: 'Cafeteria', type: 'break' },
-    { time: '02:00 PM', subject: 'DNS Prep — Navigation', faculty: 'Capt. Arun Pillai', room: 'Nautical Lab', type: 'class' },
-    { time: '04:30 PM', subject: 'Doubt Class — Physics Focus', faculty: 'Dr. Meera Iyer', room: 'Online', type: 'class' },
+    { time: '07:00 PM', endTime: '08:00 PM', subject: 'Physics — Optics & Waves', faculty: 'Dr. A. Verma', room: 'Live Online', type: 'class' },
+    { time: '08:15 PM', endTime: '09:15 PM', subject: 'Chemistry — Organic Reactions & Bonding', faculty: 'Dr. Meera Iyer', room: 'Live Online', type: 'class' },
   ],
   fri: [
-    { time: '07:30 AM', subject: 'Mathematics — Algebra', faculty: 'Capt. R. Sharma', room: 'Room 201', type: 'class' },
-    { time: '10:00 AM', subject: 'Mock Test — Full Syllabus', faculty: 'Exam Cell', room: 'Computer Lab 1', type: 'exam' },
-    { time: '12:00 PM', subject: 'Lunch Break', faculty: '—', room: 'Cafeteria', type: 'break' },
-    { time: '02:00 PM', subject: 'GK — Current Affairs', faculty: 'Mr. Vikas Menon', room: 'Online', type: 'class' },
+    { time: '07:00 PM', endTime: '08:00 PM', subject: 'Mathematics — Vectors & 3D Geometry', faculty: 'Capt. R. Sharma', room: 'Live Online', type: 'class' },
+    { time: '08:15 PM', endTime: '09:15 PM', subject: 'General Knowledge / General Science', faculty: 'Capt. Arun Pillai', room: 'Live Online', type: 'class' },
   ],
   sat: [
-    { time: '10:00 AM', subject: 'Revision — All Subjects', faculty: 'All Faculty', room: 'Main Auditorium', type: 'class' },
-    { time: '12:00 PM', subject: 'Lunch Break', faculty: '—', room: 'Cafeteria', type: 'break' },
-    { time: '02:00 PM', subject: '1-on-1 Cadet Mentoring Session', faculty: 'Senior Captains', room: 'Faculty Room', type: 'class' },
+    { time: '07:00 PM', endTime: '08:00 PM', subject: 'General Aptitude / Reasoning — Quant Shortcuts', faculty: 'Mr. Vikas Menon', room: 'Live Online', type: 'class' },
+    { time: '08:15 PM', endTime: '09:15 PM', subject: 'English — Reading Comprehension', faculty: 'Ms. Priya Nair', room: 'Live Online', type: 'class' },
   ]
 };
 
@@ -2077,8 +2270,7 @@ function getLiveClassStatus(timeStr, targetDate) {
   if (mer === 'AM' && h === 12) h = 0;
   
   const startMin = h * 60 + m;
-  const isBreak = timeStr === '12:00 PM';
-  const duration = isBreak ? 60 : 90;
+  const duration = 60; // 1-hour sessions (7:00-8:00 PM & 8:15-9:15 PM)
   const endMin = startMin + duration;
 
   if (isPastDay) {
@@ -2094,8 +2286,8 @@ function getLiveClassStatus(timeStr, targetDate) {
   if (isFutureDay) {
     return {
       status: 'scheduled',
-      label: isBreak ? 'Break' : 'Scheduled',
-      badgeClass: isBreak ? 'bg-amber-50 text-amber-700' : 'bg-slate/15 text-slate font-medium',
+      label: 'Scheduled',
+      badgeClass: 'bg-slate/15 text-slate font-medium',
       accentClass: 'bg-deep-sea/40',
       isLive: false
     };
@@ -2117,7 +2309,7 @@ function getLiveClassStatus(timeStr, targetDate) {
   if (nowMin >= startMin && nowMin <= endMin) {
     return {
       status: 'live',
-      label: isBreak ? 'Lunch Break Now' : 'Live Now',
+      label: 'Live Now',
       badgeClass: 'bg-emerald-100 text-emerald-800 border border-emerald-400 font-bold',
       accentClass: 'bg-emerald-500 animate-pulse',
       isLive: true
@@ -2125,7 +2317,7 @@ function getLiveClassStatus(timeStr, targetDate) {
   }
 
   const diff = startMin - nowMin;
-  if (diff <= 90) {
+  if (diff <= 90 && diff > 0) {
     return {
       status: 'next',
       label: `Next Up (${diff}m)`,
@@ -2137,259 +2329,53 @@ function getLiveClassStatus(timeStr, targetDate) {
 
   return {
     status: 'scheduled',
-    label: isBreak ? 'Lunch Break' : 'Scheduled',
-    badgeClass: isBreak ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700 font-medium',
+    label: 'Scheduled',
+    badgeClass: 'bg-blue-50 text-blue-700 font-medium',
     accentClass: 'bg-deep-sea/40',
     isLive: false
   };
 }
 
-function changeWeek(delta) {
-  currentWeekOffset += delta;
-  renderCadetSchedule();
-}
-
-function goToCurrentWeek() {
-  currentWeekOffset = 0;
-  currentSchedDay = getTodaySchedDay();
-  renderCadetSchedule();
-}
-
-function selectScheduleDay(day) {
-  currentSchedDay = day;
-  renderCadetSchedule();
-}
-
-function initScheduleDayPills() {
-  const container = document.getElementById('sched-day-pills');
-  if (!container) return;
-
-  const { dates } = getWeekDates(currentWeekOffset);
-  const now = new Date();
-  const nowKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
-
-  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-  container.innerHTML = days.map(dKey => {
-    const dt = dates[dKey];
-    const dtKey = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
-    const isToday = (nowKey === dtKey);
-    const isActive = (dKey === currentSchedDay);
-
-    const baseLabel = DAY_LABELS[dKey];
-    const dateNum = dt.getDate();
-
-    let btnClass = isActive ? 'filter-pill active' : 'filter-pill';
-
-    return `
-      <button class="${btnClass} sched-pill" data-day="${dKey}" onclick="selectScheduleDay('${dKey}')">
-        <span>${baseLabel} ${dateNum}</span>
-        ${isToday ? '<span class="text-[9px] bg-gold/25 text-gold px-1.5 py-0.5 rounded-full font-bold ml-1">Today</span>' : ''}
-      </button>
-    `;
-  }).join('');
-}
-
-function renderCadetDaySchedule() {
-  const container = document.getElementById('schedule-day-container');
-  if (!container) return;
-
-  const { dates } = getWeekDates(currentWeekOffset);
-  const targetDate = dates[currentSchedDay] || new Date();
-  const formattedFull = targetDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-  const items = WEEKLY_SCHEDULE_DATA[currentSchedDay] || [];
-
-  if (items.length === 0) {
-    container.innerHTML = `
-      <div class="p-6 rounded-2xl bg-white border border-gray-200 text-center text-slate text-xs">
-        <p class="font-bold text-deep-sea text-sm mb-1">${formattedFull}</p>
-        No academy lectures scheduled for this day. Free study and revision period.
-      </div>`;
-    return;
-  }
-
-  const now = new Date();
-  const nowKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
-  const targetKey = targetDate.getFullYear() + '-' + String(targetDate.getMonth()+1).padStart(2,'0') + '-' + String(targetDate.getDate()).padStart(2,'0');
-  const isToday = (nowKey === targetKey);
-
-  let headerBanner = `
-    <div class="p-3.5 rounded-xl bg-canvas border border-gray-200/80 flex items-center justify-between mb-2">
-      <div>
-        <p class="text-xs font-bold text-deep-sea uppercase tracking-wide">${formattedFull}</p>
-        <p class="text-[11px] text-slate">${items.length} Time Slots · Batch Alpha (DNS &amp; IMU-CET)</p>
-      </div>
-      ${isToday ? '<span class="badge bg-gold text-deep-sea font-bold text-[10px]">Today Active</span>' : ''}
-    </div>
-  `;
-
-  let cardsHtml = items.map(item => {
-    const statusObj = getLiveClassStatus(item.time, targetDate);
-
-    let cardBorder = statusObj.isLive 
-      ? 'border-emerald-400 bg-emerald-50/20 shadow-md ring-1 ring-emerald-400/30'
-      : 'border-gray-200 bg-white hover:border-gold/40 shadow-xs';
-
-    return `
-      <div class="flex items-center gap-3.5 p-4 rounded-2xl border transition-all ${cardBorder}">
-        <div class="w-16 text-center shrink-0 border-r border-gray-100 pr-3">
-          <p class="text-xs font-bold text-deep-sea">${item.time.split(' ')[0]}</p>
-          <p class="text-[10px] text-slate font-semibold uppercase">${item.time.split(' ')[1] || ''}</p>
-        </div>
-        <div class="w-1 self-stretch rounded-full ${statusObj.accentClass} shrink-0"></div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-2 mb-1">
-            <p class="text-sm font-bold text-deep-sea truncate">${item.subject}</p>
-            <span class="badge ${statusObj.badgeClass} shrink-0 text-[9px] flex items-center gap-1">
-              ${statusObj.isLive ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>' : ''}
-              ${statusObj.label}
-            </span>
-          </div>
-          <p class="text-xs text-slate flex flex-wrap items-center gap-2">
-            <span>${item.faculty}</span>
-            <span class="text-gray-300">•</span>
-            <span class="font-medium text-gray-700">${item.room}</span>
-          </p>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  container.innerHTML = headerBanner + cardsHtml;
-}
-
-function renderScheduleGrid() {
-  const headEl = document.getElementById('schedule-grid-head');
-  const bodyEl = document.getElementById('schedule-grid-body');
-  if (!headEl || !bodyEl) return;
-
-  const { dates } = getWeekDates(currentWeekOffset);
-  const now = new Date();
-  const nowKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
-
-  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-
-  // 1. Build THEAD
-  let thHtml = `<tr class="bg-deep-sea text-white">
-    <th class="p-3 text-left font-sub uppercase tracking-wider w-20">Time</th>`;
-
-  days.forEach(dKey => {
-    const dt = dates[dKey];
-    const dtKey = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
-    const isToday = (nowKey === dtKey);
-    const dateNum = dt.getDate();
-    const monthShort = dt.toLocaleDateString('en-IN', { month: 'short' });
-    const label = dKey.toUpperCase();
-
-    if (isToday) {
-      thHtml += `<th class="p-3 text-center font-sub uppercase tracking-wide bg-gold/20 text-gold border-x border-gold/40 font-bold">
-        ${label} (${dateNum} ${monthShort})<br><span class="text-[9px] text-gold font-semibold">(Today)</span>
-      </th>`;
-    } else {
-      thHtml += `<th class="p-3 text-center font-sub uppercase tracking-wider">
-        ${label} (${dateNum} ${monthShort})
-      </th>`;
-    }
-  });
-  thHtml += `</tr>`;
-  headEl.innerHTML = thHtml;
-
-  // 2. Build TBODY
-  const timeSlots = ['07:30 AM', '10:00 AM', '12:00 PM', '02:00 PM', '04:30 PM'];
-
-  let rowsHtml = '';
-  timeSlots.forEach(slotTime => {
-    rowsHtml += `<tr class="divide-x divide-gray-100">
-      <td class="p-2 font-bold text-deep-sea text-center">${slotTime}</td>`;
-
-    days.forEach(dKey => {
-      const dt = dates[dKey];
-      const dtKey = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
-      const isToday = (nowKey === dtKey);
-
-      const dayItems = WEEKLY_SCHEDULE_DATA[dKey] || [];
-      const item = dayItems.find(it => it.time === slotTime);
-
-      const tdTodayClass = isToday ? 'bg-gold/5' : '';
-
-      if (!item) {
-        rowsHtml += `<td class="p-1.5 ${tdTodayClass}"><div class="tt-cell"><p class="text-slate text-center">—</p></div></td>`;
-      } else {
-        const isBreak = item.type === 'break';
-        const statusObj = getLiveClassStatus(item.time, dt);
-
-        let cellClass = 'tt-cell';
-        if (isBreak) {
-          cellClass += isToday ? ' today-col' : '';
-        } else {
-          cellClass += ' class-slot';
-          if (isToday) cellClass += ' today-col';
-        }
-
-        if (statusObj.isLive) {
-          cellClass += ' ring-2 ring-emerald-500 shadow-sm animate-pulse';
-        }
-
-        let subjectDisplay = item.subject.split('—')[0].trim();
-        let topicDisplay = item.subject.split('—')[1] ? item.subject.split('—')[1].trim() : item.faculty;
-
-        if (isBreak) {
-          rowsHtml += `
-            <td class="p-1.5 ${tdTodayClass}">
-              <div class="${cellClass}">
-                <p class="text-deep-sea/70 text-center font-semibold text-[11px]">${item.subject}</p>
-                <p class="text-[9px] text-slate text-center">${item.room}</p>
-              </div>
-            </td>`;
-        } else {
-          rowsHtml += `
-            <td class="p-1.5 ${tdTodayClass}">
-              <div class="${cellClass}">
-                <div class="flex items-center justify-between">
-                  <p class="font-bold text-[11px] truncate">${subjectDisplay}</p>
-                  ${statusObj.isLive ? '<span class="w-2 h-2 rounded-full bg-emerald-400"></span>' : ''}
-                </div>
-                <p class="text-[10px] opacity-80 truncate">${topicDisplay}</p>
-              </div>
-            </td>`;
-        }
-      }
-    });
-
-    rowsHtml += `</tr>`;
-  });
-
-  bodyEl.innerHTML = rowsHtml;
-}
+function changeWeek(delta) {}
+function goToCurrentWeek() {}
+function selectScheduleDay(day) {}
+function initScheduleDayPills() {}
+function renderCadetDaySchedule() {}
+function renderScheduleGrid() {}
 
 function renderCadetSchedule() {
-  const { monday, dates } = getWeekDates(currentWeekOffset);
-  const saturday = dates['sat'];
-
-  const monStr = monday.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-  const satStr = saturday.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-
-  const subEl = document.getElementById('sched-week-subtitle');
-  if (subEl) subEl.textContent = `Week of ${monStr} – ${satStr} · Maritime Cadet Timetable`;
-
-  const navLabel = document.getElementById('sched-week-nav-label');
-  if (navLabel) {
-    if (currentWeekOffset === 0) navLabel.textContent = 'Current Week';
-    else if (currentWeekOffset === 1) navLabel.textContent = 'Next Week';
-    else if (currentWeekOffset === -1) navLabel.textContent = 'Previous Week';
-    else navLabel.textContent = `${monStr} – ${satStr}`;
-  }
-
   const liveHeader = document.getElementById('sched-live-date-header');
   if (liveHeader) {
     const now = new Date();
     const formatted = now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
     liveHeader.textContent = `Today: ${formatted} · Batch Alpha (DNS & IMU-CET)`;
   }
+  renderScheduledEventsList(selectedCalDate);
+  renderCalendar();
+}
 
-  initScheduleDayPills();
-  renderCadetDaySchedule();
-  renderScheduleGrid();
+let dashSchedDayMode = 'today'; // 'today' | 'tomorrow' only (2-day schedule)
+
+function setDashboardScheduleDay(mode) {
+  dashSchedDayMode = mode;
+  const btnToday = document.getElementById('btn-dash-sched-today');
+  const btnTomorrow = document.getElementById('btn-dash-sched-tomorrow');
+  const title = document.getElementById('dash-classes-title');
+
+  if (mode === 'today') {
+    btnToday?.classList.add('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnToday?.classList.remove('text-slate', 'hover:text-deep-sea');
+    btnTomorrow?.classList.remove('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnTomorrow?.classList.add('text-slate', 'hover:text-deep-sea');
+    if (title) title.textContent = "Today's Classes";
+  } else {
+    btnTomorrow?.classList.add('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnTomorrow?.classList.remove('text-slate', 'hover:text-deep-sea');
+    btnToday?.classList.remove('bg-deep-sea', 'text-white', 'shadow-xs');
+    btnToday?.classList.add('text-slate', 'hover:text-deep-sea');
+    if (title) title.textContent = "Tomorrow's Classes";
+  }
+  renderDashboardTodaySchedule();
 }
 
 function renderDashboardTodaySchedule() {
@@ -2397,79 +2383,82 @@ function renderDashboardTodaySchedule() {
   const dateText = document.getElementById('dash-today-date-text');
   if (!cont) return;
 
-  const todayKey = getTodaySchedDay();
+  const isTomorrow = (dashSchedDayMode === 'tomorrow');
   const d = new Date();
-  const formattedDate = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
-  if (dateText) dateText.textContent = `Today: ${formattedDate} · IMU-CET Prep Agenda`;
+  if (isTomorrow) {
+    d.setDate(d.getDate() + 1);
+  }
 
-  const classes = WEEKLY_SCHEDULE_DATA[todayKey] || [];
+  const dayIdx = d.getDay();
+  const schedKey = (dayIdx >= 1 && dayIdx <= 6) ? DAY_KEYS[dayIdx] : 'mon';
+  const formattedDate = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+
+  if (dateText) {
+    dateText.textContent = `${isTomorrow ? 'Tomorrow' : 'Today'}: ${formattedDate}`;
+  }
+
+  const classes = WEEKLY_SCHEDULE_DATA[schedKey] || [];
   if (classes.length === 0) {
-    cont.innerHTML = `<div class="p-4 rounded-xl bg-canvas text-center text-xs text-slate">No classes scheduled for today. Enjoy your revision!</div>`;
+    cont.innerHTML = `<div class="p-4 rounded-xl bg-canvas text-center text-xs text-slate">No classes scheduled for this day. Enjoy your revision!</div>`;
     return;
   }
 
+  const now = new Date();
   cont.innerHTML = classes.map(item => {
-    const statusObj = getLiveClassStatus(item.time, d);
+    const isBreak = item.type === 'break';
+    const statusObj = isTomorrow 
+      ? { label: 'Scheduled', badgeClass: 'badge-blue', accentClass: 'bg-blue-400', isLive: false }
+      : getLiveClassStatus(item.time, now);
+
+    const locationMarkup = isBreak
+      ? '<span class="text-slate">Self-Study &amp; Break</span>'
+      : `<span class="inline-flex items-center gap-1 font-medium text-emerald-600"><span class="material-symbols-outlined text-[13px]">videocam</span> ${item.room || 'Live Online'}</span>`;
 
     return `
       <div class="flex items-center gap-3.5 p-3 rounded-xl bg-canvas border border-gray-100 hover:border-gold/40 transition-colors">
-        <div class="w-14 text-center shrink-0">
-          <p class="text-xs font-bold text-deep-sea">${item.time.split(' ')[0]}</p>
-          <p class="text-[10px] text-slate uppercase">${item.time.split(' ')[1] || ''}</p>
+        <div class="w-16 text-center shrink-0 border-r border-gray-100 pr-2">
+          <p class="text-xs font-bold text-deep-sea">${item.time}</p>
+          <p class="text-[9px] text-slate font-semibold uppercase">to ${item.endTime || '08:00 PM'}</p>
         </div>
         <div class="w-1 self-stretch rounded-full ${statusObj.accentClass} shrink-0"></div>
         <div class="flex-1 min-w-0">
           <p class="text-xs sm:text-sm font-semibold text-deep-sea truncate">${item.subject}</p>
-          <p class="text-[11px] text-slate truncate">${item.faculty} · <span class="font-medium text-gray-700">${item.room}</span></p>
+          <p class="text-[11px] text-slate truncate flex items-center gap-1.5 mt-0.5">
+            <span>${item.faculty}</span>
+            <span class="text-gray-300">•</span>
+            ${locationMarkup}
+          </p>
         </div>
-        <span class="badge ${statusObj.badgeClass} shrink-0 text-[9px] flex items-center gap-1">
-          ${statusObj.isLive ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>' : ''}
-          ${statusObj.label}
-        </span>
+        <div class="flex items-center gap-1.5 shrink-0">
+          ${statusObj.isLive ? `
+            <a href="https://meet.google.com" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all shadow-xs">
+              <span class="material-symbols-outlined text-xs">videocam</span> Join Live
+            </a>
+          ` : `
+            <span class="badge ${statusObj.badgeClass} text-[9px] flex items-center gap-1">
+              ${statusObj.label}
+            </span>
+          `}
+        </div>
       </div>
     `;
   }).join('');
 }
 
-function toggleScheduleView(mode) {
-  const dayCont = document.getElementById('schedule-day-container');
-  const gridCont = document.getElementById('schedule-grid-container');
-  const dayPills = document.getElementById('sched-day-pills');
-  const btnDay = document.getElementById('btn-sched-dayview');
-  const btnGrid = document.getElementById('btn-sched-gridview');
-
-  if (mode === 'grid') {
-    dayCont?.classList.add('hidden');
-    dayPills?.classList.add('hidden');
-    gridCont?.classList.remove('hidden');
-    btnGrid?.classList.add('bg-deep-sea', 'text-white');
-    btnGrid?.classList.remove('text-slate');
-    btnDay?.classList.remove('bg-deep-sea', 'text-white');
-    btnDay?.classList.add('text-slate');
-  } else {
-    gridCont?.classList.add('hidden');
-    dayCont?.classList.remove('hidden');
-    dayPills?.classList.remove('hidden');
-    btnDay?.classList.add('bg-deep-sea', 'text-white');
-    btnDay?.classList.remove('text-slate');
-    btnGrid?.classList.remove('bg-deep-sea', 'text-white');
-    btnGrid?.classList.add('text-slate');
-    renderCadetDaySchedule();
-  }
-}
+function toggleScheduleView(mode) {}
 
 // ── STUDY MATERIALS DATA + RENDER ───────────────────────────────
 const MATERIALS = [
-  { id:1, subject:'math',    title:'Trigonometry — Complete Notes',        desc:'Chapter-wise notes covering all identities, formulas, and applications.',  pages:42, type:'PDF', icon:'calculate', date:'20 Sep 2026' },
-  { id:2, subject:'math',    title:'Algebra & Quadratics Workbook',         desc:'Practice problems with step-by-step solutions for board and IMU-CET.',       pages:68, type:'PDF', icon:'calculate', date:'14 Sep 2026' },
-  { id:3, subject:'physics', title:'Optics & Light — Theory Notes',         desc:'Reflection, refraction, lenses, and wave optics with diagrams.',             pages:38, type:'PDF', icon:'biotech',   date:'22 Sep 2026' },
-  { id:4, subject:'physics', title:'Mechanics — Motion & Forces (Part 1)',  desc:'Newton\'s laws, momentum, friction, and circular motion.',                  pages:55, type:'PDF', icon:'biotech',   date:'18 Sep 2026' },
-  { id:5, subject:'english', title:'Grammar Handbook — All Rules',          desc:'Tenses, voice, narration, and sentence correction with examples.',          pages:30, type:'PDF', icon:'spellcheck',date:'15 Sep 2026' },
-  { id:6, subject:'english', title:'Comprehension Passages — Set 1',        desc:'20 unseen passages with questions and model answers for IMU-CET prep.',      pages:24, type:'PDF', icon:'spellcheck',date:'10 Sep 2026' },
-  { id:7, subject:'gk',      title:'Maritime GK — IMO Regulations',         desc:'International Maritime Organization rules, SOLAS, MARPOL summaries.',       pages:20, type:'PDF', icon:'travel_explore',date:'25 Sep 2026'},
-  { id:8, subject:'gk',      title:'Current Affairs — Aug–Sep 2026',        desc:'Monthly current affairs curated for IMU-CET and sponsorship exams.',       pages:16, type:'PDF', icon:'travel_explore',date:'01 Oct 2026'},
-  { id:9, subject:'dns',     title:'Ship Stability Fundamentals',            desc:'Metacentric height, buoyancy, and stability diagrams for DNS prep.',        pages:50, type:'PDF', icon:'sailing',   date:'17 Sep 2026' },
-  { id:10,subject:'dns',     title:'Navigation Basics — Chartwork & Tides', desc:'Practical chartwork, tide tables, and celestial navigation introduction.',  pages:45, type:'PDF', icon:'sailing',   date:'12 Sep 2026' },
+  { id:1, subject:'math',      title:'Trigonometry — Complete Notes',        desc:'Chapter-wise notes covering all identities, formulas, and applications.',  pages:42, type:'PDF', icon:'calculate', date:'20 Sep 2026' },
+  { id:2, subject:'math',      title:'Algebra & Quadratics Workbook',         desc:'Practice problems with step-by-step solutions for board and IMU-CET.',       pages:68, type:'PDF', icon:'calculate', date:'14 Sep 2026' },
+  { id:3, subject:'physics',   title:'Optics & Light — Theory Notes',         desc:'Reflection, refraction, lenses, and wave optics with diagrams.',             pages:38, type:'PDF', icon:'biotech',   date:'22 Sep 2026' },
+  { id:4, subject:'physics',   title:'Mechanics — Motion & Forces',           desc:'Newton\'s laws, momentum, friction, and circular motion.',                  pages:55, type:'PDF', icon:'biotech',   date:'18 Sep 2026' },
+  { id:5, subject:'english',   title:'Grammar Handbook — All Rules',          desc:'Tenses, voice, narration, and sentence correction with examples.',          pages:30, type:'PDF', icon:'spellcheck',date:'15 Sep 2026' },
+  { id:6, subject:'english',   title:'Comprehension Passages — Set 1',        desc:'20 unseen passages with questions and model answers for IMU-CET prep.',      pages:24, type:'PDF', icon:'spellcheck',date:'10 Sep 2026' },
+  { id:7, subject:'chemistry', title:'Chemical Bonding & Thermodynamics',     desc:'Core concepts, molecular structures, and thermochemical formulas.',         pages:46, type:'PDF', icon:'science',   date:'24 Sep 2026' },
+  { id:8, subject:'chemistry', title:'Periodic Table & Electrochemistry',     desc:'Periodic trends, cell potentials, and inorganic reaction mechanisms.',      pages:39, type:'PDF', icon:'science',   date:'21 Sep 2026' },
+  { id:9, subject:'aptitude',  title:'Logical Reasoning & Series Handbook',   desc:'Number series, blood relations, syllogisms, and coding-decoding shortcuts.',pages:52, type:'PDF', icon:'psychology',date:'19 Sep 2026' },
+  { id:10,subject:'gk',        title:'General Knowledge & General Science',   desc:'General science fundamentals, current affairs, and maritime conventions.',   pages:48, type:'PDF', icon:'travel_explore',date:'01 Oct 2026'}
 ];
 
 let currentFilter = 'all';
@@ -2531,7 +2520,9 @@ const AVAILABLE_TESTS = [
   { id:2, title:'Mathematics — Calculus Sprint', subject:'Mathematics', duration:30, total:50, questions:GENERATE_QUESTIONS('math') },
   { id:3, title:'Physics — Optics Chapter Test', subject:'Physics', duration:45, total:50, questions:GENERATE_QUESTIONS('phy') },
   { id:4, title:'English — Grammar & Vocabulary', subject:'English', duration:30, total:50, questions:GENERATE_QUESTIONS('eng') },
-  { id:5, title:'GK — Maritime Awareness Test', subject:'Gen. Knowledge', duration:20, total:30, questions:GENERATE_QUESTIONS('gk') },
+  { id:5, title:'Chemistry — Electrochemistry & Solutions', subject:'Chemistry', duration:35, total:40, questions:GENERATE_QUESTIONS('chem') },
+  { id:6, title:'General Aptitude & Reasoning Sprint', subject:'General Aptitude / Reasoning', duration:30, total:40, questions:GENERATE_QUESTIONS('apt') },
+  { id:7, title:'GK & General Science — Maritime & Science', subject:'General Knowledge / General Science', duration:20, total:30, questions:GENERATE_QUESTIONS('gk') },
 ];
 
 function GENERATE_QUESTIONS(type) {
@@ -2569,10 +2560,23 @@ function GENERATE_QUESTIONS(type) {
       { q:'"He ran _____ the road." Fill in the blank:', opts:['in','on','across','of'], ans:2 },
       { q:'Which sentence has a grammatical error?', opts:['She is going to market.','He has went home.','They are playing cricket.','I am reading a book.'], ans:1 },
     ],
+    chem: [
+      { q:'What is the oxidation state of Chromium in K₂Cr₂O₇?', opts:['+3','+6','+4','+7'], ans:1 },
+      { q:'Which gas is evolved when Zn reacts with dilute H₂SO₄?', opts:['Oxygen','Hydrogen','Nitrogen','Sulfur dioxide'], ans:1 },
+      { q:'The pH of pure water at 25°C is:', opts:['5','6','7','8'], ans:2 },
+      { q:'Which of the following is an inert gas?', opts:['Argon','Nitrogen','Chlorine','Hydrogen'], ans:0 },
+    ],
+    apt: [
+      { q:'Find the next number in series: 2, 6, 12, 20, 30, ?', opts:['40','42','44','46'], ans:1 },
+      { q:'If CLOCK is coded as KCOLC, then WATCH is coded as:', opts:['HCTAW','HTCAW','HCATW','WTAHC'], ans:0 },
+      { q:'A man walks 3 km North, then 4 km East. How far is he from the starting point?', opts:['5 km','7 km','6 km','8 km'], ans:0 },
+      { q:'Find the odd one out:', opts:['Circle','Square','Triangle','Sphere'], ans:3 },
+    ],
     gk: [
       { q:'MARPOL stands for:', opts:['Marine Pollution Prevention','Maritime Pollution','Marine Policy Law','Maritime Protocol Law'], ans:0 },
       { q:'The headquarters of IMO is in:', opts:['Geneva','New York','London','Brussels'], ans:2 },
       { q:'Which Indian port is known as "The Gateway of India"?', opts:['Chennai','Mumbai','Kolkata','Kochi'], ans:1 },
+      { q:'Which planet is known as the Red Planet?', opts:['Venus','Mars','Jupiter','Saturn'], ans:1 },
     ],
   };
   return sets[type] || sets.full;
@@ -2911,9 +2915,12 @@ async function fetchNotices() {
   } catch(e) {}
   renderNotices(notices);
   // show notification dot
-  document.getElementById('notice-dot').classList.remove('hidden');
-  document.getElementById('notif-badge').classList.remove('hidden');
-  document.getElementById('notif-badge').textContent = notices.length;
+  document.getElementById('notice-dot')?.classList.remove('hidden');
+  const nb = document.getElementById('notif-badge');
+  if (nb) {
+    nb.classList.remove('hidden');
+    nb.textContent = notices.length;
+  }
   if (icon) setTimeout(() => icon.classList.remove('spin'), 600);
 }
 
@@ -2940,21 +2947,1222 @@ function renderNotices(notices) {
   }).join('');
 }
 
-// ── COURSE DETAIL MODAL ─────────────────────
+// ── COURSE DETAIL MODAL & DYNAMIC COURSE MANAGEMENT ─────────────
+const LS_COURSE_LOCKS = 'sp_course_locks';
+
+const DEFAULT_COURSE_LOCKS = {
+  'DNS Sponsorship Prep': false,
+  'Interview Preparation & Viva': false,
+  'Aptitude Test Prep': false
+};
+
+function getCourseLocks() {
+  try {
+    const raw = localStorage.getItem(LS_COURSE_LOCKS);
+    if (raw) return { ...DEFAULT_COURSE_LOCKS, ...JSON.parse(raw) };
+  } catch(e) {}
+  return { ...DEFAULT_COURSE_LOCKS };
+}
+
+function setCourseLock(courseName, isLocked) {
+  const locks = getCourseLocks();
+  locks[courseName] = isLocked;
+  localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
+  renderCadetCourses();
+}
+
+function setSimMode(mode) {
+  if (mode === 'locked') {
+    // Lock the sponsorship courses for basic CET-only cadets
+    const locks = {
+      'DNS Sponsorship Prep': true,
+      'Interview Preparation & Viva': true,
+      'Aptitude Test Prep': false
+    };
+    localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
+    toast('Simulating: IMU-CET Only cadet (Sponsorship & Interview locked)', 'info');
+  } else {
+    // Default unlocked state
+    const locks = {
+      'DNS Sponsorship Prep': false,
+      'Interview Preparation & Viva': false,
+      'Aptitude Test Prep': false
+    };
+    localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
+    toast('Access Restored: All courses unlocked by default', 'success');
+  }
+  renderCadetCourses();
+}
+
+function openCourseLockedModal(name) {
+  const modal = document.getElementById('modal-course-locked');
+  const title = document.getElementById('locked-modal-title');
+  if (title) title.textContent = `${name} — Locked`;
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeCourseLockedModal() {
+  const modal = document.getElementById('modal-course-locked');
+  if (modal) modal.classList.add('hidden');
+}
+
+// Live sync listener for course locks updated by Admin in another tab
+window.addEventListener('storage', (e) => {
+  if (e.key === LS_COURSE_LOCKS) {
+    renderCadetCourses();
+  }
+});
+
+const CADET_COURSES = [
+  {
+    name: 'IMU-CET',
+    category: 'Core Preparation',
+    isCore: true, // Permanent core course, never locked
+    icon: 'anchor',
+    gradient: 'from-deep-sea to-blue-600',
+    iconBg: 'bg-deep-sea/8',
+    iconColor: 'text-deep-sea',
+    desc: 'Comprehensive preparation for Indian Maritime University Common Entrance Test across all 6 core subjects.',
+    faculty: 'Capt. R. Sharma & Team',
+    batch: 'Batch A · 2026',
+    nextClass: 'Mon, 7:00 PM',
+    duration: '6 Months',
+    progress: 68,
+    status: 'Active',
+    badgeClass: 'bg-emerald-100 text-emerald-700'
+  },
+  {
+    name: 'DNS Sponsorship Prep',
+    category: 'Sponsorship Track',
+    isCore: false,
+    icon: 'sailing',
+    gradient: 'from-gold to-amber-500',
+    iconBg: 'bg-gold/10',
+    iconColor: 'text-gold',
+    desc: 'Diploma in Nautical Science — Shipping company sponsorship entrance syllabus & marine practice.',
+    faculty: 'Capt. Arun Pillai',
+    batch: 'Batch A · 2026',
+    nextClass: 'Tue, 8:15 PM',
+    duration: '3 Months',
+    progress: 45,
+    status: 'Active',
+    badgeClass: 'bg-emerald-100 text-emerald-700'
+  },
+  {
+    name: 'Interview Preparation & Viva',
+    category: 'Sponsorship Specialization',
+    isCore: false,
+    icon: 'record_voice_over',
+    gradient: 'from-teal-600 to-emerald-500',
+    iconBg: 'bg-teal-50',
+    iconColor: 'text-teal-700',
+    desc: '1-on-1 mock interviews, shipping company technical viva rounds & maritime HR question banks.',
+    faculty: 'Capt. Arun Pillai & S. Raman',
+    batch: 'Batch A · 2026',
+    nextClass: 'Thu, 6:00 PM',
+    duration: '3 Months',
+    progress: 35,
+    status: 'Active',
+    badgeClass: 'bg-emerald-100 text-emerald-700'
+  },
+  {
+    name: 'Aptitude Test Prep',
+    category: 'Aptitude & Reasoning',
+    isCore: false,
+    icon: 'psychology',
+    gradient: 'from-purple-600 to-purple-400',
+    iconBg: 'bg-purple-50',
+    iconColor: 'text-purple-600',
+    desc: 'Psychometric profiling, logical reasoning, and spatial awareness for shipping company recruitment.',
+    faculty: 'Mr. Vikas Menon',
+    batch: 'Batch B · Oct',
+    nextClass: 'Starts 05 Oct',
+    duration: '2 Months',
+    progress: 0,
+    status: 'Starting Soon',
+    badgeClass: 'bg-blue-100 text-blue-700'
+  }
+];
+
+// ══════════════════════════════════════════════════════════════════
+// ⚓ IMU-CET 6-SUBJECT CURRICULUM HUB & DRILL-DOWN ENGINE
+// ══════════════════════════════════════════════════════════════════
+
+const IMU_CET_SUBJECTS = [
+  {
+    key: 'math',
+    name: 'Mathematics',
+    shortName: 'Math',
+    icon: 'calculate',
+    colorGradient: 'from-blue-600 to-indigo-600',
+    iconBg: 'bg-blue-50',
+    iconColor: 'text-blue-600',
+    badgeClass: 'bg-blue-100 text-blue-700',
+    faculty: 'Capt. R. Sharma',
+    progress: 72,
+    weeklySchedule: 'Mon, Wed, Fri · 07:00 PM – 08:00 PM',
+    topics: ['Trigonometry (Identities & Heights)', 'Differential & Integral Calculus', 'Algebra & Matrices', 'Vectors & 3D Geometry'],
+    classes: [
+      {
+        id: 'math-c1',
+        title: 'Trigonometry - Advanced Identities & Bearings',
+        date: '26 Oct 2026',
+        day: 'Monday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '58 mins',
+        faculty: 'Capt. R. Sharma',
+        recordingAvailable: true,
+        summary: 'Compound angles, trigonometric transformations, and practical maritime navigation bearings for IMU-CET.'
+      },
+      {
+        id: 'math-c2',
+        title: 'Vectors & 3D Geometry - Dot & Cross Products',
+        date: '23 Oct 2026',
+        day: 'Friday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '55 mins',
+        faculty: 'Capt. R. Sharma',
+        recordingAvailable: true,
+        summary: 'Vector projections, direction cosines, scalar triple product, and distance between skew lines.'
+      },
+      {
+        id: 'math-c3',
+        title: 'Calculus - Differential Calculus & Applications',
+        date: '21 Oct 2026',
+        day: 'Wednesday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '60 mins',
+        faculty: 'Capt. R. Sharma',
+        recordingAvailable: true,
+        summary: 'Rate of change, tangents and normals, maxima and minima problems with previous year questions.'
+      },
+      {
+        id: 'math-c4',
+        title: 'Algebra - Quadratic Equations & Complex Numbers',
+        date: '19 Oct 2026',
+        day: 'Monday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '52 mins',
+        faculty: 'Capt. R. Sharma',
+        recordingAvailable: true,
+        summary: 'Root relationships, discriminants, modulus and argument forms tested in entrance exams.'
+      },
+      {
+        id: 'math-c5',
+        title: 'Definite Integrals & Area Under Curves',
+        date: 'Upcoming Mon',
+        day: 'Monday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'scheduled',
+        duration: '60 mins',
+        faculty: 'Capt. R. Sharma',
+        recordingAvailable: false,
+        summary: 'Properties of definite integrals, standard area problems and speed calculation shortcuts.'
+      }
+    ]
+  },
+  {
+    key: 'physics',
+    name: 'Physics',
+    shortName: 'Physics',
+    icon: 'biotech',
+    colorGradient: 'from-cyan-600 to-teal-600',
+    iconBg: 'bg-teal-50',
+    iconColor: 'text-teal-700',
+    badgeClass: 'bg-teal-100 text-teal-700',
+    faculty: 'Dr. A. Verma',
+    progress: 65,
+    weeklySchedule: 'Tue, Thu · 07:00 PM – 08:00 PM',
+    topics: ['Optics & Wave Motion', 'Mechanics & Newton\'s Laws', 'Thermodynamics & Heat Transfer', 'Electrostatics & Current'],
+    classes: [
+      {
+        id: 'phy-c1',
+        title: 'Mechanics & Motion - Kinematics & Newton\'s Laws',
+        date: '27 Oct 2026',
+        day: 'Tuesday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '56 mins',
+        faculty: 'Dr. A. Verma',
+        recordingAvailable: true,
+        summary: 'Newton\'s laws of motion, momentum conservation, friction coefficients, circular motion dynamics.'
+      },
+      {
+        id: 'phy-c2',
+        title: 'Optics & Waves - Ray Optics, Lenses & Wave Nature',
+        date: '22 Oct 2026',
+        day: 'Thursday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '62 mins',
+        faculty: 'Dr. A. Verma',
+        recordingAvailable: true,
+        summary: 'Refraction through prisms, total internal reflection in periscopes/binoculars, lens combination formulas.'
+      },
+      {
+        id: 'phy-c3',
+        title: 'Thermodynamics, Carnot Cycle & Heat Engines',
+        date: '15 Oct 2026',
+        day: 'Thursday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '54 mins',
+        faculty: 'Dr. A. Verma',
+        recordingAvailable: true,
+        summary: 'First and second laws of thermodynamics, PV diagrams, Carnot efficiency, entropy basics.'
+      },
+      {
+        id: 'phy-c4',
+        title: 'Wave Optics & Interference Phenomena',
+        date: 'Upcoming Thu',
+        day: 'Thursday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'scheduled',
+        duration: '60 mins',
+        faculty: 'Dr. A. Verma',
+        recordingAvailable: false,
+        summary: 'Huygens principle, Young\'s double slit experiment, fringe width calculations.'
+      }
+    ]
+  },
+  {
+    key: 'english',
+    name: 'English',
+    shortName: 'English',
+    icon: 'spellcheck',
+    colorGradient: 'from-amber-500 to-amber-600',
+    iconBg: 'bg-amber-50',
+    iconColor: 'text-amber-600',
+    badgeClass: 'bg-amber-100 text-amber-800',
+    faculty: 'Ms. Priya Nair',
+    progress: 80,
+    weeklySchedule: 'Mon, Sat · 08:15 PM – 09:15 PM',
+    topics: ['Grammar & Syntax Rules', 'Reading Comprehension', 'Maritime Lexicon & Idioms', 'Sentence Correction & Cloze Tests'],
+    classes: [
+      {
+        id: 'eng-c1',
+        title: 'Grammar Mastery - Active/Passive Voice & Tenses',
+        date: '26 Oct 2026',
+        day: 'Monday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '50 mins',
+        faculty: 'Ms. Priya Nair',
+        recordingAvailable: true,
+        summary: 'Direct & indirect narration, voice transformation, subject-verb agreement exceptions.'
+      },
+      {
+        id: 'eng-c2',
+        title: 'Reading Comprehension - Technical Maritime Passages',
+        date: '24 Oct 2026',
+        day: 'Saturday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '48 mins',
+        faculty: 'Ms. Priya Nair',
+        recordingAvailable: true,
+        summary: 'Skimming and scanning techniques, vocabulary in context, inference identification.'
+      },
+      {
+        id: 'eng-c3',
+        title: 'Vocabulary & Maritime Lexicon Workshop',
+        date: '17 Oct 2026',
+        day: 'Saturday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '52 mins',
+        faculty: 'Ms. Priya Nair',
+        recordingAvailable: true,
+        summary: 'High-frequency root words, synonyms/antonyms, one-word substitutions and nautical terminology.'
+      },
+      {
+        id: 'eng-c4',
+        title: 'Sentence Correction & Common Grammatical Errors',
+        date: 'Upcoming Mon',
+        day: 'Monday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'scheduled',
+        duration: '60 mins',
+        faculty: 'Ms. Priya Nair',
+        recordingAvailable: false,
+        summary: 'Parallelism, misplaced modifiers, prepositional idioms frequently tested in IMU-CET.'
+      }
+    ]
+  },
+  {
+    key: 'chemistry',
+    name: 'Chemistry',
+    shortName: 'Chemistry',
+    icon: 'science',
+    colorGradient: 'from-emerald-600 to-green-600',
+    iconBg: 'bg-emerald-50',
+    iconColor: 'text-emerald-700',
+    badgeClass: 'bg-emerald-100 text-emerald-700',
+    faculty: 'Dr. Meera Iyer',
+    progress: 60,
+    weeklySchedule: 'Tue, Thu · 08:15 PM – 09:15 PM',
+    topics: ['Chemical Bonding & Structure', 'Periodic Table & Inorganic Trends', 'Electrochemistry & Solutions', 'Hydrocarbons & Organic Mechanisms'],
+    classes: [
+      {
+        id: 'chem-c1',
+        title: 'Physical Chemistry - Chemical Kinetics & Rate Laws',
+        date: '27 Oct 2026',
+        day: 'Tuesday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '54 mins',
+        faculty: 'Dr. Meera Iyer',
+        recordingAvailable: true,
+        summary: 'Order of reaction, Arrhenius equation, activation energy calculations, collision theory.'
+      },
+      {
+        id: 'chem-c2',
+        title: 'Organic Chemistry - Hydrocarbons & Reaction Mechanisms',
+        date: '22 Oct 2026',
+        day: 'Thursday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '56 mins',
+        faculty: 'Dr. Meera Iyer',
+        recordingAvailable: true,
+        summary: 'Electrophilic addition, Markownikoff\'s rule, resonance effects and stability of intermediates.'
+      },
+      {
+        id: 'chem-c3',
+        title: 'Electrochemistry, Nernst Equation & Batteries',
+        date: '15 Oct 2026',
+        day: 'Thursday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '53 mins',
+        faculty: 'Dr. Meera Iyer',
+        recordingAvailable: true,
+        summary: 'Electrochemical series, EMF of galvanic cell, conductance, Kohlrausch\'s law.'
+      },
+      {
+        id: 'chem-c4',
+        title: 'Coordination Compounds & Transition Metals',
+        date: 'Upcoming Tue',
+        day: 'Tuesday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'scheduled',
+        duration: '60 mins',
+        faculty: 'Dr. Meera Iyer',
+        recordingAvailable: false,
+        summary: 'Werner\'s theory, crystal field theory, isomerism, and marine corrosion fundamentals.'
+      }
+    ]
+  },
+  {
+    key: 'aptitude',
+    name: 'General Aptitude / Reasoning',
+    shortName: 'Aptitude & Reasoning',
+    icon: 'psychology',
+    colorGradient: 'from-purple-600 to-indigo-600',
+    iconBg: 'bg-purple-50',
+    iconColor: 'text-purple-600',
+    badgeClass: 'bg-purple-100 text-purple-700',
+    faculty: 'Mr. Vikas Menon',
+    progress: 70,
+    weeklySchedule: 'Wed 08:15 PM & Sat 07:00 PM',
+    topics: ['Logical Deduction & Syllogisms', 'Number & Alphabet Series', 'Coding-Decoding & Blood Relations', 'Quantitative Speed Math'],
+    classes: [
+      {
+        id: 'apt-c1',
+        title: 'Quantitative Shortcuts - Speed Math & Percentages',
+        date: '24 Oct 2026',
+        day: 'Saturday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '57 mins',
+        faculty: 'Mr. Vikas Menon',
+        recordingAvailable: true,
+        summary: 'Mental calculations, percentage-fraction conversion, time and work shortcut formulas.'
+      },
+      {
+        id: 'apt-c2',
+        title: 'Logical Reasoning - Blood Relations & Directions',
+        date: '21 Oct 2026',
+        day: 'Wednesday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '51 mins',
+        faculty: 'Mr. Vikas Menon',
+        recordingAvailable: true,
+        summary: 'Family tree mapping, compass directions, displacement vs distance in reasoning problems.'
+      },
+      {
+        id: 'apt-c3',
+        title: 'Analytical Reasoning - Syllogisms & Venn Diagrams',
+        date: '17 Oct 2026',
+        day: 'Saturday',
+        time: '07:00 PM – 08:00 PM',
+        status: 'completed',
+        duration: '50 mins',
+        faculty: 'Mr. Vikas Menon',
+        recordingAvailable: true,
+        summary: 'Euler circles, statements and conclusions, either/or case determinations.'
+      },
+      {
+        id: 'apt-c4',
+        title: 'Spatial Awareness & Non-Verbal Reasoning',
+        date: 'Upcoming Wed',
+        day: 'Wednesday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'scheduled',
+        duration: '60 mins',
+        faculty: 'Mr. Vikas Menon',
+        recordingAvailable: false,
+        summary: 'Pattern completion, cube unfolding, paper folding and mirror images.'
+      }
+    ]
+  },
+  {
+    key: 'gk',
+    name: 'General Knowledge / General Science',
+    shortName: 'GK & General Science',
+    icon: 'travel_explore',
+    colorGradient: 'from-amber-600 to-gold',
+    iconBg: 'bg-gold/15',
+    iconColor: 'text-gold-dark',
+    badgeClass: 'bg-amber-100 text-amber-900',
+    faculty: 'Capt. Arun Pillai',
+    progress: 60,
+    weeklySchedule: 'Fri · 08:15 PM – 09:15 PM',
+    topics: ['Maritime Affairs & DG Shipping', 'International Maritime Conventions (IMO, SOLAS)', 'World Geography, Canals & Straits', 'General Science Fundamentals'],
+    classes: [
+      {
+        id: 'gk-c1',
+        title: 'Maritime World & Geography - Major Shipping Routes & Straits',
+        date: '23 Oct 2026',
+        day: 'Friday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '55 mins',
+        faculty: 'Capt. Arun Pillai',
+        recordingAvailable: true,
+        summary: 'Strait of Malacca, Suez & Panama Canals, Bab-el-Mandeb, major global transshipment hubs.'
+      },
+      {
+        id: 'gk-c2',
+        title: 'Nautical Science & Meteorology - Oceanic Currents & Winds',
+        date: '16 Oct 2026',
+        day: 'Friday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '58 mins',
+        faculty: 'Capt. Arun Pillai',
+        recordingAvailable: true,
+        summary: 'Trade winds, Coriolis effect, monsoons, ocean gyres, cyclone formation and warning signals.'
+      },
+      {
+        id: 'gk-c3',
+        title: 'IMO, DG Shipping & International Maritime Law',
+        date: '09 Oct 2026',
+        day: 'Friday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'completed',
+        duration: '52 mins',
+        faculty: 'Capt. Arun Pillai',
+        recordingAvailable: true,
+        summary: 'Historical origin of IMO, STCW 2010 Manila amendments, MARPOL annexes, flag states.'
+      },
+      {
+        id: 'gk-c4',
+        title: 'Indian Maritime Sector, Major Ports & SAGARMALA',
+        date: 'Upcoming Fri',
+        day: 'Friday',
+        time: '08:15 PM – 09:15 PM',
+        status: 'scheduled',
+        duration: '60 mins',
+        faculty: 'Capt. Arun Pillai',
+        recordingAvailable: false,
+        summary: 'Major and minor ports of India, coastal shipping initiatives, inland waterways development.'
+      }
+    ]
+  }
+];
+
+let currentImuCetSubjectKey = 'math';
+let currentImuCetSubTab = 'materials'; // 'materials' | 'exams' | 'classes'
+
+function openImuCetCourseHub() {
+  const mainView = document.getElementById('courses-main-view');
+  const hubView = document.getElementById('imu-cet-hub-view');
+  const subjView = document.getElementById('imu-cet-subject-view');
+  if (mainView) mainView.classList.add('hidden');
+  if (subjView) subjView.classList.add('hidden');
+  if (hubView) {
+    hubView.classList.remove('hidden');
+    renderImuCetHub();
+  }
+  const tabCourses = document.getElementById('tab-courses');
+  if (tabCourses) tabCourses.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeImuCetCourseHub(shouldScroll = true) {
+  const mainView = document.getElementById('courses-main-view');
+  const hubView = document.getElementById('imu-cet-hub-view');
+  const subjView = document.getElementById('imu-cet-subject-view');
+  if (mainView) mainView.classList.remove('hidden');
+  if (hubView) hubView.classList.add('hidden');
+  if (subjView) subjView.classList.add('hidden');
+  if (shouldScroll) {
+    const tabCourses = document.getElementById('tab-courses');
+    if (tabCourses) tabCourses.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function renderImuCetHub() {
+  const hubView = document.getElementById('imu-cet-hub-view');
+  if (!hubView) return;
+
+  hubView.innerHTML = `
+    <!-- Breadcrumb & Back Navigation -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-gray-200">
+      <div class="flex items-center gap-2 text-xs sm:text-sm">
+        <button onclick="closeImuCetCourseHub()" class="font-bold text-teal hover:underline flex items-center gap-1 min-h-[36px]">
+          <span class="material-symbols-outlined text-base">arrow_back</span>
+          <span>Back to All Courses</span>
+        </button>
+        <span class="text-slate-400">/</span>
+        <span class="font-bold text-deep-sea uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-gold text-lg">anchor</span>
+          IMU-CET Curriculum
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold flex items-center gap-1 text-[11px]">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Batch A · 2026 Active
+        </span>
+      </div>
+    </div>
+
+    <!-- IMU-CET Hero Banner -->
+    <div class="bg-gradient-to-r from-deep-sea via-navy-mid to-slate-900 rounded-2xl p-5 sm:p-6 text-white mb-6 shadow-md relative overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+        <span class="material-symbols-outlined text-[160px]">anchor</span>
+      </div>
+      <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/20 border border-gold/40 text-gold text-xs font-bold uppercase tracking-wider mb-2">
+          <span class="material-symbols-outlined text-sm">school</span> Core Degree Training
+        </div>
+        <h2 class="font-sub text-xl sm:text-2xl font-bold uppercase tracking-wide">IMU-CET Comprehensive Curriculum</h2>
+        <p class="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed">
+          Full preparation for Indian Maritime University Common Entrance Test across all 6 core subjects. Select any subject below to access study materials, CBT mock exams, and recorded class history.
+        </p>
+
+        <!-- Metrics Row -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-white/10 text-xs">
+          <div><p class="text-slate-300 text-[10px] uppercase font-bold">Total Subjects</p><p class="font-bold text-white text-sm sm:text-base">6 Core Subjects</p></div>
+          <div><p class="text-slate-300 text-[10px] uppercase font-bold">Faculty Head</p><p class="font-bold text-gold text-sm sm:text-base">Capt. R. Sharma</p></div>
+          <div><p class="text-slate-300 text-[10px] uppercase font-bold">Total Duration</p><p class="font-bold text-white text-sm sm:text-base">6 Months</p></div>
+          <div>
+            <p class="text-slate-300 text-[10px] uppercase font-bold">Curriculum Progress</p>
+            <div class="flex items-center gap-2 mt-0.5">
+              <div class="flex-1 bg-white/20 h-2 rounded-full overflow-hidden">
+                <div class="bg-gold h-full rounded-full" style="width: 68%"></div>
+              </div>
+              <span class="font-bold text-white text-xs">68%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Heading -->
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="font-sub text-base sm:text-lg font-bold text-deep-sea uppercase tracking-wide">6 Core Subjects</h3>
+        <p class="text-xs text-slate">Click on any subject to explore notes, tests, and online class archives.</p>
+      </div>
+      <span class="text-xs font-bold text-slate bg-canvas px-3 py-1.5 rounded-xl border border-gray-200">
+        6 of 6 Enrolled
+      </span>
+    </div>
+
+    <!-- 6 Subjects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      ${IMU_CET_SUBJECTS.map((s, idx) => {
+        const matCount = MATERIALS.filter(m => m.subject === s.key).length;
+        const testCount = AVAILABLE_TESTS.filter(t => t.subject.toLowerCase().includes(s.key) || s.name.toLowerCase().includes(t.subject.toLowerCase())).length;
+        const classCount = s.classes.length;
+
+        return `
+          <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gold/50 transition-all flex flex-col justify-between group">
+            <div class="h-2 bg-gradient-to-r ${s.colorGradient}"></div>
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <div class="w-12 h-12 rounded-xl ${s.iconBg} flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined ${s.iconColor} text-2xl">${s.icon}</span>
+                  </div>
+                  <span class="badge ${s.badgeClass} text-[10px] font-bold">Subject 0${idx + 1}</span>
+                </div>
+
+                <h4 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide group-hover:text-gold transition-colors">${s.name}</h4>
+                <p class="text-xs text-slate mt-1 mb-3.5 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm text-teal">person</span>
+                  <span class="font-semibold text-gray-700">${s.faculty}</span>
+                </p>
+
+                <!-- Subject Highlights Badge Chips -->
+                <div class="flex flex-wrap gap-1.5 mb-4 text-[11px]">
+                  <span class="px-2.5 py-1 rounded-lg bg-canvas border border-gray-200 text-slate font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-blue-600">description</span> ${matCount} Notes
+                  </span>
+                  <span class="px-2.5 py-1 rounded-lg bg-canvas border border-gray-200 text-slate font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-amber-600">quiz</span> ${testCount} CBT Exam
+                  </span>
+                  <span class="px-2.5 py-1 rounded-lg bg-canvas border border-gray-200 text-slate font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-emerald-600">videocam</span> ${classCount} Classes
+                  </span>
+                </div>
+
+                <!-- Key Topics -->
+                <div class="mb-4">
+                  <p class="text-[10px] font-bold text-slate uppercase tracking-wider mb-1.5">Key Syllabus Areas</p>
+                  <ul class="space-y-1">
+                    ${s.topics.slice(0, 3).map(t => `
+                      <li class="flex items-center gap-1.5 text-xs text-gray-600 truncate">
+                        <span class="w-1.5 h-1.5 rounded-full bg-gold shrink-0"></span>
+                        <span class="truncate">${t}</span>
+                      </li>
+                    `).join('')}
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <!-- Syllabus Progress Bar -->
+                <div class="mb-3.5">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-slate text-[11px]">Subject Progress</span>
+                    <span class="font-bold text-deep-sea text-[11px]">${s.progress}%</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${s.progress}%"></div></div>
+                </div>
+
+                <button onclick="openImuCetSubject('${s.key}')" class="w-full py-2.5 rounded-xl bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 min-h-[44px] shadow-xs group-hover:bg-gold group-hover:text-deep-sea">
+                  <span>Explore Subject</span>
+                  <span class="material-symbols-outlined text-base">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function openImuCetSubject(key, subTab = 'materials') {
+  currentImuCetSubjectKey = key;
+  currentImuCetSubTab = subTab;
+  const hubView = document.getElementById('imu-cet-hub-view');
+  const subjView = document.getElementById('imu-cet-subject-view');
+  if (hubView) hubView.classList.add('hidden');
+  if (subjView) {
+    subjView.classList.remove('hidden');
+    renderImuCetSubjectView();
+  }
+  const tabCourses = document.getElementById('tab-courses');
+  if (tabCourses) tabCourses.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeImuCetSubject() {
+  const subjView = document.getElementById('imu-cet-subject-view');
+  const hubView = document.getElementById('imu-cet-hub-view');
+  if (subjView) subjView.classList.add('hidden');
+  if (hubView) {
+    hubView.classList.remove('hidden');
+    renderImuCetHub();
+  }
+  const tabCourses = document.getElementById('tab-courses');
+  if (tabCourses) tabCourses.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setImuCetSubTab(tabName) {
+  currentImuCetSubTab = tabName;
+  renderImuCetSubjectView();
+}
+
+function renderImuCetSubjectView() {
+  const subjView = document.getElementById('imu-cet-subject-view');
+  if (!subjView) return;
+
+  const subject = IMU_CET_SUBJECTS.find(s => s.key === currentImuCetSubjectKey) || IMU_CET_SUBJECTS[0];
+  const matItems = MATERIALS.filter(m => m.subject === subject.key);
+  const testItems = AVAILABLE_TESTS.filter(t => t.subject.toLowerCase().includes(subject.key) || subject.name.toLowerCase().includes(t.subject.toLowerCase()));
+  const classItems = subject.classes;
+
+  subjView.innerHTML = `
+    <!-- Navigation Breadcrumb -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-200">
+      <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+        <button onclick="closeImuCetSubject()" class="font-bold text-teal hover:underline flex items-center gap-1 min-h-[36px]">
+          <span class="material-symbols-outlined text-base">arrow_back</span>
+          <span>Back to 6 Subjects</span>
+        </button>
+        <span class="text-slate-400">/</span>
+        <button onclick="closeImuCetCourseHub()" class="font-medium text-slate hover:text-deep-sea">
+          IMU-CET
+        </button>
+        <span class="text-slate-400">/</span>
+        <span class="font-bold text-deep-sea flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm ${subject.iconColor}">${subject.icon}</span>
+          ${subject.name}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="badge bg-gold/15 text-gold-dark border border-gold/30 font-bold text-xs flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">schedule</span> ${subject.weeklySchedule}
+        </span>
+      </div>
+    </div>
+
+    <!-- Quick Switcher Bar across 6 Subjects -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-5 no-scrollbar">
+      ${IMU_CET_SUBJECTS.map(s => {
+        const isActive = s.key === subject.key;
+        return `
+          <button onclick="openImuCetSubject('${s.key}', '${currentImuCetSubTab}')" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 min-h-[40px] ${isActive ? 'bg-deep-sea text-white shadow-xs' : 'bg-canvas text-slate hover:text-deep-sea hover:bg-gray-200/70 border border-gray-200'}">
+            <span class="material-symbols-outlined text-sm ${isActive ? 'text-gold' : s.iconColor}">${s.icon}</span>
+            <span>${s.shortName}</span>
+          </button>
+        `;
+      }).join('')}
+    </div>
+
+    <!-- Subject Hero Header -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 mb-6 shadow-sm">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl ${subject.iconBg} flex items-center justify-center shrink-0 shadow-2xs">
+            <span class="material-symbols-outlined ${subject.iconColor} text-3xl">${subject.icon}</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="badge ${subject.badgeClass} font-bold text-[10px] uppercase">IMU-CET Core</span>
+              <span class="text-xs text-slate">Faculty: <strong class="text-gray-800">${subject.faculty}</strong></span>
+            </div>
+            <h2 class="font-sub text-xl sm:text-2xl font-bold text-deep-sea">${subject.name}</h2>
+            <p class="text-xs text-slate mt-0.5">Comprehensive curriculum module covering theory, tests, and interactive online sessions.</p>
+          </div>
+        </div>
+
+        <!-- Subject Progress Metric -->
+        <div class="w-full md:w-56 shrink-0 bg-canvas p-3.5 rounded-xl border border-gray-100">
+          <div class="flex justify-between items-center text-xs mb-1.5">
+            <span class="font-bold text-slate text-[11px] uppercase">Syllabus Progress</span>
+            <span class="font-bold text-deep-sea text-sm">${subject.progress}%</span>
+          </div>
+          <div class="progress-bar mb-1"><div class="progress-fill" style="width:${subject.progress}%"></div></div>
+          <p class="text-[10px] text-slate">On track for batch graduation target</p>
+        </div>
+      </div>
+
+      <!-- Segmented Navigation Pills: 1. Study Materials | 2. Exams | 3. Online Class History -->
+      <div class="flex items-center gap-2 mt-6 pt-5 border-t border-gray-100 overflow-x-auto no-scrollbar">
+        <button onclick="setImuCetSubTab('materials')" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 min-h-[44px] ${currentImuCetSubTab === 'materials' ? 'bg-deep-sea text-white shadow-xs' : 'bg-canvas text-slate hover:text-deep-sea border border-gray-200'}">
+          <span class="material-symbols-outlined text-base ${currentImuCetSubTab === 'materials' ? 'text-gold' : 'text-blue-600'}">description</span>
+          <span>Study Materials (${matItems.length})</span>
+        </button>
+
+        <button onclick="setImuCetSubTab('exams')" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 min-h-[44px] ${currentImuCetSubTab === 'exams' ? 'bg-deep-sea text-white shadow-xs' : 'bg-canvas text-slate hover:text-deep-sea border border-gray-200'}">
+          <span class="material-symbols-outlined text-base ${currentImuCetSubTab === 'exams' ? 'text-gold' : 'text-amber-600'}">quiz</span>
+          <span>Exams &amp; CBT Tests (${testItems.length})</span>
+        </button>
+
+        <button onclick="setImuCetSubTab('classes')" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 min-h-[44px] ${currentImuCetSubTab === 'classes' ? 'bg-deep-sea text-white shadow-xs' : 'bg-canvas text-slate hover:text-deep-sea border border-gray-200'}">
+          <span class="material-symbols-outlined text-base ${currentImuCetSubTab === 'classes' ? 'text-gold' : 'text-emerald-600'}">videocam</span>
+          <span>Online Class History (${classItems.length})</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Sub-Tab Content -->
+    <div id="imu-cet-subtab-container">
+      ${renderImuCetSubTabContent(subject, matItems, testItems, classItems)}
+    </div>
+  `;
+}
+
+function renderImuCetSubTabContent(subject, matItems, testItems, classItems) {
+  if (currentImuCetSubTab === 'materials') {
+    if (matItems.length === 0) {
+      return `
+        <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center text-slate">
+          <span class="material-symbols-outlined text-4xl text-gray-300 mb-2">folder_open</span>
+          <p class="font-bold text-deep-sea">No specific materials found for ${subject.name}</p>
+          <p class="text-xs mt-1">Study materials will be uploaded by faculty prior to the next lecture.</p>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="mb-4 flex items-center justify-between">
+        <div>
+          <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Available Study Materials</h3>
+          <p class="text-xs text-slate">Curated reference PDFs, chapter handbooks, and worked formula sheets.</p>
+        </div>
+        <span class="text-xs text-slate font-medium">${matItems.length} documents</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${matItems.map(m => `
+          <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 hover:border-gold/50 hover:shadow-md transition-all flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-gold text-2xl">${m.icon || 'description'}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="badge bg-gold/15 text-gold-dark border border-gold/30 text-[9px] font-bold uppercase">${m.type || 'PDF'}</span>
+                <span class="text-[11px] text-slate">${m.pages} Pages</span>
+                <span class="text-gray-300">•</span>
+                <span class="text-[11px] text-slate">${m.date}</span>
+              </div>
+              <h4 class="font-sub text-sm sm:text-base font-bold text-deep-sea leading-snug">${m.title}</h4>
+              <p class="text-xs text-slate mt-1 line-clamp-2 leading-relaxed">${m.desc}</p>
+              
+              <div class="mt-3.5 flex items-center gap-2">
+                <button onclick="downloadMaterial(${m.id})" class="px-4 py-2 bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 min-h-[38px] shadow-xs active:scale-95">
+                  <span class="material-symbols-outlined text-sm text-gold">download</span>
+                  <span>Download PDF</span>
+                </button>
+                <button onclick="toast('Opening preview for "' + '${m.title}' + '"...', 'info')" class="px-3.5 py-2 bg-canvas hover:bg-gray-200/70 border border-gray-200 text-slate hover:text-deep-sea text-xs font-bold rounded-xl transition-all min-h-[38px]">
+                  Quick View
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  if (currentImuCetSubTab === 'exams') {
+    return `
+      <div class="mb-4 flex items-center justify-between">
+        <div>
+          <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Exams &amp; CBT Chapter Tests</h3>
+          <p class="text-xs text-slate">Proctored computer-based tests designed to simulate IMU-CET timing and marking.</p>
+        </div>
+        <span class="text-xs text-slate font-medium">${testItems.length + 1} tests available</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${testItems.map(t => `
+          <div class="bg-white rounded-2xl border border-gray-200 p-5 hover:border-gold/50 hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="badge bg-gold/15 text-gold-dark border border-gold/30 text-[9px] font-bold uppercase">${t.subject}</span>
+                <span class="text-xs text-slate font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-gold">timer</span> ${t.duration} mins
+                </span>
+              </div>
+              <h4 class="font-sub text-base font-bold text-deep-sea">${t.title}</h4>
+              <p class="text-xs text-slate mt-1">Timed chapter sprint with instant result analysis and answer explanations.</p>
+
+              <div class="grid grid-cols-3 gap-2 mt-4 p-2.5 rounded-xl bg-canvas border border-gray-100 text-center text-xs">
+                <div><p class="text-slate text-[10px] font-bold uppercase">Questions</p><p class="font-bold text-deep-sea mt-0.5">${t.questions ? t.questions.length : 5}</p></div>
+                <div><p class="text-slate text-[10px] font-bold uppercase">Marks</p><p class="font-bold text-deep-sea mt-0.5">${t.total} M</p></div>
+                <div><p class="text-slate text-[10px] font-bold uppercase">Proctoring</p><p class="font-bold text-emerald-600 mt-0.5">CBT Mode</p></div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
+              <span class="text-[11px] text-slate font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-emerald-600">verified</span> Ready to Start
+              </span>
+              <button onclick="openTest(${t.id})" class="px-5 py-2.5 bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-xs min-h-[40px] active:scale-95">
+                <span class="material-symbols-outlined text-base text-gold">play_circle</span>
+                <span>Start CBT Exam</span>
+              </button>
+            </div>
+          </div>
+        `).join('')}
+
+        <!-- Full Syllabus IMU-CET Mock option -->
+        <div class="bg-gradient-to-br from-navy-dark to-deep-sea rounded-2xl p-5 text-white flex flex-col justify-between shadow-md">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="badge bg-gold text-deep-sea text-[9px] font-bold uppercase">Full Length Mock</span>
+              <span class="text-xs text-slate-300 font-semibold flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-gold">timer</span> 90 mins
+              </span>
+            </div>
+            <h4 class="font-sub text-base font-bold text-white">IMU-CET Mock - Series 5</h4>
+            <p class="text-xs text-slate-300 mt-1">Simulate the complete full-length paper with all 6 subjects combined and real-time rank projection.</p>
+
+            <div class="grid grid-cols-3 gap-2 mt-4 p-2.5 rounded-xl bg-white/10 border border-white/10 text-center text-xs">
+              <div><p class="text-slate-300 text-[10px] font-bold uppercase">Questions</p><p class="font-bold text-white mt-0.5">10 Qs</p></div>
+              <div><p class="text-slate-300 text-[10px] font-bold uppercase">Marks</p><p class="font-bold text-white mt-0.5">100 M</p></div>
+              <div><p class="text-slate-300 text-[10px] font-bold uppercase">All Subjects</p><p class="font-bold text-gold mt-0.5">Combined</p></div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-white/10 flex items-center justify-between gap-2">
+            <span class="text-[11px] text-slate-300 font-medium">Official Academy Series</span>
+            <button onclick="openTest(1)" class="px-5 py-2.5 bg-gold hover:bg-gold-light text-deep-sea text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-sm min-h-[40px] active:scale-95">
+              <span class="material-symbols-outlined text-base">play_circle</span>
+              <span>Launch Full Mock</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (currentImuCetSubTab === 'classes') {
+    return `
+      <div class="mb-4 flex items-center justify-between">
+        <div>
+          <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Online Class History &amp; Recordings</h3>
+          <p class="text-xs text-slate">Stream past lecture recordings, review key nautical concepts, or check upcoming live schedules.</p>
+        </div>
+        <span class="text-xs text-slate font-medium">${classItems.length} lectures on record</span>
+      </div>
+
+      <div class="space-y-3.5">
+        ${classItems.map(c => {
+          const isCompleted = c.status === 'completed';
+          const isScheduled = c.status === 'scheduled';
+
+          return `
+            <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 hover:border-gold/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  ${isCompleted ? `
+                    <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs text-emerald-700">check_circle</span> Completed
+                    </span>
+                  ` : `
+                    <span class="badge bg-blue-100 text-blue-800 border border-blue-300 text-[10px] font-bold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs text-blue-700">event_upcoming</span> Upcoming Live
+                    </span>
+                  `}
+                  
+                  <span class="text-xs text-slate font-bold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-gold">calendar_today</span> ${c.date} (${c.day})
+                  </span>
+                  <span class="text-gray-300">•</span>
+                  <span class="text-xs text-slate font-bold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-teal">schedule</span> ${c.time}
+                  </span>
+                </div>
+
+                <h4 class="font-sub text-sm sm:text-base font-bold text-deep-sea">${c.title}</h4>
+                <p class="text-xs text-slate mt-1 leading-relaxed">${c.summary}</p>
+                
+                <div class="flex items-center gap-3 text-xs text-slate mt-2">
+                  <span class="flex items-center gap-1 font-semibold text-gray-700">
+                    <span class="material-symbols-outlined text-sm text-teal">person</span> ${c.faculty}
+                  </span>
+                  ${c.duration ? `
+                    <span class="text-gray-300">•</span>
+                    <span class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm text-gold">timer</span> ${c.duration}
+                    </span>
+                  ` : ''}
+                  <span class="text-gray-300">•</span>
+                  <span class="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                    <span class="material-symbols-outlined text-sm">videocam</span> Google Meet Portal
+                  </span>
+                </div>
+              </div>
+
+              <div class="shrink-0 flex items-center gap-2 self-start md:self-auto">
+                ${isCompleted && c.recordingAvailable ? `
+                  <button onclick="openClassRecordingModal('${c.id}')" class="px-4 py-2.5 bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-xs min-h-[42px] active:scale-95">
+                    <span class="material-symbols-outlined text-base text-gold">play_circle</span>
+                    <span>Watch Recording</span>
+                  </button>
+                  <button onclick="toast('Downloading lecture notes for ' + '${c.title}', 'success')" class="p-2.5 rounded-xl border border-gray-200 text-slate hover:text-deep-sea hover:bg-canvas transition-colors min-h-[42px] min-w-[42px] flex items-center justify-center" title="Download Class Slides">
+                    <span class="material-symbols-outlined text-base">download</span>
+                  </button>
+                ` : `
+                  <button onclick="toast('Live class link will activate 10 mins before class.', 'info')" class="px-4 py-2.5 bg-teal hover:bg-teal-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-xs min-h-[42px] active:scale-95">
+                    <span class="material-symbols-outlined text-base">videocam</span>
+                    <span>Join Class</span>
+                  </button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+}
+
+function openClassRecordingModal(classId) {
+  let foundClass = null;
+  let foundSubject = null;
+  for (const s of IMU_CET_SUBJECTS) {
+    const c = s.classes.find(item => item.id === classId);
+    if (c) {
+      foundClass = c;
+      foundSubject = s;
+      break;
+    }
+  }
+
+  if (!foundClass) return;
+
+  const modal = document.getElementById('class-recording-modal');
+  if (!modal) return;
+
+  document.getElementById('recording-modal-player-title').textContent = foundClass.title;
+  document.getElementById('recording-modal-player-sub').textContent = `Faculty: ${foundClass.faculty} · Recorded ${foundClass.date}`;
+  document.getElementById('recording-modal-player-duration').textContent = foundClass.duration || '55 mins';
+  document.getElementById('recording-modal-time-display').textContent = `18:40 / ${foundClass.duration || '55:00'}`;
+  document.getElementById('recording-modal-topic').textContent = `${foundSubject.name} — ${foundClass.title}`;
+  document.getElementById('recording-modal-meta').textContent = `Maritime Academy Class Archive · ${foundClass.day}, ${foundClass.date} at ${foundClass.time}`;
+  document.getElementById('recording-modal-desc').textContent = foundClass.summary;
+
+  modal.classList.remove('hidden');
+}
+
+function closeClassRecordingModal() {
+  const modal = document.getElementById('class-recording-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function renderCadetCourses() {
+  const container = document.getElementById('cadet-courses-grid');
+  if (!container) return;
+  const locks = getCourseLocks();
+
+  // Update simulation pill button states
+  const anyLocked = Object.values(locks).some(v => v === true);
+  const unlBtn = document.getElementById('sim-unlocked-btn');
+  const lckBtn = document.getElementById('sim-locked-btn');
+  if (unlBtn && lckBtn) {
+    if (anyLocked) {
+      lckBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white shadow-xs';
+      unlBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all';
+    } else {
+      unlBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs';
+      lckBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all';
+    }
+  }
+
+  container.innerHTML = CADET_COURSES.map(c => {
+    const isLocked = !c.isCore && (locks[c.name] === true);
+
+    if (isLocked) {
+      return `
+        <div class="bg-white/90 rounded-2xl border-2 border-dashed border-amber-300/80 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative">
+          <div class="h-2 bg-gradient-to-r from-amber-400 to-orange-400"></div>
+          <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between mb-3">
+                <div class="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-amber-600 text-2xl">lock</span>
+                </div>
+                <span class="badge bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs text-amber-700">lock</span> Locked
+                </span>
+              </div>
+              <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">${c.name}</h3>
+              <p class="text-xs text-slate mt-1 mb-3 line-clamp-2">${c.desc}</p>
+              
+              <div class="grid grid-cols-2 gap-2 text-xs mb-4 p-2.5 rounded-xl bg-gray-50/80 border border-gray-100">
+                <div><p class="text-slate text-[10px] uppercase font-bold">Faculty</p><p class="font-semibold text-gray-700 truncate">${c.faculty}</p></div>
+                <div><p class="text-slate text-[10px] uppercase font-bold">Duration</p><p class="font-semibold text-gray-700">${c.duration}</p></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200 text-[11px] text-amber-900 flex items-center gap-2 mb-1">
+                <span class="material-symbols-outlined text-amber-600 text-base shrink-0">lock</span>
+                <span>Requires <strong>IMU-CET + Sponsorship</strong> tier.</span>
+              </div>
+              <button onclick="openCourseLockedModal('${c.name}')" class="mt-3 w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider transition-colors min-h-[44px] flex items-center justify-center gap-1.5 shadow-xs">
+                <span class="material-symbols-outlined text-sm">lock_open</span> Unlock / Contact Admin
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col justify-between">
+        <div class="h-2 bg-gradient-to-r ${c.gradient}"></div>
+        <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between mb-3">
+              <div class="w-11 h-11 rounded-xl ${c.iconBg} flex items-center justify-center">
+                <span class="material-symbols-outlined ${c.iconColor} text-2xl">${c.icon}</span>
+              </div>
+              <span class="badge ${c.badgeClass}">${c.status}</span>
+            </div>
+            <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">${c.name}</h3>
+            <p class="text-xs text-slate mt-1 mb-3 line-clamp-2">${c.desc}</p>
+            <div class="grid grid-cols-2 gap-2 text-xs mb-4">
+              <div><p class="text-slate text-[10px] uppercase font-bold">Faculty</p><p class="font-semibold text-gray-700 truncate">${c.faculty}</p></div>
+              <div><p class="text-slate text-[10px] uppercase font-bold">Batch</p><p class="font-semibold text-gray-700">${c.batch}</p></div>
+              <div><p class="text-slate text-[10px] uppercase font-bold">Next Class</p><p class="font-semibold text-gold truncate">${c.nextClass}</p></div>
+              <div><p class="text-slate text-[10px] uppercase font-bold">Duration</p><p class="font-semibold text-gray-700">${c.duration}</p></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="mb-1 flex justify-between text-xs"><span class="text-slate">Syllabus Progress</span><span class="font-bold text-deep-sea">${c.progress}%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${c.progress}%"></div></div>
+            <button onclick="showCourseDetail('${c.name}')" class="mt-4 w-full py-2.5 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors min-h-[44px] flex items-center justify-center shadow-xs">View Details</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 const COURSE_DETAILS = {
+  'IMU-CET': {
+    desc: 'Comprehensive preparation for the Indian Maritime University Common Entrance Test. Covers Mathematics, Physics, Chemistry, English, General Aptitude / Reasoning, and General Knowledge / General Science.',
+    faculty: 'Capt. R. Sharma & Faculty Panel', batch: 'Batch A · April–October 2026',
+    duration: '6 Months', fee: '₹45,000', nextClass: 'Monday, 07:00 PM — Trigonometry (Live Online)',
+    topics: ['Mathematics (Algebra, Trigonometry, Calculus, Vectors & 3D Geometry)','Physics (Mechanics, Optics, Thermodynamics, Waves)','English (Grammar, Comprehension, Nautical Lexicon)','Chemistry (Bonding, Thermodynamics, Periodic Trends)','General Aptitude / Reasoning (Logic, Series, Shortcuts)','General Knowledge / General Science (IMO, SOLAS, Science)'],
+    progress: 68
+  },
   'IMU-CET Coaching': {
     desc: 'Comprehensive preparation for the Indian Maritime University Common Entrance Test. Covers Mathematics, Physics, Chemistry, English, and General Aptitude.',
     faculty: 'Capt. R. Sharma (Ex-Merchant Navy Officer)', batch: 'Batch A · April–October 2026',
-    duration: '6 Months', fee: '₹45,000', nextClass: 'Monday, 07:30 AM — Trigonometry',
+    duration: '6 Months', fee: '₹45,000', nextClass: 'Monday, 07:00 PM — Trigonometry (Live Online)',
     topics: ['Mathematics (Algebra, Trigonometry, Calculus, Statistics)','Physics (Mechanics, Optics, Thermodynamics)','English (Grammar, Comprehension, Vocabulary)','General Knowledge (Maritime Awareness, Current Affairs)'],
     progress: 68
   },
   'DNS Sponsorship Prep': {
     desc: 'Specialized module for Diploma in Nautical Science candidates targeting company sponsorships from Maersk, MSC, Anglo-Eastern, Fleet Management, and more.',
     faculty: 'Capt. Arun Pillai (Master Mariner, 20+ years)', batch: 'Batch A · July–October 2026',
-    duration: '3 Months', fee: '₹25,000', nextClass: 'Tuesday, 02:00 PM — Ship Stability',
+    duration: '3 Months', fee: '₹25,000', nextClass: 'Tuesday, 08:15 PM — Ship Stability (Live Online)',
     topics: ['Ship Stability & Buoyancy','Navigation & Chartwork','Seamanship & Watchkeeping','STCW Regulations','Company Interview Preparation'],
     progress: 45
+  },
+  'Interview Preparation & Viva': {
+    desc: 'Intensive 1-on-1 and panel interview coaching for shipping company cadet sponsorships. Covers technical viva, maritime HR protocols, situational judgment, and psychometric assessments.',
+    faculty: 'Capt. Arun Pillai (Master Mariner) & Chief Eng. S. Raman',
+    batch: 'Batch A · 2026',
+    duration: '3 Months',
+    fee: '₹20,000 (Included in Sponsorship Bundle)',
+    nextClass: 'Thursday, 06:00 PM — Mock Panel Interview (1-on-1)',
+    topics: [
+      'Maritime HR & Behavioral Questions (Why Merchant Navy, Leadership, Conflict Resolution)',
+      'Technical Viva (Ship types, Buoyancy, Engine cycles, STCW & SOLAS conventions)',
+      'Shipping Company Specific Rounds (Anglo-Eastern, Synergy, Fleet, Great Eastern)',
+      '1-on-1 Mock Interview Sessions with Master Mariners',
+      'Psychometric Profiling & Situation Reaction Tests (SRT)'
+    ],
+    progress: 35
   },
   'Aptitude Test Prep': {
     desc: 'Focused preparation for psychometric and aptitude tests used in maritime recruitment drives by major shipping companies.',
@@ -2966,6 +4174,10 @@ const COURSE_DETAILS = {
 };
 
 function showCourseDetail(name) {
+  if (name === 'IMU-CET' || name === 'IMU-CET Coaching') {
+    openImuCetCourseHub();
+    return;
+  }
   const d = COURSE_DETAILS[name];
   if (!d) return;
   document.getElementById('course-modal-title').textContent = name;
@@ -3247,65 +4459,129 @@ const myRole = 'Cadet';
 // ══════════════════════════════════════════════
 //  SHARED ACADEMY LIVE CHAT LOGIC
 // ══════════════════════════════════════════════
-const LS_CHAT_MESSAGES = 'sp_portal_chat_messages_v1';
-let activeChatChannelId = 'general';
+const LS_CHAT_MESSAGES = 'sp_portal_chat_messages_v2';
+let activeChatChannelId = 'math';
 let chatSearchFilter = '';
 
 const CHANNELS_LIST = [
-  { id: 'general', name: 'General Discussion', type: 'channel', icon: 'forum', badge: 'Academy All', desc: 'Academy-wide chat for all cadets & faculty' },
-  { id: 'batch-a', name: 'Batch A (IMU-CET)', type: 'channel', icon: 'groups', badge: 'Batch A', desc: 'Discussion for Batch A cadets & faculty' },
-  { id: 'batch-b', name: 'Batch B (DNS Prep)', type: 'channel', icon: 'groups', badge: 'Batch B', desc: 'Discussion for Batch B cadets & faculty' },
-  { id: 'batch-c', name: 'Batch C (Sponsorship)', type: 'channel', icon: 'groups', badge: 'Batch C', desc: 'Discussion for Batch C cadets & faculty' },
-  { id: 'dm-sharma', name: 'Capt. R. Sharma', type: 'dm', icon: 'person', role: 'Faculty', title: 'Senior Lecturer · Math/Physics', online: true },
-  { id: 'dm-pillai', name: 'Capt. Arun Pillai', type: 'dm', icon: 'person', role: 'Faculty', title: 'Master Mariner · Seamanship', online: true },
-  { id: 'dm-arjun', name: 'Arjun Sharma', type: 'dm', icon: 'person', role: 'Cadet', title: 'Batch A Student', online: true },
-  { id: 'dm-kavitha', name: 'Kavitha Menon', type: 'dm', icon: 'person', role: 'Cadet', title: 'Batch B Student', online: true }
+  { 
+    id: 'math', 
+    name: 'Mathematics', 
+    type: 'channel', 
+    icon: 'calculate', 
+    badge: 'Faculty & Cadets', 
+    faculty: 'Capt. R. Sharma',
+    desc: 'Live discussion & doubt clearing · Faculty: Capt. R. Sharma' 
+  },
+  { 
+    id: 'physics', 
+    name: 'Physics', 
+    type: 'channel', 
+    icon: 'biotech', 
+    badge: 'Faculty & Cadets', 
+    faculty: 'Dr. A. Verma',
+    desc: 'Live discussion & doubt clearing · Faculty: Dr. A. Verma' 
+  },
+  { 
+    id: 'english', 
+    name: 'English', 
+    type: 'channel', 
+    icon: 'spellcheck', 
+    badge: 'Faculty & Cadets', 
+    faculty: 'Ms. Priya Nair',
+    desc: 'Live discussion & doubt clearing · Faculty: Ms. Priya Nair' 
+  },
+  { 
+    id: 'chemistry', 
+    name: 'Chemistry', 
+    type: 'channel', 
+    icon: 'science', 
+    badge: 'Faculty & Cadets', 
+    faculty: 'Dr. Meera Iyer',
+    desc: 'Live discussion & doubt clearing · Faculty: Dr. Meera Iyer' 
+  },
+  { 
+    id: 'aptitude', 
+    name: 'General Aptitude / Reasoning', 
+    type: 'channel', 
+    icon: 'psychology', 
+    badge: 'Faculty & Cadets', 
+    faculty: 'Mr. Vikas Menon',
+    desc: 'Live discussion & doubt clearing · Faculty: Mr. Vikas Menon' 
+  },
+  { 
+    id: 'gk-science', 
+    name: 'General Knowledge / General Science', 
+    type: 'channel', 
+    icon: 'travel_explore', 
+    badge: 'Faculty & Cadets', 
+    faculty: 'Capt. Arun Pillai',
+    desc: 'Live discussion & doubt clearing · Faculty: Capt. Arun Pillai' 
+  }
 ];
 
 const SEED_CHAT_MESSAGES = [
   {
     id: 1,
-    channelId: 'general',
+    channelId: 'math',
     senderName: 'Capt. R. Sharma',
     senderRole: 'Faculty',
     avatarBg: '#0B2345',
-    text: 'Welcome Cadets to the Sindhupath Live Chat! Feel free to ask your doubts or queries here.',
+    text: 'Welcome Cadets to the Mathematics discussion group! Feel free to ask any doubt on Trigonometry, Calculus, or Vectors.',
     timestamp: '09:00 AM'
   },
   {
     id: 2,
-    channelId: 'general',
+    channelId: 'math',
     senderName: 'Arjun Sharma',
     senderRole: 'Cadet',
     avatarBg: '#C89B3C',
-    text: 'Good morning Captain! Will today\'s Trigonometry class be recorded?',
+    text: 'Good morning Sir! Could you share the shortcut formula for height and distance problems?',
     timestamp: '09:05 AM'
   },
   {
     id: 3,
-    channelId: 'general',
-    senderName: 'Capt. R. Sharma',
+    channelId: 'physics',
+    senderName: 'Dr. A. Verma',
     senderRole: 'Faculty',
     avatarBg: '#0B2345',
-    text: 'Yes Arjun! All live classes are archived in the Study Materials tab.',
-    timestamp: '09:08 AM'
+    text: 'Welcome to the Physics discussion room! Mechanics & Wave Optics doubt sessions start here.',
+    timestamp: '09:30 AM'
   },
   {
     id: 4,
-    channelId: 'batch-a',
-    senderName: 'Kavitha Menon',
-    senderRole: 'Cadet',
-    avatarBg: '#0D9488',
-    text: 'Has anyone finished Chapter 4 Calculus exercises?',
-    timestamp: '10:15 AM'
+    channelId: 'english',
+    senderName: 'Ms. Priya Nair',
+    senderRole: 'Faculty',
+    avatarBg: '#0B2345',
+    text: 'Welcome to English! Review the active/passive voice notes uploaded in the Study Materials tab.',
+    timestamp: '10:00 AM'
   },
   {
     id: 5,
-    channelId: 'dm-sharma',
-    senderName: 'Capt. R. Sharma',
+    channelId: 'chemistry',
+    senderName: 'Dr. Meera Iyer',
     senderRole: 'Faculty',
     avatarBg: '#0B2345',
-    text: 'Hello Cadet! Let me know if you need help with your IMU-CET preparations.',
+    text: 'Hello Cadets! Ask your Physical, Inorganic, and Organic Chemistry questions here.',
+    timestamp: '10:15 AM'
+  },
+  {
+    id: 6,
+    channelId: 'aptitude',
+    senderName: 'Mr. Vikas Menon',
+    senderRole: 'Faculty',
+    avatarBg: '#0B2345',
+    text: 'Welcome to General Aptitude & Reasoning! Practice today\'s speed-math tricks for the IMU-CET test.',
+    timestamp: '10:30 AM'
+  },
+  {
+    id: 7,
+    channelId: 'gk-science',
+    senderName: 'Capt. Arun Pillai',
+    senderRole: 'Faculty',
+    avatarBg: '#0B2345',
+    text: 'Welcome! This room is dedicated to General Knowledge, General Science, and Maritime updates.',
     timestamp: '11:00 AM'
   }
 ];
@@ -3344,15 +4620,10 @@ function selectChatChannel(id) {
   const avatarEl = document.getElementById('chat-header-avatar');
 
   if (titleEl) titleEl.textContent = channel.name;
-  if (subEl)   subEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> ${channel.desc || (channel.role ? channel.role + ' · ' + channel.title : 'Active Channel')}`;
+  if (subEl)   subEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Faculty: ${channel.faculty} · All Cadets &amp; Faculty`;
   if (avatarEl) {
-    if (channel.type === 'dm') {
-      avatarEl.innerHTML = `<span class="font-bold text-white text-sm">${channel.name.charAt(0)}</span>`;
-      avatarEl.style.background = channel.role === 'Faculty' ? '#0B2345' : '#C89B3C';
-    } else {
-      avatarEl.innerHTML = `<span class="material-symbols-outlined text-gold">${channel.icon || 'forum'}</span>`;
-      avatarEl.style.background = '#0B2345';
-    }
+    avatarEl.innerHTML = `<span class="material-symbols-outlined text-gold">${channel.icon || 'calculate'}</span>`;
+    avatarEl.style.background = '#0B2345';
   }
 
   // On mobile screens, hide channels list and show message container
@@ -3383,53 +4654,30 @@ function renderChatChannelsList() {
   const container = document.getElementById('chat-channels-list');
   if (!container) return;
 
-  const filtered = CHANNELS_LIST.filter(c => !chatSearchFilter || c.name.toLowerCase().includes(chatSearchFilter) || (c.title && c.title.toLowerCase().includes(chatSearchFilter)));
+  const filtered = CHANNELS_LIST.filter(c => !chatSearchFilter || c.name.toLowerCase().includes(chatSearchFilter) || (c.faculty && c.faculty.toLowerCase().includes(chatSearchFilter)));
 
   let html = '';
-
-  const channels = filtered.filter(c => c.type === 'channel');
-  if (channels.length > 0) {
-    html += `<p class="px-3 pt-2 pb-1 text-[10px] font-bold text-slate uppercase tracking-wider">Group Channels</p>`;
-    channels.forEach(c => {
+  if (filtered.length > 0) {
+    html += `<p class="px-3 pt-2 pb-1.5 text-[10px] font-bold text-slate uppercase tracking-wider">Subject Rooms (Faculty &amp; Cadets)</p>`;
+    filtered.forEach(c => {
       const active = c.id === activeChatChannelId;
       html += `
         <div onclick="selectChatChannel('${c.id}')"
           class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all ${active ? 'bg-deep-sea text-white font-bold shadow-sm' : 'hover:bg-white text-gray-700 hover:text-deep-sea'}">
           <div class="flex items-center gap-2.5 min-w-0">
             <span class="material-symbols-outlined text-lg ${active ? 'text-gold' : 'text-slate'}">${c.icon}</span>
-            <span class="text-xs truncate">${c.name}</span>
-          </div>
-          ${c.badge ? `<span class="badge ${active ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-gray-200 text-gray-600'} text-[9px]">${c.badge}</span>` : ''}
-        </div>
-      `;
-    });
-  }
-
-  const dms = filtered.filter(c => c.type === 'dm');
-  if (dms.length > 0) {
-    html += `<p class="px-3 pt-3 pb-1 text-[10px] font-bold text-slate uppercase tracking-wider">Direct Messages</p>`;
-    dms.forEach(c => {
-      const active = c.id === activeChatChannelId;
-      const badgeColor = c.role === 'Faculty' ? 'bg-teal/20 text-teal border border-teal/30' : 'bg-gold/20 text-gold border border-gold/30';
-      html += `
-        <div onclick="selectChatChannel('${c.id}')"
-          class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all ${active ? 'bg-deep-sea text-white font-bold shadow-sm' : 'hover:bg-white text-gray-700 hover:text-deep-sea'}">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 text-white" style="background:${c.role === 'Faculty' ? '#0B2345' : '#C89B3C'}">
-              ${c.name.charAt(0)}
-            </div>
             <div class="min-w-0">
-              <p class="text-xs truncate leading-tight">${c.name}</p>
-              <p class="text-[10px] ${active ? 'text-white/70' : 'text-slate'} truncate">${c.title || c.role}</p>
+              <span class="text-xs truncate block leading-tight">${c.name}</span>
+              <span class="text-[10px] ${active ? 'text-white/70' : 'text-slate'} truncate block mt-0.5">${c.faculty}</span>
             </div>
           </div>
-          <span class="badge ${badgeColor} text-[9px]">${c.role}</span>
+          <span class="badge ${active ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-gray-100 text-gray-600'} text-[8px] shrink-0">Live</span>
         </div>
       `;
     });
   }
 
-  container.innerHTML = html || `<p class="text-xs text-slate p-4 text-center">No channels found.</p>`;
+  container.innerHTML = html || `<p class="text-xs text-slate p-4 text-center">No subject channels found.</p>`;
 }
 
 function renderChatMessages() {
@@ -3563,6 +4811,8 @@ window.addEventListener('keydown', (e) => {
     const courseModal = document.getElementById('course-modal');
     const testModal = document.getElementById('test-modal');
     const moreSheet = document.getElementById('more-action-sheet');
+    const recModal = document.getElementById('class-recording-modal');
+    if (recModal && !recModal.classList.contains('hidden')) closeClassRecordingModal();
     if (courseModal && !courseModal.classList.contains('hidden')) courseModal.classList.add('hidden');
     if (testModal && !testModal.classList.contains('hidden')) closeTestModal();
     if (moreSheet && !moreSheet.classList.contains('translate-y-full')) closeMoreSheet();
@@ -3577,6 +4827,7 @@ renderCadetSchedule();
 renderScheduledEventsList();
 renderCalendar();
 renderDashboardTodaySchedule();
+renderCadetCourses();
 
 // ── MOBILE "MORE" ACTION SHEET LOGIC ─────────
 function openMoreSheet() {

@@ -892,12 +892,39 @@
         <div class="page-header">
           <div>
             <div class="page-title">Courses</div>
-            <div class="page-subtitle">Course catalog management</div>
+            <div class="page-subtitle">Course catalog management &amp; cadet access control</div>
           </div>
           <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-course')">
             <span class="material-symbols-outlined" style="font-size:14px;">add</span> Add Course
           </button>
         </div>
+
+        <!-- Course Access & Locks Authority Control -->
+        <div class="card" style="margin-bottom:24px;border:1.5px solid #e2e8f0;background:#fff;box-shadow:0 2px 8px rgba(11,35,69,0.04);">
+          <div class="card-header" style="background:#f8fafc;flex-wrap:wrap;gap:12px;padding:16px 20px;">
+            <div>
+              <div style="font-family:'Oswald';font-size:16px;font-weight:600;color:#0B2345;display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined" style="color:#C89B3C;font-size:20px;">admin_panel_settings</span>
+                Cadet Course Access &amp; Sponsorship Locks Authority
+              </div>
+              <div style="font-size:12px;color:#64748b;margin-top:3px;">
+                All 4 courses are <strong>unlocked by default</strong> for all cadets. Use this authority panel to lock specialized modules for cadets enrolled in the basic <strong>IMU-CET Only</strong> tier.
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="adminSetAllLocks(false)">
+                <span class="material-symbols-outlined" style="font-size:15px;color:#16a34a;">lock_open</span> Unlock All (Default)
+              </button>
+              <button class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;" onclick="adminSetSponsorshipLocks(true)">
+                <span class="material-symbols-outlined" style="font-size:15px;color:#d97706;">lock</span> Lock Sponsorship &amp; Interview (CET-Only)
+              </button>
+            </div>
+          </div>
+          <div style="padding:18px 20px;" id="admin-course-locks-list">
+            <!-- Populated by renderAdminCourseLocks() -->
+          </div>
+        </div>
+
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="courses-grid"></div>
       </div>
 
@@ -1785,8 +1812,9 @@ const FALLBACK_COURSES = [
   { id:1, name:'IMU-CET Preparatory', duration:'6 Months',  fee:55000, batches:2, enrolled:72, status:'Active',   desc:'Comprehensive preparation for the Indian Maritime University Common Entrance Test covering Maths, Physics, Chemistry, English and General Knowledge.' },
   { id:2, name:'DNS Preparatory',     duration:'8 Months',  fee:65000, batches:2, enrolled:58, status:'Active',   desc:'Diploma in Nautical Science preparatory course with full syllabus coverage, mock tests, and personal mentorship.' },
   { id:3, name:'Sponsorship Prep',    duration:'4 Months',  fee:40000, batches:1, enrolled:44, status:'Active',   desc:'Tailored coaching for students targeting shipping company sponsorships. Covers aptitude, group discussions, and interview skills.' },
-  { id:4, name:'Aptitude Training',   duration:'3 Months',  fee:25000, batches:1, enrolled:68, status:'Active',   desc:'Intensive aptitude and reasoning training for maritime entrance exams. Daily practice sessions and performance analytics.' },
-  { id:5, name:'Entrance Exam Crash', duration:'45 Days',   fee:15000, batches:1, enrolled:42, status:'Upcoming', desc:'Fast-track crash course for students appearing in upcoming maritime entrance examinations.' },
+  { id:4, name:'Interview & Viva Prep', duration:'3 Months', fee:20000, batches:1, enrolled:38, status:'Active', desc:'1-on-1 mock interview sessions, shipping company technical viva rounds, and maritime HR question banks.' },
+  { id:5, name:'Aptitude Training',   duration:'3 Months',  fee:25000, batches:1, enrolled:68, status:'Active',   desc:'Intensive aptitude and reasoning training for maritime entrance exams. Daily practice sessions and performance analytics.' },
+  { id:6, name:'Entrance Exam Crash', duration:'45 Days',   fee:15000, batches:1, enrolled:42, status:'Upcoming', desc:'Fast-track crash course for students appearing in upcoming maritime entrance examinations.' },
 ];
 
 const FALLBACK_NOTICES = [
@@ -1858,7 +1886,7 @@ function switchTab(tab, navEl) {
   if (tab === 'students')    renderStudents();
   if (tab === 'faculty')     renderFaculty();
   if (tab === 'admissions')  renderAdmissions();
-  if (tab === 'courses')     renderCourses();
+  if (tab === 'courses')     { renderCourses(); renderAdminCourseLocks(); }
   if (tab === 'noticeboard') fetchAdminNotices();
   if (tab === 'fees')        renderFees();
   if (tab === 'messages')    { loadChatMessages(); selectChatChannel('general'); }
@@ -2264,8 +2292,136 @@ async function updateAdmission(id, status) {
   toast(`Admission ${status.toLowerCase()}!`, status==='Approved'?'#16a34a':'#dc2626');
 }
 
+// ─── CADET COURSE ACCESS & LOCKS AUTHORITY ───
+const LS_COURSE_LOCKS = 'sp_course_locks';
+
+const DEFAULT_COURSE_LOCKS = {
+  'DNS Sponsorship Prep': false,
+  'Interview Preparation & Viva': false,
+  'Aptitude Test Prep': false
+};
+
+function getAdminCourseLocks() {
+  try {
+    const raw = localStorage.getItem(LS_COURSE_LOCKS);
+    if (raw) return { ...DEFAULT_COURSE_LOCKS, ...JSON.parse(raw) };
+  } catch(e) {}
+  return { ...DEFAULT_COURSE_LOCKS };
+}
+
+function adminToggleCourseLock(courseName) {
+  const locks = getAdminCourseLocks();
+  locks[courseName] = !locks[courseName];
+  localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
+  renderAdminCourseLocks();
+  toast(locks[courseName] ? `Locked ${courseName} for CET-Only cadets` : `Unlocked ${courseName} for all cadets`, '#0B2345');
+}
+
+function adminSetAllLocks(lockState) {
+  const locks = {
+    'DNS Sponsorship Prep': lockState,
+    'Interview Preparation & Viva': lockState,
+    'Aptitude Test Prep': lockState
+  };
+  localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
+  renderAdminCourseLocks();
+  toast(lockState ? 'All sponsorship courses locked for CET-only cadets' : 'All courses unlocked by default for all cadets', '#16a34a');
+}
+
+function adminSetSponsorshipLocks(lockState) {
+  const locks = {
+    'DNS Sponsorship Prep': lockState,
+    'Interview Preparation & Viva': lockState,
+    'Aptitude Test Prep': false
+  };
+  localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
+  renderAdminCourseLocks();
+  toast('Sponsorship & Interview courses locked for CET-Only batch', '#d97706');
+}
+
+function renderAdminCourseLocks() {
+  const container = document.getElementById('admin-course-locks-list');
+  if (!container) return;
+  const locks = getAdminCourseLocks();
+
+  const courses = [
+    {
+      name: 'IMU-CET',
+      category: 'Core Preparation (Common for All Batches)',
+      isCore: true,
+      desc: 'Base syllabus covering Maths, Physics, Chemistry, English, Aptitude, and GK. Mandatory & permanent for all enrolled cadets.'
+    },
+    {
+      name: 'DNS Sponsorship Prep',
+      category: 'Sponsorship Specialization',
+      isCore: false,
+      desc: 'Company sponsorship exams (Maersk, Anglo-Eastern, Synergy, Fleet). Locked for cadets who have not paid for Sponsorship.'
+    },
+    {
+      name: 'Interview Preparation & Viva',
+      category: 'Sponsorship Specialization',
+      isCore: false,
+      desc: '1-on-1 mock panel interviews, technical viva, psychometrics, and maritime HR question banks.'
+    },
+    {
+      name: 'Aptitude Test Prep',
+      category: 'Reasoning & Psychometrics',
+      isCore: false,
+      desc: 'Spatial, numerical, and logic reasoning test bank for maritime entrance and recruitment tests.'
+    }
+  ];
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+      ${courses.map(c => {
+        if (c.isCore) {
+          return `
+            <div style="padding:14px 16px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <span style="font-weight:700;color:#0B2345;font-size:14px;">${c.name}</span>
+                  <span class="badge badge-green" style="font-size:10px;">Always Unlocked</span>
+                </div>
+                <div style="font-size:11px;color:#64748b;line-height:1.4;">${c.desc}</div>
+              </div>
+              <div style="margin-top:14px;font-size:11px;color:#16a34a;font-weight:600;display:flex;align-items:center;gap:5px;">
+                <span class="material-symbols-outlined" style="font-size:15px;">check_circle</span> Common for both batches
+              </div>
+            </div>
+          `;
+        }
+
+        const isLocked = locks[c.name] === true;
+        return `
+          <div style="padding:14px 16px;border-radius:10px;background:${isLocked ? '#fffbeb' : '#fff'};border:1px solid ${isLocked ? '#fcd34d' : '#e2e8f0'};display:flex;flex-direction:column;justify-content:space-between;transition:all .2s;">
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <span style="font-weight:700;color:#0B2345;font-size:14px;">${c.name}</span>
+                <span class="badge ${isLocked ? 'badge-yellow' : 'badge-green'}" style="font-size:10px;">
+                  ${isLocked ? '🔒 Locked (CET Only)' : '✓ Unlocked (Default)'}
+                </span>
+              </div>
+              <div style="font-size:11px;color:#64748b;line-height:1.4;">${c.desc}</div>
+            </div>
+            <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span style="font-size:11px;color:${isLocked ? '#92400e' : '#64748b'};font-weight:500;">
+                ${isLocked ? 'Access restricted' : 'Accessible to all cadets'}
+              </span>
+              <button onclick="adminToggleCourseLock('${c.name}')" class="btn btn-xs ${isLocked ? 'btn-gold' : 'btn-outline'}" style="font-size:11px;padding:4px 10px;">
+                <span class="material-symbols-outlined" style="font-size:13px;">${isLocked ? 'lock_open' : 'lock'}</span>
+                ${isLocked ? 'Unlock Course' : 'Lock Course'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
 // ─── COURSES ───
 function renderCourses() {
+  renderAdminCourseLocks();
   const grid = document.getElementById('courses-grid');
   grid.innerHTML = appCourses.map(c => `
     <div class="card" style="overflow:visible;">
