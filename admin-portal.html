@@ -926,6 +926,64 @@
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="courses-grid"></div>
+
+        <!-- DNS Sponsorship Companies & Question Papers Authority Control -->
+        <div class="card" style="margin-top:28px;border:1.5px solid #e2e8f0;background:#fff;box-shadow:0 2px 8px rgba(11,35,69,0.04);">
+          <div class="card-header" style="background:#f8fafc;flex-wrap:wrap;gap:12px;padding:16px 20px;">
+            <div>
+              <div style="font-family:'Oswald';font-size:16px;font-weight:600;color:#0B2345;display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined" style="color:#C89B3C;font-size:20px;">sailing</span>
+                Sponsorship Prep &amp; Question Banks Authority
+              </div>
+              <div style="font-size:12px;color:#64748b;margin-top:3px;">
+                Manage global shipping lines, operational fleet statistics, company histories, and past entrance question papers displayed to cadets.
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-sm btn-outline" onclick="adminOpenAddInterviewPdfModal()" style="font-size:12px;">
+                <span class="material-symbols-outlined" style="font-size:15px;color:#0f766e;">picture_as_pdf</span> ➕ Add Interview PDF
+              </button>
+              <button class="btn btn-sm btn-outline" onclick="adminOpenAddCommonQuestionModal()" style="font-size:12px;">
+                <span class="material-symbols-outlined" style="font-size:15px;color:#d97706;">fact_check</span> ➕ Add Common Question
+              </button>
+              <button class="btn btn-gold btn-sm" onclick="openAddCompanyModal()" style="font-size:12px;">
+                <span class="material-symbols-outlined" style="font-size:15px;">add_business</span> ➕ Add Shipping Company
+              </button>
+            </div>
+          </div>
+          <div style="padding:18px 20px;" id="admin-sponsorship-companies-list">
+            <!-- Populated by renderAdminSponsorshipCompanies() -->
+          </div>
+        </div>
+
+        <!-- Sunday Mock Viva & Interviewer Availability Authority Control -->
+        <div class="card" style="margin-top:28px;border:1.5px solid #e2e8f0;background:#fff;box-shadow:0 2px 8px rgba(11,35,69,0.04);">
+          <div class="card-header" style="background:#f8fafc;flex-wrap:wrap;gap:12px;padding:16px 20px;">
+            <div>
+              <div style="font-family:'Oswald';font-size:16px;font-weight:600;color:#0B2345;display:flex;align-items:center;gap:8px;">
+                <span class="material-symbols-outlined" style="color:#0f766e;font-size:20px;">record_voice_over</span>
+                Sunday Mock Viva &amp; Interviewer Availability Authority
+              </div>
+              <div style="font-size:12px;color:#64748b;margin-top:3px;">
+                Manage the upcoming Sunday 1-on-1 viva session confirmation, handle cancellations if interviewers are called for shipboard/pilotage duties, and broadcast 48-hour prior notices.
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-sm" style="background:#16a34a;color:#fff;" onclick="adminSetVivaStatus('confirmed')">
+                <span class="material-symbols-outlined" style="font-size:15px;">check_circle</span> Confirm Sunday Session
+              </button>
+              <button class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;" onclick="adminSetVivaStatus('pending')">
+                <span class="material-symbols-outlined" style="font-size:15px;">hourglass_top</span> Set to Pending (48h Notice)
+              </button>
+              <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;" onclick="adminPromptCancelViva()">
+                <span class="material-symbols-outlined" style="font-size:15px;">cancel</span> Cancel / Postpone Session
+              </button>
+            </div>
+          </div>
+          <div style="padding:18px 20px;" id="admin-viva-status-display">
+            <!-- Populated by renderAdminVivaStatus() -->
+          </div>
+        </div>
       </div>
 
       <!-- ════════════════════ MESSAGES TAB ════════════════════ -->
@@ -1623,6 +1681,351 @@
 </div>
 
 <!-- Add Course Modal -->
+<!-- Modal: Add / Edit Shipping Company -->
+<div class="modal-overlay" id="modal-company-editor" role="dialog" aria-modal="true" aria-labelledby="modal-title-company-editor" onclick="if(event.target===this) closeModal('modal-company-editor')">
+  <div class="modal" style="max-width:650px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-company-editor">Add / Edit Shipping Company</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-company-editor')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height:calc(100vh - 180px);overflow-y:auto;">
+      <input type="hidden" id="comp-id">
+      <div class="form-group">
+        <label class="form-label">Company Name *</label>
+        <input class="form-input" id="comp-name" placeholder="e.g. A.P. Moller – Maersk">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Headquarters / Country *</label>
+          <input class="form-input" id="comp-hq" placeholder="e.g. Copenhagen, Denmark 🇩🇰">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Operational Fleet Size *</label>
+          <input class="form-input" id="comp-fleet-count" placeholder="e.g. 730+ Vessels">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Established Year</label>
+          <input class="form-input" id="comp-est" placeholder="e.g. 1904">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Recruiting Status</label>
+          <select class="form-select" id="comp-status">
+            <option value="Recruiting · 2026 Batch">Recruiting · 2026 Batch</option>
+            <option value="Active Partner">Active Partner</option>
+            <option value="Upcoming Window">Upcoming Window</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tagline / Subtitle</label>
+        <input class="form-input" id="comp-tagline" placeholder="e.g. World Premier Integrated Container Logistics Carrier">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company History &amp; Legacy *</label>
+        <textarea class="form-input" id="comp-history" rows="4" placeholder="Detail the company founding story, maritime milestones, and cadet sponsorship reputation..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fleet Breakdown (Format: <code>Type | Count | Description</code> per line)</label>
+        <textarea class="form-input" id="comp-fleet-breakdown" rows="3" placeholder="Container Ships | 450+ Ships | Global trade network&#10;Tankers | 180+ Ships | Crude and product"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modal-company-editor')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="adminSaveCompany()">Save Company</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Past Question Paper -->
+<div class="modal-overlay" id="modal-add-paper" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-paper" onclick="if(event.target===this) closeModal('modal-add-paper')">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-add-paper">Add Past Question Paper</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-add-paper')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="paper-comp-id">
+      <div class="form-group">
+        <label class="form-label">Shipping Company</label>
+        <input class="form-input" id="paper-comp-name" readonly style="background:#f1f5f9;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Question Paper Title *</label>
+        <input class="form-input" id="paper-title" placeholder="e.g. Maersk DNS Cadet Entrance Paper 2026">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Exam Year *</label>
+          <input class="form-input" id="paper-year" placeholder="2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <input class="form-input" id="paper-duration" placeholder="60 mins">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Questions Count</label>
+          <input class="form-input" id="paper-q-count" type="number" placeholder="50">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total Marks</label>
+          <input class="form-input" id="paper-marks" type="number" placeholder="100">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modal-add-paper')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="adminSavePaper()">Add Question Paper</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Interview Question PDF -->
+<div class="modal-overlay" id="modal-add-interview-pdf" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-interview-pdf" onclick="if(event.target===this) closeModal('modal-add-interview-pdf')">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-add-interview-pdf">Add Interview Question PDF Handbook</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-add-interview-pdf')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height:calc(100vh - 180px);overflow-y:auto;">
+      <div class="form-group">
+        <label class="form-label">Handbook Title *</label>
+        <input class="form-input" id="pdf-title" placeholder="e.g. Technical Viva &amp; COLREGs Question Bank">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <input class="form-input" id="pdf-category" placeholder="e.g. Technical Navigation &amp; Seamanship">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Page Count *</label>
+          <input class="form-input" id="pdf-pages" placeholder="e.g. 48 Pages">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">File Size *</label>
+          <input class="form-input" id="pdf-size" placeholder="e.g. 4.8 MB">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target File Name *</label>
+          <input class="form-input" id="pdf-filename" placeholder="e.g. Sindhupath_Technical_Viva_2026.pdf">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Handbook Description</label>
+        <textarea class="form-input" id="pdf-desc" rows="3" placeholder="Summary of question bank contents and topics covered..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modal-add-interview-pdf')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="adminSaveInterviewPdfModal()">Add PDF Handbook</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Common Sponsorship Question -->
+<div class="modal-overlay" id="modal-add-common-sponsorship-question" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-common-sponsorship-question" onclick="if(event.target===this) closeModal('modal-add-common-sponsorship-question')">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-add-common-sponsorship-question">Add Common Sponsorship Question</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-add-common-sponsorship-question')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height:calc(100vh - 180px);overflow-y:auto;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-input" id="csq-category">
+            <option value="Ship Stability &amp; Buoyancy">Ship Stability &amp; Buoyancy</option>
+            <option value="Physics &amp; Hydrostatics">Physics &amp; Hydrostatics</option>
+            <option value="Nautical Aptitude &amp; Navigation">Nautical Aptitude &amp; Navigation</option>
+            <option value="Ship Knowledge &amp; Tonnage">Ship Knowledge &amp; Tonnage</option>
+            <option value="Mechanical Reasoning &amp; Fluid Mechanics">Mechanical Reasoning &amp; Fluid Mechanics</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Frequently Tested Companies *</label>
+          <input class="form-input" id="csq-companies" placeholder="e.g. Maersk · Anglo-Eastern · Synergy">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Question Text *</label>
+        <textarea class="form-input" id="csq-question" rows="3" placeholder="Enter universal sponsorship question text..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Key Principle / Mathematical Formula Note</label>
+        <textarea class="form-input" id="csq-formula" rows="2" placeholder="Key formula, principle, or recommended answer strategy..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority Tag</label>
+        <input class="form-input" id="csq-priority" placeholder="e.g. Universal Must-Know / High Priority">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modal-add-common-sponsorship-question')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="adminSaveCommonQuestionModal()">Save Common Question</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: Edit Sunday Viva Schedule & GMeet Link -->
+<div class="modal-overlay" id="modal-viva-schedule" role="dialog" aria-modal="true" aria-labelledby="modal-title-viva-schedule" onclick="if(event.target===this) closeModal('modal-viva-schedule')">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-viva-schedule">Schedule Interview &amp; Google Meet Link</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-viva-schedule')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height:calc(100vh - 180px);overflow-y:auto;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Session Date *</label>
+          <input class="form-input" id="viva-sched-date" placeholder="e.g. Sunday, 01 Nov 2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Session Time Slot *</label>
+          <input class="form-input" id="viva-sched-time" placeholder="e.g. 10:30 AM – 11:15 AM (Slot 03)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Google Meet Link (GMeet) *</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="viva-sched-gmeet" placeholder="https://meet.google.com/sp-viva-mock" style="flex:1;">
+          <button type="button" class="btn btn-sm btn-outline" onclick="document.getElementById('viva-sched-gmeet').value='https://meet.google.com/sp-' + Math.random().toString(36).substring(2,6) + '-' + Math.random().toString(36).substring(2,6)">
+            Generate
+          </button>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Interviewer Lead *</label>
+          <input class="form-input" id="viva-sched-interviewer" placeholder="Capt. Arun Pillai (Master Mariner, 20+ yrs)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Session Status *</label>
+          <select class="form-input" id="viva-sched-status">
+            <option value="confirmed">Confirmed (Happening as Scheduled)</option>
+            <option value="pending">Pending (Awaiting 48-hr Friday Notice)</option>
+            <option value="cancelled">Cancelled / Postponed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notice &amp; Instructions to Cadet *</label>
+        <textarea class="form-input" id="viva-sched-reason" rows="3" placeholder="Instructions displayed to cadet..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modal-viva-schedule')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="adminSaveScheduleModal()">Save &amp; Broadcast to Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Edit Past Interviewer Assessment Report -->
+<div class="modal-overlay" id="modal-viva-past-report" role="dialog" aria-modal="true" aria-labelledby="modal-title-viva-past-report" onclick="if(event.target===this) closeModal('modal-viva-past-report')">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-viva-past-report">Edit Past Interviewer Assessment Report</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-viva-past-report')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height:calc(100vh - 180px);overflow-y:auto;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Last Interview Date *</label>
+          <input class="form-input" id="viva-rep-date" placeholder="e.g. Sunday, 25 Oct 2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Overall Score / Rating *</label>
+          <input class="form-input" id="viva-rep-score" placeholder="e.g. 7.5 / 10">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Last Interviewer Name &amp; Rank *</label>
+          <input class="form-input" id="viva-rep-interviewer" placeholder="Capt. Arun Pillai (Master Mariner, Ex-Maersk)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Overall Verdict *</label>
+          <input class="form-input" id="viva-rep-verdict" placeholder="e.g. Good Nautical Knowledge · Needs Work on Situational Judgment">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Key Strengths (One per line) *</label>
+        <textarea class="form-input" id="viva-rep-strengths" rows="3" placeholder="Crisp COLREG Rule 10 explanation..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Critical Areas to Improve for Upcoming Session (One per line) *</label>
+        <textarea class="form-input" id="viva-rep-improvements" rows="3" placeholder="Revise Angle of Loll vs List correction protocol..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Detailed Interviewer Remarks &amp; Feedback *</label>
+        <textarea class="form-input" id="viva-rep-remarks" rows="3" placeholder="Comprehensive notes from Master Mariner..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modal-viva-past-report')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="adminSavePastReportModal()">Save &amp; Update Student Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Add Commonly Asked Question to Send to Student -->
+<div class="modal-overlay" id="modal-viva-add-question" role="dialog" aria-modal="true" aria-labelledby="modal-title-viva-add-question" onclick="if(event.target===this) closeModal('modal-viva-add-question')">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-viva-add-question">Send Commonly Asked Question to Student</span>
+      <button class="modal-close" aria-label="Close modal" onclick="closeModal('modal-viva-add-question')">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height:calc(100vh - 180px);overflow-y:auto;">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-input" id="viva-q-category">
+            <option value="Ship Stability">Ship Stability</option>
+            <option value="COLREGs &amp; Navigation">COLREGs &amp; Navigation</option>
+            <option value="Maritime HR &amp; Behavioral">Maritime HR &amp; Behavioral</option>
+            <option value="Ship Knowledge &amp; Cargo">Ship Knowledge &amp; Cargo</option>
+            <option value="Bridge Equipment">Bridge Equipment</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority Tag *</label>
+          <input class="form-input" id="viva-q-priority" placeholder="e.g. High Priority / Anglo-Eastern / Synergy">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Question Text *</label>
+        <textarea class="form-input" id="viva-q-text" rows="3" placeholder="Enter the exact viva question..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Faculty Guidance / Recommended Focus Note</label>
+        <textarea class="form-input" id="viva-q-note" rows="2" placeholder="e.g. Focus on ballasting lower double bottom tanks first..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modal-viva-add-question')">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="adminSaveQuestionModal()">Send Question to Student</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-add-course" role="dialog" aria-modal="true" aria-labelledby="modal-title-add-course" onclick="if(event.target===this) closeModal('modal-add-course')">
   <div class="modal" style="max-width:500px;">
     <div class="modal-header">
@@ -2296,8 +2699,7 @@ async function updateAdmission(id, status) {
 const LS_COURSE_LOCKS = 'sp_course_locks';
 
 const DEFAULT_COURSE_LOCKS = {
-  'DNS Sponsorship Prep': false,
-  'Interview Preparation & Viva': false,
+  'Sponsorship Prep': false,
   'Aptitude Test Prep': false
 };
 
@@ -2319,8 +2721,7 @@ function adminToggleCourseLock(courseName) {
 
 function adminSetAllLocks(lockState) {
   const locks = {
-    'DNS Sponsorship Prep': lockState,
-    'Interview Preparation & Viva': lockState,
+    'Sponsorship Prep': lockState,
     'Aptitude Test Prep': lockState
   };
   localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
@@ -2330,13 +2731,12 @@ function adminSetAllLocks(lockState) {
 
 function adminSetSponsorshipLocks(lockState) {
   const locks = {
-    'DNS Sponsorship Prep': lockState,
-    'Interview Preparation & Viva': lockState,
+    'Sponsorship Prep': lockState,
     'Aptitude Test Prep': false
   };
   localStorage.setItem(LS_COURSE_LOCKS, JSON.stringify(locks));
   renderAdminCourseLocks();
-  toast('Sponsorship & Interview courses locked for CET-Only batch', '#d97706');
+  toast('Sponsorship courses locked for CET-Only batch', '#d97706');
 }
 
 function renderAdminCourseLocks() {
@@ -2352,16 +2752,10 @@ function renderAdminCourseLocks() {
       desc: 'Base syllabus covering Maths, Physics, Chemistry, English, Aptitude, and GK. Mandatory & permanent for all enrolled cadets.'
     },
     {
-      name: 'DNS Sponsorship Prep',
+      name: 'Sponsorship Prep',
       category: 'Sponsorship Specialization',
       isCore: false,
-      desc: 'Company sponsorship exams (Maersk, Anglo-Eastern, Synergy, Fleet). Locked for cadets who have not paid for Sponsorship.'
-    },
-    {
-      name: 'Interview Preparation & Viva',
-      category: 'Sponsorship Specialization',
-      isCore: false,
-      desc: '1-on-1 mock panel interviews, technical viva, psychometrics, and maritime HR question banks.'
+      desc: 'All-in-one cadet sponsorship preparation: common interview PDFs, universal company question banks, and shipping company fleet & past papers.'
     },
     {
       name: 'Aptitude Test Prep',
@@ -2422,6 +2816,8 @@ function renderAdminCourseLocks() {
 // ─── COURSES ───
 function renderCourses() {
   renderAdminCourseLocks();
+  renderAdminSponsorshipCompanies();
+  renderAdminVivaStatus();
   const grid = document.getElementById('courses-grid');
   grid.innerHTML = appCourses.map(c => `
     <div class="card" style="overflow:visible;">
@@ -3106,6 +3502,1082 @@ function refreshCurrentTab() {
 }
 
 // ─── Init ───
+
+// ══════════════════════════════════════════════════════════════════
+// 🚢 DNS SPONSORSHIP COMPANIES & PAST PAPERS AUTHORITY ENGINE
+// ══════════════════════════════════════════════════════════════════
+
+const LS_SPONSORSHIP_COMPANIES = 'sp_sponsorship_companies_v1';
+
+const ADMIN_DEFAULT_COMPANIES = [
+  {
+    id: 'maersk',
+    name: 'A.P. Moller – Maersk',
+    tagline: 'World Premier Integrated Container Logistics Carrier',
+    headquarters: 'Copenhagen, Denmark 🇩🇰',
+    established: '1904',
+    fleetCount: '730+ Vessels',
+    fleetBreakdown: [
+      { type: 'Ultra Large Container Ships (ULCV)', count: '135+ Ships', desc: 'Up to 20,000+ TEU capacity' },
+      { type: 'Feeder & Regional Container Vessels', count: '450+ Ships', desc: 'Global coastal network' },
+      { type: 'Green Methanol / Dual-Fuel Fleet', count: '25+ Ships', desc: 'Pioneering eco-propulsion' },
+      { type: 'Svitzer Tug & Marine Terminal Boats', count: '120+ Vessels', desc: 'Harbour operations' }
+    ],
+    history: 'Founded in 1904 by Arnold Peter Møller and his father Captain Peter Mærsk Møller in Svendborg, Denmark. Over 120 years, Maersk evolved from a single secondhand steamship (SS Svendborg) into the undisputed pioneer of maritime containerization. Operating across 130 countries, Maersk offers the most prestigious deck cadet sponsorship programs globally, renowned for high safety standards, state-of-the-art bridge automation, and guaranteed sea-time placement.',
+    selectionProcess: [
+      { step: '1. Online Cognitive Assessment', detail: 'PLI test measuring numerical speed, logical deduction, and spatial pattern completion.' },
+      { step: '2. Maritime English & Technical Test', detail: 'Grammar, nautical vocabulary, basic physics (mechanics, buoyancy), and mathematics.' },
+      { step: '3. Video Interview & Technical Viva', detail: '1-on-1 interview with Master Mariners assessing motivation, situational judgment, and marine general awareness.' },
+      { step: '4. DG Shipping Medical Examination', detail: 'Strict 6/6 uncorrected vision, zero color blindness (Ishihara test), and physical fitness.' }
+    ],
+    pastPapers: [
+      { id: 'maersk-2025', title: 'Maersk DNS Sponsorship Written Paper 2025', year: '2025', questions: 50, duration: '60 mins', marks: 100, solved: true },
+      { id: 'maersk-2024', title: 'Maersk Nautical Aptitude & Physics Test 2024', year: '2024', questions: 45, duration: '50 mins', marks: 90, solved: true },
+      { id: 'maersk-2023', title: 'Maersk Cadet Entrance & English Reasoning 2023', year: '2023', questions: 50, duration: '60 mins', marks: 100, solved: true }
+    ],
+    status: 'Recruiting · 2026 Batch',
+    accentColor: 'from-sky-600 to-blue-700',
+    badgeColor: 'bg-sky-100 text-sky-800'
+  },
+  {
+    id: 'anglo-eastern',
+    name: 'Anglo-Eastern Ship Management',
+    tagline: 'Leading Global Third-Party Ship Manager & Crew Operator',
+    headquarters: 'Hong Kong 🇭🇰',
+    established: '1974',
+    fleetCount: '650+ Vessels',
+    fleetBreakdown: [
+      { type: 'Bulk Carriers (Capesize, Panamax)', count: '280+ Ships', desc: 'Global dry bulk trade' },
+      { type: 'Crude & Product Oil Tankers', count: '190+ Ships', desc: 'VLCC & Aframax tankers' },
+      { type: 'Container Vessels', count: '110+ Ships', desc: 'Worldwide liner trade' },
+      { type: 'LPG / Chemical Carriers', count: '70+ Ships', desc: 'Specialized cargo ships' }
+    ],
+    history: 'Established in 1974 in Hong Kong, Anglo-Eastern has grown into one of the top three largest ship management enterprises in the world. Merging with Univan in 2015, Anglo-Eastern operates its world-renowned training academy (AEMA in Karjat, India). Its DNS sponsorship program is famous for high technical rigor, discipline, and excellent promotion tracks from Deck Cadet to Master Mariner.',
+    selectionProcess: [
+      { step: '1. Online AEMA Written Exam', detail: 'Physics, Chemistry, Mathematics, English, General Knowledge, and Maritime Aptitude.' },
+      { step: '2. Psychometric Profiling (16PF)', detail: 'Psychological assessment evaluating emotional resilience, stress tolerance, and leadership potential.' },
+      { step: '3. Technical & Personal Interview', detail: 'Rigorous technical viva with senior Captains covering ship types, nautical coordinates, and general science.' },
+      { step: '4. Comprehensive Medical Test', detail: 'Conducted at DG Shipping authorized clinics conforming to ILO/MLC standards.' }
+    ],
+    pastPapers: [
+      { id: 'aema-2025', title: 'Anglo-Eastern DNS Entrance Exam Paper 2025', year: '2025', questions: 60, duration: '90 mins', marks: 120, solved: true },
+      { id: 'aema-2024', title: 'Anglo-Eastern Mathematics & Science Sprint 2024', year: '2024', questions: 50, duration: '60 mins', marks: 100, solved: true },
+      { id: 'aema-2023', title: 'AEMA Technical Viva & Written Sample 2023', year: '2023', questions: 50, duration: '60 mins', marks: 100, solved: true }
+    ],
+    status: 'Recruiting · 2026 Batch',
+    accentColor: 'from-amber-600 to-amber-700',
+    badgeColor: 'bg-amber-100 text-amber-800'
+  },
+  {
+    id: 'synergy',
+    name: 'Synergy Marine Group',
+    tagline: 'Modern Technology-Driven Maritime Fleet Manager',
+    headquarters: 'Singapore 🇸🇬',
+    established: '2006',
+    fleetCount: '660+ Vessels',
+    fleetBreakdown: [
+      { type: 'Container Carriers', count: '240+ Ships', desc: 'Modern high-capacity liners' },
+      { type: 'Tankers & Chemical Vessels', count: '180+ Ships', desc: 'Oil, chemical & bitumen tankers' },
+      { type: 'Bulk Carriers', count: '170+ Ships', desc: 'Capesize and Supramax fleet' },
+      { type: 'LNG / Dual-Fuel Gas Carriers', count: '70+ Ships', desc: 'Advanced cryogenic carriers' }
+    ],
+    history: 'Founded in 2006 by Captain Rajesh Unni in Singapore, Synergy Marine Group has become one of the fastest-growing ship management companies worldwide. Known for forward-thinking digitalization, smart bridge operations, and crew mental wellness initiatives, Synergy offers competitive DNS cadet stipends, accelerated promotional routes, and modern fleet deployments.',
+    selectionProcess: [
+      { step: '1. Online Entrance Assessment', detail: 'Technical aptitude, numerical logic, and reasoning test.' },
+      { step: '2. Technical Viva Round', detail: 'Navigation, buoyancy basics, trigonometry, and marine awareness.' },
+      { step: '3. HR & Situation Reaction Test', detail: 'Scenario-based evaluation for onboard team compatibility.' },
+      { step: '4. Medical Clearance', detail: 'DG Shipping physical fitness & eyesight exam.' }
+    ],
+    pastPapers: [
+      { id: 'synergy-2025', title: 'Synergy Marine Cadet Selection Paper 2025', year: '2025', questions: 50, duration: '60 mins', marks: 100, solved: true },
+      { id: 'synergy-2024', title: 'Synergy Technical Aptitude & English 2024', year: '2024', questions: 45, duration: '50 mins', marks: 90, solved: true }
+    ],
+    status: 'Recruiting · 2026 Batch',
+    accentColor: 'from-emerald-600 to-teal-700',
+    badgeColor: 'bg-emerald-100 text-emerald-800'
+  },
+  {
+    id: 'fleet-mgmt',
+    name: 'Fleet Management Limited (FML)',
+    tagline: 'Excellence in Ship Operations & Crewing Worldwide',
+    headquarters: 'Hong Kong 🇭🇰 (Caravel Group)',
+    established: '1994',
+    fleetCount: '600+ Vessels',
+    fleetBreakdown: [
+      { type: 'Bulk Carriers', count: '250+ Ships', desc: 'Panamax, Kamsarmax & Handysize' },
+      { type: 'Oil & Product Tankers', count: '200+ Ships', desc: 'Modern double-hull tankers' },
+      { type: 'Container Vessels', count: '100+ Ships', desc: 'Global transshipment routes' },
+      { type: 'Specialized Gas & Chemical', count: '50+ Ships', desc: 'Ethylene & ammonia carriers' }
+    ],
+    history: 'Founded in 1994 by Kishore Rajvanshy in Hong Kong as a subsidiary of the Caravel Group, Fleet Management Limited has expanded to operate more than 600 vessels. Fleet operates dedicated training centers in India and the Philippines, providing DNS cadets with high-end simulator exposure, rigorous shipboard training, and dependable career longevity.',
+    selectionProcess: [
+      { step: '1. FML Written Entrance Exam', detail: 'PCM fundamentals, logic reasoning, and English grammar.' },
+      { step: '2. Psychometric Profiling', detail: 'Aptitude tests and situational behavioral analysis.' },
+      { step: '3. Technical Interview', detail: 'Interview with Captains and Chief Engineers.' },
+      { step: '4. Pre-Sea Medicals', detail: 'Authorized DG Shipping fitness certification.' }
+    ],
+    pastPapers: [
+      { id: 'fml-2025', title: 'Fleet Management DNS Cadet Test 2025', year: '2025', questions: 50, duration: '60 mins', marks: 100, solved: true },
+      { id: 'fml-2024', title: 'FML Mathematics & Physics Entrance 2024', year: '2024', questions: 50, duration: '60 mins', marks: 100, solved: true }
+    ],
+    status: 'Recruiting · 2026 Batch',
+    accentColor: 'from-purple-600 to-indigo-700',
+    badgeColor: 'bg-purple-100 text-purple-800'
+  },
+  {
+    id: 'msc',
+    name: 'Mediterranean Shipping Company (MSC)',
+    tagline: 'World Largest Container Shipping Line',
+    headquarters: 'Geneva, Switzerland 🇨🇭',
+    established: '1970',
+    fleetCount: '800+ Vessels',
+    fleetBreakdown: [
+      { type: 'Mega Container Ships (24,000 TEU)', count: '180+ Ships', desc: 'World largest container ships' },
+      { type: 'Standard Liner Fleet', count: '520+ Ships', desc: 'Calling at 500+ ports worldwide' },
+      { type: 'Cruise & Passenger Fleet', count: '25+ Ships', desc: 'MSC Cruises international' },
+      { type: 'Dual-Fuel LNG Giants', count: '75+ Ships', desc: 'Ultra-low emission propulsion' }
+    ],
+    history: 'Founded in 1970 by Captain Gianluigi Aponte in Naples with a single German cargo vessel, MSC is now headquartered in Geneva and stands as the world largest container shipping company by container capacity. Operating more than 800 vessels across 500 ports, MSC deck cadet sponsorship gives trainees exposure to the largest and most advanced container vessels afloat.',
+    selectionProcess: [
+      { step: '1. MSC Online Aptitude Test', detail: 'Mathematics, logical reasoning, and English proficiency.' },
+      { step: '2. Technical Viva Round', detail: 'Seamanship basics, marine physics, and navigational signs.' },
+      { step: '3. Senior Panel Interview', detail: 'Interpersonal skills, shipboard discipline, and personality.' },
+      { step: '4. Comprehensive Medical Test', detail: 'DG Shipping physical fitness benchmarks.' }
+    ],
+    pastPapers: [
+      { id: 'msc-2025', title: 'MSC Deck Cadet Written Assessment 2025', year: '2025', questions: 50, duration: '60 mins', marks: 100, solved: true },
+      { id: 'msc-2024', title: 'MSC Mathematics & Nautical Aptitude 2024', year: '2024', questions: 50, duration: '60 mins', marks: 100, solved: true }
+    ],
+    status: 'Recruiting · 2026 Batch',
+    accentColor: 'from-amber-500 to-yellow-600',
+    badgeColor: 'bg-yellow-100 text-yellow-900'
+  },
+  {
+    id: 'great-eastern',
+    name: 'The Great Eastern Shipping Co. Ltd (GE Shipping)',
+    tagline: 'India Largest Private Sector Shipping Service Provider',
+    headquarters: 'Mumbai, India 🇮🇳',
+    established: '1948',
+    fleetCount: '45+ Vessels (Modern High DWT)',
+    fleetBreakdown: [
+      { type: 'Crude Oil Tankers (Suezmax & Aframax)', count: '14 Ships', desc: 'Heavy domestic & global crude oil' },
+      { type: 'Product Carriers & MR Tankers', count: '18 Ships', desc: 'Refined petroleum products' },
+      { type: 'Dry Bulk Carriers (Kamsarmax, Supramax)', count: '10 Ships', desc: 'Coal, grain & ore international' },
+      { type: 'LPG Gas Carriers', count: '5 Ships', desc: 'Pressurized gas transport' }
+    ],
+    history: 'Founded in 1948 by the Sheth and Bhiwandiwalla families right after Indian independence to build national maritime capability. Operating out of Mumbai with its renowned Great Eastern Institute of Maritime Studies (GEIMS) in Lonavala, GE Shipping is India largest private shipping enterprise with an exceptional reputation for cadet safety, rigorous training, and strong permanent career pathways on Indian and foreign-flagged vessels.',
+    selectionProcess: [
+      { step: '1. GEIMS Online Entrance Test', detail: 'Physics, Mathematics, General Knowledge, and Reasoning.' },
+      { step: '2. Technical Viva Round', detail: 'Nautical science fundamentals and buoyancy physics.' },
+      { step: '3. Psychometric & Personality Assessment', detail: 'Behavioral profiling for merchant navy lifestyle.' },
+      { step: '4. DG Shipping Medical Examination', detail: 'Unaided 6/6 vision, audiometry, and physical fitness.' }
+    ],
+    pastPapers: [
+      { id: 'ges-2025', title: 'GEIMS DNS Sponsorship Entrance Paper 2025', year: '2025', questions: 60, duration: '90 mins', marks: 120, solved: true },
+      { id: 'ges-2024', title: 'GE Shipping Nautical Aptitude & Math 2024', year: '2024', questions: 50, duration: '60 mins', marks: 100, solved: true }
+    ],
+    status: 'Recruiting · 2026 Batch',
+    accentColor: 'from-blue-700 to-indigo-900',
+    badgeColor: 'bg-blue-100 text-blue-900'
+  }
+];
+
+function getAdminSponsorshipCompanies() {
+  try {
+    const raw = localStorage.getItem(LS_SPONSORSHIP_COMPANIES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch(e) {}
+  return ADMIN_DEFAULT_COMPANIES;
+}
+
+function saveAdminSponsorshipCompanies(companies) {
+  localStorage.setItem(LS_SPONSORSHIP_COMPANIES, JSON.stringify(companies));
+  renderAdminSponsorshipCompanies();
+}
+
+const LS_SPONSORSHIP_INTERVIEW_PDFS = 'sp_sponsorship_interview_pdfs_v1';
+const LS_COMMON_SPONSORSHIP_QUESTIONS = 'sp_common_sponsorship_questions_v1';
+
+const ADMIN_DEFAULT_INTERVIEW_PDFS = [
+  {
+    id: 'pdf-tech-viva',
+    title: 'Technical Viva & COLREGs Master Question Bank',
+    category: 'Technical Navigation & Seamanship',
+    description: 'Essential oral viva questions on Rules 1–19, day/fog signals, sextant corrections, gyro vs magnetic compass, and ship stability principles.',
+    pages: '48 Pages',
+    size: '4.8 MB',
+    year: '2025–2026 Edition',
+    fileName: 'Sindhupath_Technical_Viva_Handbook_2026.pdf'
+  },
+  {
+    id: 'pdf-hr-behavioral',
+    title: 'Maritime HR & Behavioral Interview Handbook',
+    category: 'Maritime HR Round',
+    description: 'High-frequency HR and psychometric questions: why merchant navy, handling 6–9 months shipboard isolation, emergency decision making, and officer hierarchy.',
+    pages: '36 Pages',
+    size: '3.2 MB',
+    year: '2025–2026 Edition',
+    fileName: 'Sindhupath_Maritime_HR_Interview_Guide_2026.pdf'
+  },
+  {
+    id: 'pdf-mariner-guide',
+    title: 'Master Mariner & Chief Engineer Viva Oral Guide',
+    category: 'Master Mariner Panel',
+    description: 'Real-world viva scenarios, emergency ship handling, bridge simulator oral questions, and panel viva grading rubrics.',
+    pages: '52 Pages',
+    size: '5.1 MB',
+    year: '2026 Edition',
+    fileName: 'Sindhupath_Master_Mariner_Viva_Oral_Guide.pdf'
+  },
+  {
+    id: 'pdf-cadet-transcripts',
+    title: 'Shipping Company Cadet Interview Transcripts',
+    category: 'Real Transcripts',
+    description: 'Actual interview transcripts from successful cadets at Maersk, Anglo-Eastern, Synergy Marine, Fleet Management & MSC sponsorship rounds.',
+    pages: '30 Pages',
+    size: '2.9 MB',
+    year: '2025 Exam Batch',
+    fileName: 'Sindhupath_Cadet_Interview_Transcripts_2025.pdf'
+  }
+];
+
+const ADMIN_DEFAULT_COMMON_QUESTIONS = [
+  {
+    id: 'csq-1',
+    category: 'Ship Stability & Buoyancy',
+    companies: 'Maersk · Anglo-Eastern · Synergy · Fleet · MSC',
+    question: 'Explain the physical difference between an "Angle of Loll" and a "List". What is the exact step-by-step ballasting procedure to correct an Angle of Loll without capsizing the vessel?',
+    formula: 'GM < 0 (Unstable Equilibrium) vs G off centerline. Always ballast lower double-bottom tanks first; never dump from the high side.',
+    priority: 'Universal Must-Know'
+  },
+  {
+    id: 'csq-2',
+    category: 'Physics & Hydrostatics',
+    companies: 'Anglo-Eastern · Synergy · Great Eastern',
+    question: 'State Archimedes’ Principle and explain why a heavy steel ship floats while a small steel bolt sinks. How does water density (fresh vs sea water) affect draft and displacement?',
+    formula: 'Displacement = Underwater Volume × Water Density. When passing from Sea Water (1.025) to Fresh Water (1.000), draft increases (FWA = W / 40 TPC).',
+    priority: 'Frequently Asked in CBT & Viva'
+  },
+  {
+    id: 'csq-3',
+    category: 'Nautical Aptitude & Navigation',
+    companies: 'Maersk · MSC · Fleet Management',
+    question: 'A container ship travels from Port A to Port B (distance 360 nautical miles) at an engine speed of 18 knots against a 2-knot opposing ocean current. Calculate total voyage time and fuel saved if current was assisting.',
+    formula: 'Speed Over Ground = Engine Speed ± Current. Opposing = 16 knots (22.5 hrs); Assisting = 20 knots (18 hrs).',
+    priority: 'Standard Aptitude Test Question'
+  },
+  {
+    id: 'csq-4',
+    category: 'Ship Knowledge & Tonnage',
+    companies: 'Universal Across All 6 Companies',
+    question: 'What is the fundamental difference between Deadweight Tonnage (DWT), Gross Registered Tonnage (GRT), and Displacement? What are the seasonal load line marks on the ship’s Plimsoll mark?',
+    formula: 'GRT/GT = Internal vessel volume (100 cu ft = 1 ton). DWT = Cargo, fuel, crew, fresh water carrying weight. Plimsoll marks: TF, F, T, S, W, WNA.',
+    priority: 'Core Shipboard Question'
+  },
+  {
+    id: 'csq-5',
+    category: 'Mechanical Reasoning & Fluid Mechanics',
+    companies: 'Synergy Marine · Great Eastern · Fleet',
+    question: 'Explain Pascal’s Principle as applied to hydraulic steering gear systems on board modern merchant ships. How is mechanical advantage calculated for a 3-sheave pulley crane block?',
+    formula: 'Pressure P = F1 / A1 = F2 / A2. Mechanical Advantage of 3-sheave block = 6 (ideal velocity ratio).',
+    priority: 'Technical Reasoning Round'
+  }
+];
+
+function getAdminInterviewPdfs() {
+  try {
+    const raw = localStorage.getItem(LS_SPONSORSHIP_INTERVIEW_PDFS);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return ADMIN_DEFAULT_INTERVIEW_PDFS;
+}
+
+function saveAdminInterviewPdfs(list) {
+  localStorage.setItem(LS_SPONSORSHIP_INTERVIEW_PDFS, JSON.stringify(list));
+  renderAdminSponsorshipCompanies();
+}
+
+function getAdminCommonQuestions() {
+  try {
+    const raw = localStorage.getItem(LS_COMMON_SPONSORSHIP_QUESTIONS);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return ADMIN_DEFAULT_COMMON_QUESTIONS;
+}
+
+function saveAdminCommonQuestions(list) {
+  localStorage.setItem(LS_COMMON_SPONSORSHIP_QUESTIONS, JSON.stringify(list));
+  renderAdminSponsorshipCompanies();
+}
+
+function adminOpenAddInterviewPdfModal() {
+  document.getElementById('pdf-title').value = '';
+  document.getElementById('pdf-category').value = 'Technical Navigation';
+  document.getElementById('pdf-pages').value = '35 Pages';
+  document.getElementById('pdf-size').value = '3.5 MB';
+  document.getElementById('pdf-filename').value = 'Sindhupath_Interview_Questions_2026.pdf';
+  document.getElementById('pdf-desc').value = '';
+  openModal('modal-add-interview-pdf');
+}
+
+function adminSaveInterviewPdfModal() {
+  const title = document.getElementById('pdf-title').value.trim();
+  const cat = document.getElementById('pdf-category').value.trim();
+  const pages = document.getElementById('pdf-pages').value.trim();
+  const size = document.getElementById('pdf-size').value.trim();
+  const fname = document.getElementById('pdf-filename').value.trim();
+  const desc = document.getElementById('pdf-desc').value.trim();
+
+  if (!title || !cat) {
+    alert('Please enter title and category.');
+    return;
+  }
+
+  const list = getAdminInterviewPdfs();
+  list.push({
+    id: 'pdf-' + Date.now(),
+    title: title,
+    category: cat,
+    pages: pages || '30 Pages',
+    size: size || '3.0 MB',
+    fileName: fname || 'Handbook.pdf',
+    description: desc || 'Sponsorship interview preparation question bank.'
+  });
+
+  saveAdminInterviewPdfs(list);
+  closeModal('modal-add-interview-pdf');
+  toast('Interview PDF added and broadcast to student portal!', '#16a34a');
+}
+
+function adminDeleteInterviewPdf(pdfId) {
+  if (!confirm('Remove this interview PDF handbook from student portal?')) return;
+  let list = getAdminInterviewPdfs();
+  list = list.filter(p => p.id !== pdfId);
+  saveAdminInterviewPdfs(list);
+  toast('PDF handbook removed', '#dc2626');
+}
+
+function adminOpenAddCommonQuestionModal() {
+  document.getElementById('csq-category').value = 'Ship Stability & Buoyancy';
+  document.getElementById('csq-companies').value = 'Maersk · Anglo-Eastern · Synergy';
+  document.getElementById('csq-question').value = '';
+  document.getElementById('csq-formula').value = '';
+  document.getElementById('csq-priority').value = 'Universal Must-Know';
+  openModal('modal-add-common-sponsorship-question');
+}
+
+function adminSaveCommonQuestionModal() {
+  const cat = document.getElementById('csq-category').value;
+  const comps = document.getElementById('csq-companies').value.trim() || 'All Shipping Companies';
+  const q = document.getElementById('csq-question').value.trim();
+  const formula = document.getElementById('csq-formula').value.trim();
+  const pri = document.getElementById('csq-priority').value.trim() || 'High Priority';
+
+  if (!q) {
+    alert('Please enter question text.');
+    return;
+  }
+
+  const list = getAdminCommonQuestions();
+  list.push({
+    id: 'csq-' + Date.now(),
+    category: cat,
+    companies: comps,
+    question: q,
+    formula: formula || 'Key technical concept to review.',
+    priority: pri
+  });
+
+  saveAdminCommonQuestions(list);
+  closeModal('modal-add-common-sponsorship-question');
+  toast('Common sponsorship question added and dispatched to student portal!', '#16a34a');
+}
+
+function adminDeleteCommonQuestion(qId) {
+  if (!confirm('Remove this common question from student portal?')) return;
+  let list = getAdminCommonQuestions();
+  list = list.filter(q => q.id !== qId);
+  saveAdminCommonQuestions(list);
+  toast('Common question removed', '#dc2626');
+}
+
+function renderAdminSponsorshipCompanies() {
+  const container = document.getElementById('admin-sponsorship-companies-list');
+  if (!container) return;
+
+  const companies = getAdminSponsorshipCompanies();
+  const pdfs = getAdminInterviewPdfs();
+  const questions = getAdminCommonQuestions();
+
+  container.innerHTML = `
+    <!-- Section 1: Interview Question PDFs -->
+    <div style="margin-bottom:20px;padding:16px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;border-bottom:1px solid #e2e8f0;padding-bottom:8px;">
+        <div style="font-weight:700;color:#0B2345;font-size:13px;display:flex;align-items:center;gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#0f766e;">picture_as_pdf</span>
+          Common Interview Questions (PDF Handbooks)
+          <span class="badge badge-teal" style="font-size:10px;">${pdfs.length} Handbooks</span>
+        </div>
+        <button class="btn btn-outline btn-xs" onclick="adminOpenAddInterviewPdfModal()">
+          <span class="material-symbols-outlined" style="font-size:13px;">add</span> Add PDF
+        </button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;">
+        ${pdfs.map(p => `
+          <div style="background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div>
+              <div style="font-weight:700;font-size:12px;color:#0B2345;">${p.title}</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px;">${p.category} · ${p.pages} (${p.size})</div>
+              <div style="font-size:10px;color:#0f766e;font-weight:600;margin-top:2px;">${p.fileName}</div>
+            </div>
+            <button onclick="adminDeleteInterviewPdf('${p.id}')" class="btn btn-outline btn-xs" style="color:#dc2626;border-color:#fecaca;" title="Delete PDF">
+              <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Section 2: Common Sponsorship Questions Across Every Company -->
+    <div style="margin-bottom:20px;padding:16px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;border-bottom:1px solid #e2e8f0;padding-bottom:8px;">
+        <div style="font-weight:700;color:#0B2345;font-size:13px;display:flex;align-items:center;gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#d97706;">fact_check</span>
+          Common Sponsorship Questions in Every Company
+          <span class="badge badge-yellow" style="font-size:10px;">${questions.length} Universal Questions</span>
+        </div>
+        <button class="btn btn-outline btn-xs" onclick="adminOpenAddCommonQuestionModal()">
+          <span class="material-symbols-outlined" style="font-size:13px;">add</span> Add Question
+        </button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${questions.map((q, idx) => `
+          <div style="background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+            <div style="flex:1;">
+              <div style="display:flex;gap:6px;align-items:center;margin-bottom:3px;flex-wrap:wrap;">
+                <span class="badge" style="background:#f1f5f9;font-size:10px;">Q${idx + 1} · ${q.category}</span>
+                <span class="badge badge-yellow" style="font-size:10px;">${q.companies}</span>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:#0B2345;">${q.question}</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px;"><strong>Principle:</strong> ${q.formula}</div>
+            </div>
+            <button onclick="adminDeleteCommonQuestion('${q.id}')" class="btn btn-outline btn-xs" style="color:#dc2626;border-color:#fecaca;" title="Delete Question">
+              <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Section 3: Recognized Shipping Companies & Past Question Papers -->
+    <div style="margin-bottom:10px;font-weight:700;color:#0B2345;font-size:13px;display:flex;align-items:center;gap:6px;">
+      <span class="material-symbols-outlined" style="font-size:18px;color:#C89B3C;">directions_boat</span>
+      Recognized Shipping Companies (Fleet Size, History &amp; Past Papers)
+      <span class="badge badge-green" style="font-size:10px;">${companies.length} Lines</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;">
+      ${companies.map(c => {
+        const paperCount = c.pastPapers ? c.pastPapers.length : 0;
+        return `
+          <div style="border:1.5px solid #e2e8f0;border-radius:12px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+            <div>
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+                <div>
+                  <div style="font-family:'Oswald';font-size:16px;font-weight:600;color:#0B2345;">${c.name}</div>
+                  <div style="font-size:12px;color:#64748b;margin-top:2px;">${c.headquarters} · Est. ${c.established || 'N/A'}</div>
+                </div>
+                <span class="badge badge-green" style="font-size:10px;">${c.fleetCount}</span>
+              </div>
+              <div style="font-size:12px;color:#475569;line-height:1.45;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                ${c.history}
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:#0B2345;margin-bottom:12px;">
+                <span style="background:#f1f5f9;padding:3px 8px;border-radius:6px;font-weight:600;">
+                  📝 ${paperCount} Old Question Paper${paperCount===1?'':'s'}
+                </span>
+                <span style="background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:6px;font-weight:600;">
+                  ${c.status || 'Recruiting'}
+                </span>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;border-top:1px solid #f1f5f9;padding-top:12px;">
+              <div style="display:flex;gap:6px;">
+                <button onclick="openEditCompanyModal('${c.id}')" class="btn btn-outline btn-xs" style="font-size:11px;padding:4px 10px;">
+                  <span class="material-symbols-outlined" style="font-size:13px;">edit</span> Edit
+                </button>
+                <button onclick="openAddPaperModal('${c.id}')" class="btn btn-outline btn-xs" style="font-size:11px;padding:4px 10px;">
+                  <span class="material-symbols-outlined" style="font-size:13px;">add</span> Add Paper
+                </button>
+              </div>
+              <button onclick="adminDeleteCompany('${c.id}')" class="btn btn-xs" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;font-size:11px;padding:4px 8px;" title="Delete Company">
+                <span class="material-symbols-outlined" style="font-size:13px;">delete</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function openAddCompanyModal() {
+  document.getElementById('modal-title-company-editor').textContent = 'Add New Shipping Company';
+  document.getElementById('comp-id').value = '';
+  document.getElementById('comp-name').value = '';
+  document.getElementById('comp-tagline').value = '';
+  document.getElementById('comp-hq').value = '';
+  document.getElementById('comp-est').value = '';
+  document.getElementById('comp-fleet-count').value = '';
+  document.getElementById('comp-fleet-breakdown').value = '';
+  document.getElementById('comp-history').value = '';
+  document.getElementById('comp-status').value = 'Recruiting · 2026 Batch';
+  openModal('modal-company-editor');
+}
+
+function openEditCompanyModal(id) {
+  const companies = getAdminSponsorshipCompanies();
+  const c = companies.find(item => item.id === id);
+  if (!c) return;
+
+  document.getElementById('modal-title-company-editor').textContent = 'Edit Shipping Company: ' + c.name;
+  document.getElementById('comp-id').value = c.id;
+  document.getElementById('comp-name').value = c.name || '';
+  document.getElementById('comp-tagline').value = c.tagline || '';
+  document.getElementById('comp-hq').value = c.headquarters || '';
+  document.getElementById('comp-est').value = c.established || '';
+  document.getElementById('comp-fleet-count').value = c.fleetCount || '';
+  document.getElementById('comp-history').value = c.history || '';
+  document.getElementById('comp-status').value = c.status || 'Recruiting · 2026 Batch';
+
+  // Format fleet breakdown
+  const breakdownLines = (c.fleetBreakdown || []).map(b => `${b.type} | ${b.count} | ${b.desc || ''}`).join('\n');
+  document.getElementById('comp-fleet-breakdown').value = breakdownLines;
+
+  openModal('modal-company-editor');
+}
+
+function adminSaveCompany() {
+  const idInput = document.getElementById('comp-id').value.trim();
+  const name = document.getElementById('comp-name').value.trim();
+  const hq = document.getElementById('comp-hq').value.trim();
+  const fleetCount = document.getElementById('comp-fleet-count').value.trim();
+  const history = document.getElementById('comp-history').value.trim();
+  const tagline = document.getElementById('comp-tagline').value.trim();
+  const established = document.getElementById('comp-est').value.trim();
+  const status = document.getElementById('comp-status').value;
+  const breakdownRaw = document.getElementById('comp-fleet-breakdown').value.trim();
+
+  if (!name) { toast('Please enter company name', '#DC2626'); return; }
+  if (!hq) { toast('Please enter headquarters / country', '#DC2626'); return; }
+  if (!fleetCount) { toast('Please enter fleet count', '#DC2626'); return; }
+  if (!history) { toast('Please enter company history', '#DC2626'); return; }
+
+  // Parse breakdown
+  const fleetBreakdown = breakdownRaw ? breakdownRaw.split('\n').map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    return {
+      type: parts[0] || 'Vessel Type',
+      count: parts[1] || 'Multiple Ships',
+      desc: parts[2] || 'Operational fleet'
+    };
+  }) : [];
+
+  let companies = [...getAdminSponsorshipCompanies()];
+
+  if (idInput) {
+    // Edit existing
+    const idx = companies.findIndex(item => item.id === idInput);
+    if (idx !== -1) {
+      companies[idx] = {
+        ...companies[idx],
+        name,
+        tagline,
+        headquarters: hq,
+        fleetCount,
+        established,
+        status,
+        history,
+        fleetBreakdown: fleetBreakdown.length > 0 ? fleetBreakdown : companies[idx].fleetBreakdown
+      };
+      toast('Company "' + name + '" updated successfully!', '#16a34a');
+    }
+  } else {
+    // Add new
+    const newId = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'comp-' + Date.now();
+    const newComp = {
+      id: newId,
+      name,
+      tagline: tagline || 'Premier Shipping Line & Cadet Sponsor',
+      headquarters: hq,
+      established: established || new Date().getFullYear().toString(),
+      fleetCount,
+      fleetBreakdown: fleetBreakdown.length > 0 ? fleetBreakdown : [
+        { type: 'Commercial Fleet', count: fleetCount, desc: 'International operational fleet' }
+      ],
+      history,
+      selectionProcess: [
+        { step: '1. Online Entrance Assessment', detail: 'General aptitude, mathematics, and physics written test.' },
+        { step: '2. Technical & Viva Interview', detail: 'Interview with Master Mariners & Marine Engineers.' },
+        { step: '3. Medical Examination', detail: 'DG Shipping approved pre-sea medical standard.' }
+      ],
+      pastPapers: [
+        { id: newId + '-2025', title: name + ' DNS Sponsorship Paper 2025', year: '2025', questions: 50, duration: '60 mins', marks: 100, solved: true }
+      ],
+      status: status || 'Recruiting · 2026 Batch',
+      accentColor: 'from-blue-600 to-indigo-700',
+      badgeColor: 'bg-blue-100 text-blue-800'
+    };
+    companies.push(newComp);
+    toast('New shipping company "' + name + '" added!', '#16a34a');
+  }
+
+  saveAdminSponsorshipCompanies(companies);
+  closeModal('modal-company-editor');
+}
+
+function adminDeleteCompany(id) {
+  let companies = getAdminSponsorshipCompanies();
+  const c = companies.find(item => item.id === id);
+  if (!c) return;
+
+  if (confirm('Are you sure you want to delete "' + c.name + '" from the sponsorship list? Cadets will no longer see this company.')) {
+    companies = companies.filter(item => item.id !== id);
+    saveAdminSponsorshipCompanies(companies);
+    toast('Company "' + c.name + '" deleted', '#d97706');
+  }
+}
+
+function openAddPaperModal(companyId) {
+  const companies = getAdminSponsorshipCompanies();
+  const c = companies.find(item => item.id === companyId);
+  if (!c) return;
+
+  document.getElementById('paper-comp-id').value = c.id;
+  document.getElementById('paper-comp-name').value = c.name;
+  document.getElementById('paper-title').value = c.name + ' DNS Cadet Entrance Paper ' + (new Date().getFullYear());
+  document.getElementById('paper-year').value = new Date().getFullYear().toString();
+  document.getElementById('paper-q-count').value = '50';
+  document.getElementById('paper-duration').value = '60 mins';
+  document.getElementById('paper-marks').value = '100';
+
+  openModal('modal-add-paper');
+}
+
+function adminSavePaper() {
+  const compId = document.getElementById('paper-comp-id').value;
+  const title = document.getElementById('paper-title').value.trim();
+  const year = document.getElementById('paper-year').value.trim() || new Date().getFullYear().toString();
+  const qCount = parseInt(document.getElementById('paper-q-count').value) || 50;
+  const duration = document.getElementById('paper-duration').value.trim() || '60 mins';
+  const marks = parseInt(document.getElementById('paper-marks').value) || 100;
+
+  if (!title) { toast('Please enter paper title', '#DC2626'); return; }
+
+  let companies = [...getAdminSponsorshipCompanies()];
+  const idx = companies.findIndex(item => item.id === compId);
+  if (idx === -1) return;
+
+  if (!companies[idx].pastPapers) companies[idx].pastPapers = [];
+
+  const newPaper = {
+    id: compId + '-paper-' + Date.now(),
+    title,
+    year,
+    questions: qCount,
+    duration,
+    marks,
+    solved: true
+  };
+
+  companies[idx].pastPapers.unshift(newPaper);
+  saveAdminSponsorshipCompanies(companies);
+  closeModal('modal-add-paper');
+  toast('Added "' + title + '" to ' + companies[idx].name, '#16a34a');
+}
+
+
+// ══════════════════════════════════════════════════════════════════
+// 🎙️ SUNDAY VIVA & INTERVIEWER AVAILABILITY AUTHORITY ENGINE
+// ══════════════════════════════════════════════════════════════════
+
+const LS_INTERVIEW_VIVA_STATUS = 'sp_interview_viva_status_v1';
+
+const ADMIN_DEFAULT_VIVA_STATE = {
+  sessionDate: 'Sunday, 01 Nov 2026',
+  sessionTime: '10:30 AM – 11:15 AM (Slot 03 · 1-on-1 Mock Viva)',
+  status: 'confirmed',
+  interviewer: 'Capt. Arun Pillai (Master Mariner, 20+ yrs)',
+  coInterviewer: 'Chief Eng. S. Raman (Ex-Chief Engineer, Fleet)',
+  noticeDate: 'Friday, 30 Oct 2026 (48 hours prior)',
+  noticeDispatched: true,
+  emailSent: true,
+  reason: '1-on-1 sponsorship mock viva confirmed. Please join 5 minutes before your scheduled slot with video on in formal cadet attire.',
+  room: 'Live 1-on-1 Video Booth (Google Meet)',
+  gmeetLink: 'https://meet.google.com/sp-viva-mock',
+  cadetSlot: '10:30 AM – 11:15 AM',
+
+  pastReport: {
+    lastSessionDate: 'Sunday, 25 Oct 2026',
+    interviewer: 'Capt. Arun Pillai (Master Mariner, Ex-Maersk)',
+    overallScore: '7.5 / 10',
+    verdict: 'Good Nautical Knowledge · Needs Work on Situational Judgment',
+    strengths: [
+      'Crisp COLREG Rule 10 & Rule 19 sound signaling explanation.',
+      'Confident spoken English and accurate maritime vocabulary.'
+    ],
+    improvements: [
+      'Revise exact difference between Angle of Loll and List correction protocol (explain ballasting bottom tanks first).',
+      'Work on shipboard isolation scenario: avoid generic answers, show practical mental resilience.',
+      'Maintain steady eye contact with the camera rather than glancing downward.'
+    ],
+    interviewerRemarks: 'Cadet demonstrated solid fundamental navigation understanding. Needs more confidence when explaining stability calculation principles and handling situational cross-questions under pressure. Recommended for Tier-1 companies after addressing the above points.'
+  },
+
+  commonQuestions: [
+    {
+      id: 'q1',
+      category: 'Ship Stability',
+      question: 'What is Angle of Loll? How does it differ from a List, and what are the exact corrective steps without capsizing?',
+      priority: 'High Priority',
+      adminNote: 'Focus on Ballasting lower double-bottom tanks first. Do NOT dump ballast from high side.'
+    },
+    {
+      id: 'q2',
+      category: 'COLREGs & Navigation',
+      question: 'Explain Rule 19 (Conduct of Vessels in Restricted Visibility). What actions do you take upon detecting another vessel by radar alone?',
+      priority: 'Frequently Asked (Synergy & Anglo)',
+      adminNote: 'Mention no alteration to port for vessel forward of beam, and no alteration towards vessel abeam or abaft beam.'
+    },
+    {
+      id: 'q3',
+      category: 'Maritime HR & Behavioral',
+      question: 'Why Merchant Navy over onshore careers, and how will you manage 6–9 months away from family and social connectivity?',
+      priority: 'Mandatory HR Round',
+      adminNote: 'Demonstrate genuine passion for seafaring life and realistic understanding of sea duties.'
+    },
+    {
+      id: 'q4',
+      category: 'Ship Knowledge',
+      question: 'What are the main types of merchant vessels, and what is the difference between DWT (Deadweight Tonnage) and GRT (Gross Registered Tonnage)?',
+      priority: 'High Priority',
+      adminNote: 'Be clear: GRT is volume (100 cu ft = 1 ton), DWT is actual carrying weight in metric tons.'
+    }
+  ]
+};
+
+function getAdminVivaState() {
+  try {
+    const raw = localStorage.getItem(LS_INTERVIEW_VIVA_STATUS);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return ADMIN_DEFAULT_VIVA_STATE;
+}
+
+function saveAdminVivaState(state) {
+  localStorage.setItem(LS_INTERVIEW_VIVA_STATUS, JSON.stringify(state));
+  renderAdminVivaStatus();
+}
+
+function renderAdminVivaStatus() {
+  const container = document.getElementById('admin-viva-status-display');
+  if (!container) return;
+
+  const state = getAdminVivaState();
+  const isConfirmed = state.status === 'confirmed';
+  const isPending = state.status === 'pending';
+  const isCancelled = state.status === 'cancelled';
+  const gmeet = state.gmeetLink || 'https://meet.google.com/sp-viva-mock';
+  const pastReport = state.pastReport || ADMIN_DEFAULT_VIVA_STATE.pastReport;
+  const questions = (state.commonQuestions && state.commonQuestions.length) ? state.commonQuestions : ADMIN_DEFAULT_VIVA_STATE.commonQuestions;
+
+  container.innerHTML = `
+    <!-- 1. SCHEDULE & GOOGLE MEET CONTROL -->
+    <div style="padding:16px 18px;border-radius:10px;background:${isConfirmed ? '#f0fdf4' : isPending ? '#fffbeb' : '#fef2f2'};border:1px solid ${isConfirmed ? '#bbf7d0' : isPending ? '#fde68a' : '#fecaca'};margin-bottom:16px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="badge ${isConfirmed ? 'badge-green' : isPending ? 'badge-yellow' : 'badge-gray'}" style="font-size:11px;font-weight:700;">
+              ${isConfirmed ? '✓ CONFIRMED (Session Scheduled)' : isPending ? '⏳ PENDING (Awaiting 48-hr Notice)' : '❌ CANCELLED / POSTPONED'}
+            </span>
+            <span style="font-size:13px;color:#0B2345;font-weight:700;">${state.sessionDate} · ${state.sessionTime}</span>
+          </div>
+          <div style="font-size:12px;color:#475569;margin-top:6px;line-height:1.5;">
+            <strong>Interviewer on Duty:</strong> ${state.interviewer}
+          </div>
+          <div style="font-size:12px;color:#475569;margin-top:4px;line-height:1.5;">
+            <strong>Google Meet Link:</strong> <a href="${gmeet}" target="_blank" style="color:#0f766e;font-weight:600;text-decoration:underline;">${gmeet}</a>
+          </div>
+          <div style="font-size:12px;color:#475569;margin-top:4px;line-height:1.5;">
+            <strong>Notice / Cadet Message:</strong> ${state.reason}
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <button class="btn btn-gold btn-sm" onclick="adminOpenScheduleModal()" style="font-size:12px;">
+            <span class="material-symbols-outlined" style="font-size:15px;">edit_calendar</span> Edit Schedule &amp; GMeet
+          </button>
+          <div style="font-size:11px;color:${isConfirmed ? '#16a34a' : isPending ? '#d97706' : '#dc2626'};font-weight:700;">
+            ${state.noticeDispatched ? '📢 48-hr Notice &amp; Email Sent' : '⏳ 48-hr Notice Pending'}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PAST REPORT GIVEN BY LAST INTERVIEWER -->
+    <div style="padding:16px 18px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;border-bottom:1px solid #e2e8f0;padding-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="material-symbols-outlined" style="color:#d97706;font-size:20px;">assignment_turned_in</span>
+          <span style="font-family:'Oswald';font-size:15px;font-weight:600;color:#0B2345;">Past Interviewer Report (Given to Student to Improve)</span>
+          <span class="badge badge-blue" style="font-size:11px;">Score: ${pastReport.overallScore}</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="adminOpenPastReportModal()" style="font-size:11px;padding:4px 10px;">
+          <span class="material-symbols-outlined" style="font-size:14px;">edit_note</span> Edit Past Report
+        </button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:12px;font-size:12px;">
+        <div style="background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;">
+          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;display:flex;align-items:center;gap:4px;">
+            <span class="material-symbols-outlined" style="font-size:14px;">check_circle</span> Strengths Observed:
+          </div>
+          <ul style="margin:0;padding-left:16px;color:#475569;">
+            ${pastReport.strengths.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>
+        <div style="background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #fed7aa;">
+          <div style="font-weight:700;color:#c2410c;margin-bottom:4px;display:flex;align-items:center;gap:4px;">
+            <span class="material-symbols-outlined" style="font-size:14px;">tips_and_updates</span> Critical Areas for Improvement:
+          </div>
+          <ul style="margin:0;padding-left:16px;color:#334155;">
+            ${pastReport.improvements.map(i => `<li>${i}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#64748b;margin-top:8px;font-style:italic;">
+        <strong>Remarks by ${pastReport.interviewer}:</strong> "${pastReport.interviewerRemarks}"
+      </div>
+    </div>
+
+    <!-- 3. COMMONLY ASKED QUESTIONS SENT TO STUDENT -->
+    <div style="padding:16px 18px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="material-symbols-outlined" style="color:#0f766e;font-size:20px;">help_outline</span>
+          <span style="font-family:'Oswald';font-size:15px;font-weight:600;color:#0B2345;">Commonly Asked Questions Sent to Cadet</span>
+          <span class="badge badge-teal" style="font-size:11px;">${questions.length} Active Questions</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="adminResetDefaultQuestions()" style="font-size:11px;padding:4px 8px;">
+            Reset Defaults
+          </button>
+          <button class="btn btn-gold btn-sm" onclick="adminOpenAddQuestionModal()" style="font-size:11px;padding:4px 10px;">
+            <span class="material-symbols-outlined" style="font-size:14px;">add</span> Add Question
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${questions.map((q, idx) => `
+          <div style="background:#fff;padding:10px 14px;border-radius:8px;border:1px solid #e2e8f0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">
+                <span class="badge" style="background:#f1f5f9;color:#0B2345;font-size:10px;font-weight:700;">Q${idx + 1} · ${q.category}</span>
+                <span class="badge badge-yellow" style="font-size:10px;">${q.priority}</span>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:#0B2345;line-height:1.4;">
+                ${q.question}
+              </div>
+              ${q.adminNote ? `
+                <div style="font-size:11px;color:#64748b;margin-top:3px;">
+                  <strong style="color:#0f766e;">Guidance Note:</strong> ${q.adminNote}
+                </div>
+              ` : ''}
+            </div>
+            <button onclick="adminDeleteQuestion('${q.id}')" class="btn btn-outline btn-xs" style="color:#dc2626;border-color:#fecaca;" title="Remove Question">
+              <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Admin Action: Quick status set
+function adminSetVivaStatus(newStatus) {
+  const state = { ...getAdminVivaState() };
+  state.status = newStatus;
+  state.noticeDispatched = true;
+  state.emailSent = true;
+
+  if (newStatus === 'confirmed') {
+    state.reason = '1-on-1 sponsorship mock viva confirmed. Please join 5 minutes before your scheduled slot with video on in formal cadet attire.';
+    toast('Sunday Viva session CONFIRMED! 48-hr notice and GMeet link broadcast to cadets.', '#16a34a');
+  } else if (newStatus === 'pending') {
+    state.reason = 'Confirmation in progress with vessel operations. Status will be finalized 48 hours prior (Friday evening).';
+    toast('Sunday Viva set to PENDING (Awaiting 48-hr notice)', '#d97706');
+  }
+
+  saveAdminVivaState(state);
+}
+
+function adminPromptCancelViva() {
+  const reason = prompt('Please enter cancellation reason to broadcast to cadets:', 'Capt. Arun Pillai called for emergency vessel inspection & port pilotage duties. Session postponed.');
+  if (reason === null) return;
+
+  const state = { ...getAdminVivaState() };
+  state.status = 'cancelled';
+  state.noticeDispatched = true;
+  state.emailSent = true;
+  state.reason = reason.trim() || 'Interviewer unavailable due to urgent vessel operations. Session cancelled.';
+
+  saveAdminVivaState(state);
+  toast('Sunday Viva CANCELLED. Cancellation notice dispatched to cadets.', '#dc2626');
+}
+
+// Modal 1: Schedule & GMeet Editor
+function adminOpenScheduleModal() {
+  const state = getAdminVivaState();
+  document.getElementById('viva-sched-date').value = state.sessionDate || 'Sunday, 01 Nov 2026';
+  document.getElementById('viva-sched-time').value = state.sessionTime || '10:30 AM – 11:15 AM (Slot 03)';
+  document.getElementById('viva-sched-gmeet').value = state.gmeetLink || 'https://meet.google.com/sp-viva-mock';
+  document.getElementById('viva-sched-interviewer').value = state.interviewer || 'Capt. Arun Pillai (Master Mariner, 20+ yrs)';
+  document.getElementById('viva-sched-status').value = state.status || 'confirmed';
+  document.getElementById('viva-sched-reason').value = state.reason || '';
+  openModal('modal-viva-schedule');
+}
+
+function adminSaveScheduleModal() {
+  const date = document.getElementById('viva-sched-date').value.trim();
+  const time = document.getElementById('viva-sched-time').value.trim();
+  const gmeet = document.getElementById('viva-sched-gmeet').value.trim();
+  const interviewer = document.getElementById('viva-sched-interviewer').value.trim();
+  const status = document.getElementById('viva-sched-status').value;
+  const reason = document.getElementById('viva-sched-reason').value.trim();
+
+  if (!date || !time || !gmeet) {
+    alert('Please provide Date, Time, and Google Meet Link.');
+    return;
+  }
+
+  const state = { ...getAdminVivaState() };
+  state.sessionDate = date;
+  state.sessionTime = time;
+  state.gmeetLink = gmeet;
+  state.interviewer = interviewer;
+  state.status = status;
+  state.reason = reason || 'Mock viva scheduled. Please join via Google Meet on time.';
+  state.noticeDispatched = true;
+  state.emailSent = true;
+
+  saveAdminVivaState(state);
+  closeModal('modal-viva-schedule');
+  toast('Interview schedule & Google Meet link broadcast to student!', '#16a34a');
+}
+
+// Modal 2: Past Report Editor
+function adminOpenPastReportModal() {
+  const state = getAdminVivaState();
+  const r = state.pastReport || ADMIN_DEFAULT_VIVA_STATE.pastReport;
+  document.getElementById('viva-rep-date').value = r.lastSessionDate || 'Sunday, 25 Oct 2026';
+  document.getElementById('viva-rep-score').value = r.overallScore || '7.5 / 10';
+  document.getElementById('viva-rep-interviewer').value = r.interviewer || 'Capt. Arun Pillai (Master Mariner, Ex-Maersk)';
+  document.getElementById('viva-rep-verdict').value = r.verdict || 'Good Nautical Knowledge · Needs Work on Situational Judgment';
+  document.getElementById('viva-rep-strengths').value = (r.strengths || []).join('\n');
+  document.getElementById('viva-rep-improvements').value = (r.improvements || []).join('\n');
+  document.getElementById('viva-rep-remarks').value = r.interviewerRemarks || '';
+  openModal('modal-viva-past-report');
+}
+
+function adminSavePastReportModal() {
+  const date = document.getElementById('viva-rep-date').value.trim();
+  const score = document.getElementById('viva-rep-score').value.trim();
+  const interviewer = document.getElementById('viva-rep-interviewer').value.trim();
+  const verdict = document.getElementById('viva-rep-verdict').value.trim();
+  const strengths = document.getElementById('viva-rep-strengths').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const improvements = document.getElementById('viva-rep-improvements').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const remarks = document.getElementById('viva-rep-remarks').value.trim();
+
+  if (!date || !score || !interviewer) {
+    alert('Please fill in Date, Score, and Interviewer.');
+    return;
+  }
+
+  const state = { ...getAdminVivaState() };
+  state.pastReport = {
+    lastSessionDate: date,
+    overallScore: score,
+    interviewer: interviewer,
+    verdict: verdict || 'Assessment Complete',
+    strengths: strengths.length ? strengths : ['Good understanding of basic nautical concepts.'],
+    improvements: improvements.length ? improvements : ['Continue practicing COLREG situations.'],
+    interviewerRemarks: remarks || 'Cadet evaluated.'
+  };
+
+  saveAdminVivaState(state);
+  closeModal('modal-viva-past-report');
+  toast('Past interviewer report updated and dispatched to student!', '#16a34a');
+}
+
+// Modal 3: Add Question Editor
+function adminOpenAddQuestionModal() {
+  document.getElementById('viva-q-category').value = 'Ship Stability';
+  document.getElementById('viva-q-priority').value = 'High Priority';
+  document.getElementById('viva-q-text').value = '';
+  document.getElementById('viva-q-note').value = '';
+  openModal('modal-viva-add-question');
+}
+
+function adminSaveQuestionModal() {
+  const category = document.getElementById('viva-q-category').value;
+  const priority = document.getElementById('viva-q-priority').value.trim() || 'High Priority';
+  const text = document.getElementById('viva-q-text').value.trim();
+  const note = document.getElementById('viva-q-note').value.trim();
+
+  if (!text) {
+    alert('Please enter question text.');
+    return;
+  }
+
+  const state = { ...getAdminVivaState() };
+  if (!state.commonQuestions) state.commonQuestions = [];
+
+  state.commonQuestions.push({
+    id: 'q_' + Date.now(),
+    category: category,
+    priority: priority,
+    question: text,
+    adminNote: note
+  });
+
+  saveAdminVivaState(state);
+  closeModal('modal-viva-add-question');
+  toast('New commonly asked question sent to student!', '#16a34a');
+}
+
+function adminDeleteQuestion(qId) {
+  if (!confirm('Remove this question from student target list?')) return;
+  const state = { ...getAdminVivaState() };
+  state.commonQuestions = (state.commonQuestions || []).filter(q => q.id !== qId);
+  saveAdminVivaState(state);
+  toast('Question removed from student view', '#64748b');
+}
+
+function adminResetDefaultQuestions() {
+  if (!confirm('Reset questions to standard recommended high-yield bank?')) return;
+  const state = { ...getAdminVivaState() };
+  state.commonQuestions = JSON.parse(JSON.stringify(ADMIN_DEFAULT_VIVA_STATE.commonQuestions));
+  saveAdminVivaState(state);
+  toast('Questions reset to recommended defaults', '#16a34a');
+}
 window.addEventListener('DOMContentLoaded', async () => {
   // Set today's date on payment modal
   const payDate = document.getElementById('pay-date');
