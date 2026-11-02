@@ -2229,10 +2229,19 @@
 const SUPABASE_URL = 'https://jqmivbtedttaczkuyxcn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxbWl2YnRlZHR0YWN6a3V5eGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNjM5NTgsImV4cCI6MjEwNjczOTk1OH0.4-5cZBFziRMcaeVEgTTrtwAz99N1EdJpolv2dp3zwzw';
 let sbClient = null;
+let sbAuthProvisionClient = null;
 
 try {
   if (window.supabase) {
     sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Dedicated isolated client for provisioning accounts without overwriting Admin session
+    sbAuthProvisionClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false
+      }
+    });
   }
 } catch (e) {
   console.warn('Supabase initialization warning:', e);
@@ -2729,29 +2738,45 @@ async function saveStudent() {
   savedStudents.unshift(newStudent);
   localStorage.setItem('sindhupath_saved_students', JSON.stringify(savedStudents));
 
-  // 3. Register with Supabase Auth in background
-  if (sbClient) {
-    sbClient.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role: 'student',
-          full_name: newStudent.name
+  // 3. Register directly with Supabase Auth
+  let supabaseSuccess = false;
+  let supabaseMsg = '';
+  if (sbAuthProvisionClient) {
+    try {
+      const { data, error } = await sbAuthProvisionClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: 'student',
+            full_name: newStudent.name
+          }
         }
+      });
+      if (error) {
+        supabaseMsg = error.message;
+        console.warn('Supabase signup notice:', error);
+      } else if (data?.user) {
+        supabaseSuccess = true;
+        console.log('Supabase signup success:', data.user);
       }
-    }).then(res => {
-      console.log('Supabase signup response for student:', res);
-    }).catch(err => {
-      console.warn('Supabase signup note:', err);
-    });
+    } catch (err) {
+      supabaseMsg = err.message || 'Network exception';
+    }
   }
 
   // 4. Update UI
   appStudents.unshift(newStudent);
   renderStudents();
   closeModal('modal-add-student');
-  toast(`✓ Student "${newStudent.name}" created! Login ready with ${email}`, '#16a34a', 5000);
+
+  if (supabaseSuccess) {
+    toast(`✓ Student "${newStudent.name}" created and synced to Supabase Auth!`, '#16a34a', 5000);
+  } else if (supabaseMsg) {
+    toast(`Saved locally. Supabase Auth notice: ${supabaseMsg}`, '#f59e0b', 7000);
+  } else {
+    toast(`✓ Student "${newStudent.name}" saved! Ready at login.html`, '#16a34a', 5000);
+  }
 
   // Reset form
   ['s-fname','s-lname','s-roll','s-attendance','s-mobile','s-email','s-password','s-address'].forEach(id => {
@@ -2896,29 +2921,45 @@ async function saveFaculty() {
   savedFaculty.unshift(newF);
   localStorage.setItem('sindhupath_saved_faculty', JSON.stringify(savedFaculty));
 
-  // 3. Register with Supabase Auth in background
-  if (sbClient) {
-    sbClient.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role: 'faculty',
-          full_name: newF.name,
-          designation: newF.designation
+  // 3. Register directly with Supabase Auth
+  let supabaseSuccess = false;
+  let supabaseMsg = '';
+  if (sbAuthProvisionClient) {
+    try {
+      const { data, error } = await sbAuthProvisionClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: 'faculty',
+            full_name: newF.name,
+            designation: newF.designation
+          }
         }
+      });
+      if (error) {
+        supabaseMsg = error.message;
+        console.warn('Supabase signup notice:', error);
+      } else if (data?.user) {
+        supabaseSuccess = true;
+        console.log('Supabase signup success:', data.user);
       }
-    }).then(res => {
-      console.log('Supabase signup response for faculty:', res);
-    }).catch(err => {
-      console.warn('Supabase signup note:', err);
-    });
+    } catch (err) {
+      supabaseMsg = err.message || 'Network exception';
+    }
   }
 
   appFaculty.unshift(newF);
   renderFaculty();
   closeModal('modal-add-faculty');
-  toast(`✓ Faculty "${name}" created! Login ready with ${email}`, '#16a34a', 5000);
+
+  if (supabaseSuccess) {
+    toast(`✓ Faculty "${name}" created and synced to Supabase Auth!`, '#16a34a', 5000);
+  } else if (supabaseMsg) {
+    toast(`Saved locally. Supabase Auth notice: ${supabaseMsg}`, '#f59e0b', 7000);
+  } else {
+    toast(`✓ Faculty "${name}" saved! Ready at login.html`, '#16a34a', 5000);
+  }
 
   // Reset form
   ['f-name','f-id','f-qual','f-exp','f-mobile','f-email','f-password'].forEach(id => {
