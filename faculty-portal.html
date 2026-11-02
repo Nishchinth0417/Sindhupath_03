@@ -2112,7 +2112,7 @@ function applyQuickName() {
 // ── Logout ───────────────────────────────────
 async function doLogout() {
   if (sbClient) await sbClient.auth.signOut();
-  window.location.href = 'login2.html';
+  window.location.href = 'login.html';
 }
 
 // ── Sidebar & Action Sheet ───────────────────
@@ -5012,7 +5012,7 @@ function resetChatMessages() {
     try {
       const { data: { session } } = await sbClient.auth.getSession();
       if (!session) {
-        window.location.href = 'login2.html';
+        window.location.href = 'login.html';
         return;
       }
       currentFacultyEmail = session.user?.email || '';
