@@ -1582,25 +1582,57 @@
           <input class="form-input" id="s-mobile" type="tel" placeholder="+91 98765 43210">
         </div>
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" id="s-email" type="email" placeholder="student@email.com">
-        </div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
           <label class="form-label">Fee Status</label>
           <select class="form-select" id="s-feestatus">
             <option>Paid</option><option>Partial</option><option>Pending</option>
           </select>
         </div>
+      </div>
+
+      <!-- Account Credentials & Login Access -->
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <span style="font-size:12px; font-weight:700; color:#0B2345; text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:6px;">
+            <span class="material-symbols-outlined" style="font-size:16px; color:#C89B3C;">vpn_key</span>
+            Student Portal Login Credentials
+          </span>
+          <span class="badge badge-green" style="font-size:10px;">Immediate Access</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Gmail / Student Email ID *</label>
+            <input class="form-input" id="s-email" type="email" placeholder="e.g. cadet.arjun@gmail.com" required>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label class="form-label" style="margin-bottom:0;">Initial Password *</label>
+              <button type="button" onclick="generateStudentPassword()" style="padding:0; font-size:11px; color:#C89B3C; font-weight:600; cursor:pointer; background:none; border:none;">
+                🎲 Auto-Generate
+              </button>
+            </div>
+            <div style="position:relative;">
+              <input class="form-input" id="s-password" type="text" placeholder="e.g. Cadet@2026!" style="padding-right:36px;" required>
+              <button type="button" onclick="togglePasswordInput('s-password', this)" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#64748b; cursor:pointer;">
+                <span class="material-symbols-outlined" style="font-size:18px;">visibility</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:11px; color:#64748b; margin-top:8px; margin-bottom:0; display:flex; align-items:center; gap:5px;">
+          <span class="material-symbols-outlined" style="font-size:14px; color:#16a34a;">check_circle</span>
+          Cadet can log in at <code>login.html</code> immediately and can change this password in Student Profile.
+        </p>
+      </div>
+
+      <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Attendance %</label>
           <input class="form-input" id="s-attendance" type="number" min="0" max="100" placeholder="85">
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Address</label>
-        <textarea class="form-textarea" id="s-address" rows="2" placeholder="Full address…"></textarea>
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          <input class="form-input" id="s-address" placeholder="City, State">
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -1660,15 +1692,46 @@
           <input class="form-input" id="f-mobile" type="tel" placeholder="+91 98765 43210">
         </div>
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" id="f-email" type="email" placeholder="faculty@sindhupath.edu.in">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="f-status">
+            <option>Active</option><option>Inactive</option><option>On Leave</option>
+          </select>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Status</label>
-        <select class="form-select" id="f-status">
-          <option>Active</option><option>Inactive</option><option>On Leave</option>
-        </select>
+
+      <!-- Account Credentials & Login Access -->
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <span style="font-size:12px; font-weight:700; color:#0B2345; text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:6px;">
+            <span class="material-symbols-outlined" style="font-size:16px; color:#C89B3C;">vpn_key</span>
+            Faculty Portal Login Credentials
+          </span>
+          <span class="badge badge-green" style="font-size:10px;">Immediate Access</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Gmail / Faculty Email ID *</label>
+            <input class="form-input" id="f-email" type="email" placeholder="e.g. capt.ravi@gmail.com" required>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label class="form-label" style="margin-bottom:0;">Initial Password *</label>
+              <button type="button" onclick="generateFacultyPassword()" style="padding:0; font-size:11px; color:#C89B3C; font-weight:600; cursor:pointer; background:none; border:none;">
+                🎲 Auto-Generate
+              </button>
+            </div>
+            <div style="position:relative;">
+              <input class="form-input" id="f-password" type="text" placeholder="e.g. Officer@2026!" style="padding-right:36px;" required>
+              <button type="button" onclick="togglePasswordInput('f-password', this)" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#64748b; cursor:pointer;">
+                <span class="material-symbols-outlined" style="font-size:18px;">visibility</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:11px; color:#64748b; margin-top:8px; margin-bottom:0; display:flex; align-items:center; gap:5px;">
+          <span class="material-symbols-outlined" style="font-size:14px; color:#16a34a;">check_circle</span>
+          Faculty can log in at <code>login.html</code> immediately and can change this password in Officer Profile.
+        </p>
       </div>
     </div>
     <div class="modal-footer">
@@ -2455,11 +2518,64 @@ async function loadAllData() {
 }
 
 // ─── Data loaders (static — backend will be wired later) ───
-function loadStudents()   { /* uses FALLBACK_STUDENTS */ }
-function loadFaculty()    { /* uses FALLBACK_FACULTY  */ }
+// ─── Data loaders & Local Persistence ───
+function loadStudents() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('sindhupath_saved_students') || '[]');
+    if (saved.length > 0) {
+      const existingRolls = new Set(saved.map(s => (s.roll || s.roll_number || '').toLowerCase()));
+      appStudents = [...saved, ...FALLBACK_STUDENTS.filter(fb => !existingRolls.has((fb.roll || fb.roll_number || '').toLowerCase()))];
+      return;
+    }
+  } catch(e) { console.warn('Load students error:', e); }
+  appStudents = [...FALLBACK_STUDENTS];
+}
+
+function loadFaculty() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('sindhupath_saved_faculty') || '[]');
+    if (saved.length > 0) {
+      const existingIds = new Set(saved.map(f => (f.id || '').toLowerCase()));
+      appFaculty = [...saved, ...FALLBACK_FACULTY.filter(fb => !existingIds.has((fb.id || '').toLowerCase()))];
+      return;
+    }
+  } catch(e) { console.warn('Load faculty error:', e); }
+  appFaculty = [...FALLBACK_FACULTY];
+}
+
 function loadAdmissions() { /* uses FALLBACK_ADMISSIONS */ }
-function loadNotices()    {
-  fetchAdminNotices();
+function loadNotices()    { fetchAdminNotices(); }
+
+// ─── Password Generation & Toggle Helpers ───
+function generateStudentPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$';
+  const rand = Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const pwd = `Cadet@${rand}!`;
+  const el = document.getElementById('s-password');
+  if (el) el.value = pwd;
+  toast(`🎲 Generated password: ${pwd}`, '#C89B3C', 4000);
+}
+
+function generateFacultyPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$';
+  const rand = Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const pwd = `Naval@${rand}!`;
+  const el = document.getElementById('f-password');
+  if (el) el.value = pwd;
+  toast(`🎲 Generated password: ${pwd}`, '#C89B3C', 4000);
+}
+
+function togglePasswordInput(id, btn) {
+  const inp = document.getElementById(id);
+  if (!inp) return;
+  const icon = btn.querySelector('.material-symbols-outlined');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    if (icon) icon.textContent = 'visibility';
+  } else {
+    inp.type = 'password';
+    if (icon) icon.textContent = 'visibility_off';
+  }
 }
 
 // ─── Supabase connection test ───
@@ -2496,7 +2612,10 @@ function renderStudents(list = null) {
     : data.map(s => `
       <tr>
         <td><span style="font-family:monospace;font-size:12px;color:#64748b;">${s.roll || s.roll_number || '—'}</span></td>
-        <td><strong>${s.name || s.full_name || '—'}</strong></td>
+        <td>
+          <strong>${s.name || s.full_name || '—'}</strong>
+          ${s.email ? `<div style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;margin-top:2px;"><span class="material-symbols-outlined" style="font-size:12px;color:#C89B3C;">mail</span>${s.email}</div>` : ''}
+        </td>
         <td><span class="tag">${s.course || '—'}</span></td>
         <td>${s.batch || '—'}</td>
         <td>
@@ -2523,9 +2642,10 @@ function applyStudentFilters() {
   const c  = document.getElementById('student-filter-course')?.value || '';
   const fs = document.getElementById('student-filter-status')?.value || '';
   return appStudents.filter(s => {
-    const name = (s.name || s.full_name || '').toLowerCase();
-    const roll = (s.roll || s.roll_number || '').toLowerCase();
-    if (q && !name.includes(q) && !roll.includes(q)) return false;
+    const name  = (s.name || s.full_name || '').toLowerCase();
+    const roll  = (s.roll || s.roll_number || '').toLowerCase();
+    const email = (s.email || '').toLowerCase();
+    if (q && !name.includes(q) && !roll.includes(q) && !email.includes(q)) return false;
     if (c && s.course !== c) return false;
     if (fs && (s.fees_status || s.fee_status) !== fs) return false;
     return true;
@@ -2552,24 +2672,92 @@ function fmtDate(d) {
 async function saveStudent() {
   const fname = document.getElementById('s-fname').value.trim();
   const lname = document.getElementById('s-lname').value.trim();
-  if (!fname || !lname) { toast('Please fill required fields','#dc2626'); return; }
+  const email = (document.getElementById('s-email')?.value || '').trim().toLowerCase();
+  const password = document.getElementById('s-password')?.value || '';
+
+  if (!fname || !lname) { toast('Please fill first and last name', '#dc2626'); return; }
+  if (!email || !email.includes('@')) { toast('Please enter a valid Gmail / Email address', '#dc2626'); return; }
+  if (!password || password.length < 6) { toast('Please provide an initial password (min 6 characters)', '#dc2626'); return; }
+
+  const roll = document.getElementById('s-roll').value.trim() || `SP-2025-${String(appStudents.length+1).padStart(3,'0')}`;
+  const course = document.getElementById('s-course').value;
+  const batch = document.getElementById('s-batch').value;
+
   const newStudent = {
     id: Date.now(),
-    roll: document.getElementById('s-roll').value.trim() || `SP-2025-${String(appStudents.length+1).padStart(3,'0')}`,
+    roll,
     name: `${fname} ${lname}`,
-    course: document.getElementById('s-course').value,
-    batch: document.getElementById('s-batch').value,
-    attendance: parseInt(document.getElementById('s-attendance').value) || 80,
-    fees_status: document.getElementById('s-feestatus').value,
+    email,
+    mobile: document.getElementById('s-mobile')?.value || '',
+    course,
+    batch,
+    attendance: parseInt(document.getElementById('s-attendance')?.value) || 85,
+    fees_status: document.getElementById('s-feestatus')?.value || 'Pending',
     joined: new Date().toISOString().split('T')[0],
   };
-  // (Supabase insert will be added when backend is ready)
+
+  // 1. Provision credentials in shared sindhupath_users store for immediate login at login.html
+  let allUsers = [];
+  try {
+    allUsers = JSON.parse(localStorage.getItem('sindhupath_users') || '[]');
+  } catch(e) { allUsers = []; }
+
+  const existingIdx = allUsers.findIndex(u => u.email.toLowerCase() === email);
+  const userRecord = {
+    id: 'cadet_' + Date.now(),
+    email,
+    password,
+    role: 'student',
+    name: newStudent.name,
+    roll: newStudent.roll,
+    course: newStudent.course,
+    batch: newStudent.batch,
+    must_change_password: true,
+    created_at: new Date().toISOString()
+  };
+
+  if (existingIdx >= 0) {
+    allUsers[existingIdx] = userRecord;
+  } else {
+    allUsers.push(userRecord);
+  }
+  localStorage.setItem('sindhupath_users', JSON.stringify(allUsers));
+
+  // 2. Persist student in saved roster
+  let savedStudents = [];
+  try { savedStudents = JSON.parse(localStorage.getItem('sindhupath_saved_students') || '[]'); } catch(e) {}
+  savedStudents.unshift(newStudent);
+  localStorage.setItem('sindhupath_saved_students', JSON.stringify(savedStudents));
+
+  // 3. Register with Supabase Auth in background
+  if (sbClient) {
+    sbClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role: 'student',
+          full_name: newStudent.name
+        }
+      }
+    }).then(res => {
+      console.log('Supabase signup response for student:', res);
+    }).catch(err => {
+      console.warn('Supabase signup note:', err);
+    });
+  }
+
+  // 4. Update UI
   appStudents.unshift(newStudent);
   renderStudents();
   closeModal('modal-add-student');
-  toast(`✓ Student "${newStudent.name}" added!`, '#16a34a');
+  toast(`✓ Student "${newStudent.name}" created! Login ready with ${email}`, '#16a34a', 5000);
+
   // Reset form
-  ['s-fname','s-lname','s-roll','s-attendance','s-mobile','s-email','s-address'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  ['s-fname','s-lname','s-roll','s-attendance','s-mobile','s-email','s-password','s-address'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
 }
 
 function editStudent(id) {
@@ -2578,6 +2766,11 @@ function editStudent(id) {
 function deleteStudent(id) {
   if (!confirm('Delete this student record?')) return;
   appStudents = appStudents.filter(s => s.id !== id);
+  try {
+    let savedStudents = JSON.parse(localStorage.getItem('sindhupath_saved_students') || '[]');
+    savedStudents = savedStudents.filter(s => s.id !== id);
+    localStorage.setItem('sindhupath_saved_students', JSON.stringify(savedStudents));
+  } catch(e) {}
   renderStudents();
   toast('Student removed', '#dc2626');
 }
@@ -2605,7 +2798,10 @@ function renderFaculty(list = null) {
     : data.map(f => `
       <tr>
         <td><span style="font-family:monospace;font-size:12px;color:#64748b;">${f.id||'—'}</span></td>
-        <td><strong>${f.name||f.full_name||'—'}</strong></td>
+        <td>
+          <strong>${f.name||f.full_name||'—'}</strong>
+          ${f.email ? `<div style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;margin-top:2px;"><span class="material-symbols-outlined" style="font-size:12px;color:#C89B3C;">mail</span>${f.email}</div>` : ''}
+        </td>
         <td>${f.designation||'—'}</td>
         <td><span class="tag tag-gold">${f.subject||'—'}</span></td>
         <td style="font-size:12px;color:#64748b;">${f.qualification||'—'}</td>
@@ -2622,7 +2818,12 @@ function renderFaculty(list = null) {
 function applyFacultyFilters() {
   const q = (document.getElementById('faculty-search')?.value||'').toLowerCase();
   if (!q) return appFaculty;
-  return appFaculty.filter(f => (f.name||f.full_name||'').toLowerCase().includes(q) || (f.subject||'').toLowerCase().includes(q));
+  return appFaculty.filter(f => {
+    const name  = (f.name || f.full_name || '').toLowerCase();
+    const subj  = (f.subject || '').toLowerCase();
+    const email = (f.email || '').toLowerCase();
+    return name.includes(q) || subj.includes(q) || email.includes(q);
+  });
 }
 function filterFaculty() { renderFaculty(); }
 function facultyStatusBadge(s) {
@@ -2632,26 +2833,98 @@ function facultyStatusBadge(s) {
 function deleteFaculty(id) {
   if (!confirm('Remove this faculty member?')) return;
   appFaculty = appFaculty.filter(f => f.id !== id);
+  try {
+    let savedFaculty = JSON.parse(localStorage.getItem('sindhupath_saved_faculty') || '[]');
+    savedFaculty = savedFaculty.filter(f => f.id !== id);
+    localStorage.setItem('sindhupath_saved_faculty', JSON.stringify(savedFaculty));
+  } catch(e) {}
   renderFaculty();
   toast('Faculty removed', '#dc2626');
 }
 
 async function saveFaculty() {
   const name = document.getElementById('f-name').value.trim();
-  if (!name) { toast('Please enter faculty name','#dc2626'); return; }
+  const email = (document.getElementById('f-email')?.value || '').trim().toLowerCase();
+  const password = document.getElementById('f-password')?.value || '';
+
+  if (!name) { toast('Please enter faculty name', '#dc2626'); return; }
+  if (!email || !email.includes('@')) { toast('Please enter a valid Gmail / Email address', '#dc2626'); return; }
+  if (!password || password.length < 6) { toast('Please provide an initial password (min 6 characters)', '#dc2626'); return; }
+
   const newF = {
-    id: `FAC-${String(Date.now()).slice(-4)}`,
+    id: document.getElementById('f-id')?.value.trim() || `FAC-${String(Date.now()).slice(-4)}`,
     name,
+    email,
     designation: document.getElementById('f-designation').value,
     subject:     document.getElementById('f-subject').value,
     qualification: document.getElementById('f-qual').value,
+    experience:  document.getElementById('f-exp')?.value || '5',
+    mobile:      document.getElementById('f-mobile')?.value || '',
     joined:      new Date().toISOString().split('T')[0],
     status:      document.getElementById('f-status').value,
   };
+
+  // 1. Provision credentials in shared sindhupath_users store for immediate login at login.html
+  let allUsers = [];
+  try {
+    allUsers = JSON.parse(localStorage.getItem('sindhupath_users') || '[]');
+  } catch(e) { allUsers = []; }
+
+  const existingIdx = allUsers.findIndex(u => u.email.toLowerCase() === email);
+  const userRecord = {
+    id: 'fac_' + Date.now(),
+    email,
+    password,
+    role: 'faculty',
+    name: newF.name,
+    designation: newF.designation,
+    subject: newF.subject,
+    must_change_password: true,
+    created_at: new Date().toISOString()
+  };
+
+  if (existingIdx >= 0) {
+    allUsers[existingIdx] = userRecord;
+  } else {
+    allUsers.push(userRecord);
+  }
+  localStorage.setItem('sindhupath_users', JSON.stringify(allUsers));
+
+  // 2. Persist faculty in saved roster
+  let savedFaculty = [];
+  try { savedFaculty = JSON.parse(localStorage.getItem('sindhupath_saved_faculty') || '[]'); } catch(e) {}
+  savedFaculty.unshift(newF);
+  localStorage.setItem('sindhupath_saved_faculty', JSON.stringify(savedFaculty));
+
+  // 3. Register with Supabase Auth in background
+  if (sbClient) {
+    sbClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role: 'faculty',
+          full_name: newF.name,
+          designation: newF.designation
+        }
+      }
+    }).then(res => {
+      console.log('Supabase signup response for faculty:', res);
+    }).catch(err => {
+      console.warn('Supabase signup note:', err);
+    });
+  }
+
   appFaculty.unshift(newF);
   renderFaculty();
   closeModal('modal-add-faculty');
-  toast(`✓ Faculty "${name}" added!`,'#16a34a');
+  toast(`✓ Faculty "${name}" created! Login ready with ${email}`, '#16a34a', 5000);
+
+  // Reset form
+  ['f-name','f-id','f-qual','f-exp','f-mobile','f-email','f-password'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
 }
 
 // ─── ADMISSIONS ───

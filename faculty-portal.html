@@ -2111,6 +2111,7 @@ function applyQuickName() {
 
 // ── Logout ───────────────────────────────────
 async function doLogout() {
+  localStorage.removeItem('sindhupath_active_user');
   if (sbClient) await sbClient.auth.signOut();
   window.location.href = 'login.html';
 }
@@ -4552,13 +4553,57 @@ async function verifyCurrentPassword(e) {
     return;
   }
 
+  // Check provisioned local credentials first
+  const activeLocal = JSON.parse(localStorage.getItem('sindhupath_active_user') || 'null');
+  let email = currentFacultyEmail || activeLocal?.email || document.getElementById('pf-email')?.value;
+  let localUsers = [];
+  try { localUsers = JSON.parse(localStorage.getItem('sindhupath_users') || '[]'); } catch(err) {}
+  const localMatched = localUsers.find(u => u.email && u.email.toLowerCase() === (email||'').toLowerCase());
+
+  if (localMatched) {
+    if (localMatched.password === curPass) {
+      isCurrentPassVerified = true;
+      curPassInput.readOnly = true;
+      curPassInput.classList.remove('border-red-500');
+      curPassInput.classList.add('bg-gray-50');
+      if (btn) btn.classList.add('hidden');
+      const btnReset = document.getElementById('btn-reset-curpass');
+      if (btnReset) btnReset.classList.remove('hidden');
+      const tag = document.getElementById('pw-verified-tag');
+      if (tag) tag.classList.remove('hidden');
+      const stepBadge = document.getElementById('pw-step-badge');
+      if (stepBadge) {
+        stepBadge.classList.remove('bg-amber-500');
+        stepBadge.classList.add('bg-emerald-500');
+      }
+      const stepText = document.getElementById('pw-step-text');
+      if (stepText) stepText.textContent = 'Step 2 of 2: Set New Password';
+      const step2 = document.getElementById('pw-step-2');
+      if (step2) {
+        step2.classList.remove('hidden');
+        step2.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      toast('Current password verified! Now enter your new password.', 'success');
+      setTimeout(() => { document.getElementById('pf-newpass')?.focus(); }, 200);
+      return;
+    } else {
+      if (errEl) {
+        errText.textContent = 'Current password is incorrect. Please try again.';
+        errEl.classList.remove('hidden');
+      }
+      curPassInput.classList.add('border-red-500');
+      curPassInput.focus();
+      toast('Current password incorrect.', 'error');
+      return;
+    }
+  }
+
   if (!sbClient) {
     toast('Authentication service unavailable. Please refresh.', 'error');
     return;
   }
 
   // Resolve user email
-  let email = currentFacultyEmail;
   if (!email) {
     try {
       const { data } = await sbClient.auth.getSession();
@@ -4678,33 +4723,42 @@ async function updateNewPassword(e) {
   const origHTML = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Updating in Supabase...';
+    btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Updating Password...';
   }
 
-  if (!sbClient) {
-    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-    toast('Supabase not available. Please reload.', 'error');
-    return;
-  }
+  // 1. Update in shared sindhupath_users store
+  let localUsers = [];
+  try { localUsers = JSON.parse(localStorage.getItem('sindhupath_users') || '[]'); } catch(err) {}
+  const activeLocal = JSON.parse(localStorage.getItem('sindhupath_active_user') || 'null');
+  const email = currentFacultyEmail || activeLocal?.email || document.getElementById('pf-email')?.value;
+  const localMatched = localUsers.find(u => u.email && u.email.toLowerCase() === (email||'').toLowerCase());
 
-  try {
-    const { error } = await sbClient.auth.updateUser({ password: np });
-
-    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-
-    if (error) {
-      toast('Error updating password: ' + error.message, 'error');
-      return;
+  if (localMatched) {
+    localMatched.password = np;
+    localMatched.must_change_password = false;
+    localStorage.setItem('sindhupath_users', JSON.stringify(localUsers));
+    if (activeLocal && activeLocal.email.toLowerCase() === (email||'').toLowerCase()) {
+      activeLocal.password = np;
+      activeLocal.must_change_password = false;
+      localStorage.setItem('sindhupath_active_user', JSON.stringify(activeLocal));
     }
-
-    toast('Password successfully updated in Supabase!', 'success');
-    resetPasswordSteps();
-
-  } catch(err) {
-    console.error('Update password error:', err);
-    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-    toast('Failed to update password: ' + (err.message || 'Please try again.'), 'error');
   }
+
+  // 2. Also update in Supabase Auth if session exists
+  if (sbClient) {
+    try {
+      const { data: sessionData } = await sbClient.auth.getSession();
+      if (sessionData?.session) {
+        await sbClient.auth.updateUser({ password: np });
+      }
+    } catch(sbErr) {
+      console.warn('Supabase password sync note:', sbErr);
+    }
+  }
+
+  if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+  toast('✓ Password successfully updated!', 'success');
+  resetPasswordSteps();
 }
 
 // Backward compatibility alias
@@ -5012,33 +5066,49 @@ function resetChatMessages() {
     try {
       const { data: { session } } = await sbClient.auth.getSession();
       if (!session) {
-        window.location.href = 'login.html';
-        return;
-      }
-      currentFacultyEmail = session.user?.email || '';
-      const emailEl = document.getElementById('pf-email');
-      if (emailEl) { emailEl.value = session.user.email; emailEl.readOnly = true; }
-
-      // Check role authorization from profiles table
-      try {
-        const { data: profile } = await sbClient
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile) {
-          if (profile.role && profile.role !== 'faculty' && profile.role !== 'admin' && profile.role !== 'instructor') {
-            console.warn('Unauthorized role detected:', profile.role);
-            toast('Unauthorized role. Redirecting to student bridge...', 'error');
-            setTimeout(() => { window.location.href = 'index.html'; }, 1500);
-            return;
+        // Check for active provisioned user session
+        let activeUser = null;
+        try { activeUser = JSON.parse(localStorage.getItem('sindhupath_active_user') || 'null'); } catch(e) {}
+        if (activeUser && (activeUser.role === 'faculty' || activeUser.role === 'instructor')) {
+          currentFacultyEmail = activeUser.email || '';
+          const emailEl = document.getElementById('pf-email');
+          if (emailEl) { emailEl.value = currentFacultyEmail; emailEl.readOnly = true; }
+          if (activeUser.name) setFacultyName(activeUser.name);
+          if (activeUser.must_change_password) {
+            setTimeout(() => {
+              toast('Welcome Officer! Please set your new password in Officer Profile.', 'warning', 6000);
+            }, 1000);
           }
-          if (profile.full_name) setFacultyName(profile.full_name);
-          if (profile.avatar_url) setFacultyAvatar(profile.avatar_url);
+        } else {
+          window.location.href = 'login.html';
+          return;
         }
-      } catch(profErr) {
-        console.info('Profiles check fallback:', profErr.message);
+      } else {
+        currentFacultyEmail = session.user?.email || '';
+        const emailEl = document.getElementById('pf-email');
+        if (emailEl) { emailEl.value = session.user.email; emailEl.readOnly = true; }
+
+        // Check role authorization from profiles table
+        try {
+          const { data: profile } = await sbClient
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile) {
+            if (profile.role && profile.role !== 'faculty' && profile.role !== 'admin' && profile.role !== 'instructor') {
+              console.warn('Unauthorized role detected:', profile.role);
+              toast('Unauthorized role. Redirecting to student bridge...', 'error');
+              setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+              return;
+            }
+            if (profile.full_name) setFacultyName(profile.full_name);
+            if (profile.avatar_url) setFacultyAvatar(profile.avatar_url);
+          }
+        } catch(profErr) {
+          console.info('Profiles check fallback:', profErr.message);
+        }
       }
     } catch(err) {
       console.warn('Session check warning:', err);

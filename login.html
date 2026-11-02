@@ -252,6 +252,12 @@
         .single();
 
       if (!error && profile?.role) {
+        localStorage.setItem('sindhupath_active_user', JSON.stringify({
+          id: user.id,
+          email: user.email,
+          role: profile.role,
+          name: profile.full_name || user.user_metadata?.full_name || ''
+        }));
         if (profile.role === 'student') {
           window.location.href = 'student-portal.html';
           return;
@@ -304,6 +310,22 @@
       const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
       
       if (error || !data.session) {
+        // Check if user credentials were provisioned by Admin
+        let localUsers = [];
+        try { localUsers = JSON.parse(localStorage.getItem('sindhupath_users') || '[]'); } catch(e) {}
+        const matched = localUsers.find(u => u.email && u.email.toLowerCase() === email && u.password === password);
+
+        if (matched) {
+          localStorage.setItem('sindhupath_active_user', JSON.stringify(matched));
+          showStatus('✓ Credentials verified! Entering Sindhupath portal...', 'success');
+          setTimeout(() => {
+            if (matched.role === 'student') window.location.href = 'student-portal.html';
+            else if (matched.role === 'faculty') window.location.href = 'faculty-portal.html';
+            else window.location.href = 'admin-portal.html';
+          }, 500);
+          return;
+        }
+
         showStatus('Access Denied: ' + (error?.message || 'Invalid email or password.'), 'error');
         document.getElementById('password').value = '';
         document.getElementById('password').focus();

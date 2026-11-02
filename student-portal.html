@@ -2012,6 +2012,7 @@ function removeAvatar() {
 
 // ── Logout ──────────────────────────────────
 async function doLogout() {
+  localStorage.removeItem('sindhupath_active_user');
   if (sbClient) await sbClient.auth.signOut();
   window.location.href = 'login.html';
 }
@@ -7038,22 +7039,42 @@ async function updateNewPasswordSingleScreen(e) {
   }
 
   try {
-    if (sbClient) {
-      const { data: sessionData } = await sbClient.auth.getSession();
-      const email = sessionData?.session?.user?.email || document.getElementById('pf-email')?.value;
-      if (email) {
-        const { error: signInErr } = await sbClient.auth.signInWithPassword({ email, password: curPass });
-        if (signInErr) {
-          if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-          toast('Current password is incorrect.', 'error');
-          return;
-        }
-      }
-      const { error: updateErr } = await sbClient.auth.updateUser({ password: newPass });
-      if (updateErr) {
+    const activeLocal = JSON.parse(localStorage.getItem('sindhupath_active_user') || 'null');
+    const email = document.getElementById('pf-email')?.value || activeLocal?.email || currentStudentEmail;
+
+    // 1. Check & update credentials in shared sindhupath_users store
+    let localUsers = [];
+    try { localUsers = JSON.parse(localStorage.getItem('sindhupath_users') || '[]'); } catch(e) {}
+    const localMatched = localUsers.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+
+    if (localMatched) {
+      if (localMatched.password !== curPass) {
         if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
-        toast('Error updating password: ' + updateErr.message, 'error');
+        toast('Current password is incorrect.', 'error');
         return;
+      }
+      localMatched.password = newPass;
+      localMatched.must_change_password = false;
+      localStorage.setItem('sindhupath_users', JSON.stringify(localUsers));
+      if (activeLocal && activeLocal.email.toLowerCase() === email.toLowerCase()) {
+        activeLocal.password = newPass;
+        activeLocal.must_change_password = false;
+        localStorage.setItem('sindhupath_active_user', JSON.stringify(activeLocal));
+      }
+    }
+
+    // 2. Also update Supabase Auth if session exists
+    if (sbClient) {
+      try {
+        const { data: sessionData } = await sbClient.auth.getSession();
+        if (sessionData?.session) {
+          const { error: signInErr } = await sbClient.auth.signInWithPassword({ email, password: curPass });
+          if (!signInErr) {
+            await sbClient.auth.updateUser({ password: newPass });
+          }
+        }
+      } catch(sbErr) {
+        console.warn('Supabase password sync note:', sbErr);
       }
     }
 
@@ -7545,14 +7566,32 @@ function resetChatMessages() {
     try {
       const { data: { session } } = await sbClient.auth.getSession();
       if (!session) {
-        window.location.href = 'login.html';
-        return;
+        // Check for active provisioned user session
+        let activeUser = null;
+        try { activeUser = JSON.parse(localStorage.getItem('sindhupath_active_user') || 'null'); } catch(e) {}
+        if (activeUser && activeUser.role === 'student') {
+          currentStudentEmail = activeUser.email || '';
+          const emailEl = document.getElementById('pf-email');
+          if (emailEl) { emailEl.value = currentStudentEmail; emailEl.readOnly = true; }
+          const displayEmailEl = document.getElementById('profile-display-email');
+          if (displayEmailEl) { displayEmailEl.textContent = currentStudentEmail; }
+          if (activeUser.name) setStudentName(activeUser.name);
+          if (activeUser.must_change_password) {
+            setTimeout(() => {
+              toast('Welcome Cadet! Please change your initial password in Profile & Security.', '#C89B3C', 6000);
+            }, 1000);
+          }
+        } else {
+          window.location.href = 'login.html';
+          return;
+        }
+      } else {
+        currentStudentEmail = session.user?.email || '';
+        const emailEl = document.getElementById('pf-email');
+        if (emailEl) { emailEl.value = currentStudentEmail; emailEl.readOnly = true; }
+        const displayEmailEl = document.getElementById('profile-display-email');
+        if (displayEmailEl) { displayEmailEl.textContent = currentStudentEmail; }
       }
-      currentStudentEmail = session.user?.email || '';
-      const emailEl = document.getElementById('pf-email');
-      if (emailEl) { emailEl.value = currentStudentEmail; emailEl.readOnly = true; }
-      const displayEmailEl = document.getElementById('profile-display-email');
-      if (displayEmailEl) { displayEmailEl.textContent = currentStudentEmail; }
     } catch(err) {
       console.warn('Session check warning:', err);
     }
