@@ -58,11 +58,22 @@
     #sidebar {
       width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 50;
       background: linear-gradient(180deg,#071322 0%,#0B2345 100%);
-      display: flex; flex-direction: column; transition: transform .3s ease;
+      border-right: 1px solid rgba(200,155,60,0.15);
+      display: flex; flex-direction: column; transition: width .3s ease, transform .3s ease;
+      overflow: hidden;
     }
-    #sidebar.collapsed { transform: translateX(-260px); }
+    #sidebar.collapsed { width: 64px; }
+    #sidebar.collapsed .nav-label,
+    #sidebar.collapsed .sidebar-brand-text,
+    #sidebar.collapsed .nav-category-header,
+    #sidebar.collapsed .faculty-info-wrap,
+    #sidebar.collapsed .nav-badge { display: none !important; }
+    #sidebar.collapsed .nav-item { justify-content: center !important; padding: 10px !important; width: calc(100% - 16px) !important; margin: 2px 8px !important; }
+    #sidebar.collapsed .nav-item .material-symbols-outlined,
+    #sidebar.collapsed .nav-item .iconify { font-size: 22px !important; margin: 0 !important; }
+
     #sidebar-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40;
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 45;
     }
     #sidebar-overlay.show { display: block; }
 
@@ -74,12 +85,18 @@
       transition: all .2s ease; user-select: none; width: calc(100% - 20px); text-align: left;
       border: none; background: transparent; outline-offset: 2px;
     }
-    .nav-item:hover, .nav-item:focus-visible { background: rgba(255,255,255,.1); color: #fff; outline: 2px solid #C89B3C; }
-    .nav-item.active { background: rgba(200,155,60,.18); color: #C89B3C; border-left: 3px solid #C89B3C; padding-left: 13px; }
-    .nav-item .material-symbols-outlined { font-size: 20px; }
+    .nav-item:hover, .nav-item:focus-visible { background: rgba(200,155,60,.15); color: #fff; outline: 2px solid #C89B3C; }
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(200,155,60,0.22), rgba(200,155,60,0.06));
+      color: #C89B3C;
+      border-left: 3px solid #C89B3C;
+      padding-left: 15px;
+    }
+    .nav-item .material-symbols-outlined { font-size: 20px; flex-shrink: 0; }
 
     /* ── Main area ── */
-    #main { margin-left: 260px; min-height: 100vh; background: #F4F6FA; transition: margin .3s; }
+    #main { margin-left: 260px; min-height: 100vh; background: #F4F6FA; transition: margin-left .3s ease; }
+    #main.sidebar-collapsed { margin-left: 64px; }
 
     /* ── Mobile Dock Button ── */
     .mobile-dock-btn {
@@ -136,9 +153,15 @@
 
     /* ── Media Queries ── */
     @media (max-width: 767px) {
-      #sidebar { display: none !important; }
-      #sidebar-overlay { display: none !important; }
+      #sidebar {
+        width: 260px !important; transform: translateX(-100%);
+        transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+      }
+      #sidebar.open { transform: translateX(0) !important; z-index: 60 !important; }
+      #sidebar-overlay { z-index: 55; }
       #main { margin-left: 0 !important; padding-bottom: 5.5rem !important; }
+      #main.sidebar-collapsed { margin-left: 0 !important; }
       .tab-content { padding: 14px 14px !important; }
       .modal-backdrop { padding: 0 !important; }
       .modal-box { max-height: 100vh !important; height: 100% !important; border-radius: 0 !important; }
@@ -150,9 +173,9 @@
 
     @media (min-width: 768px) and (max-width: 1024px) {
       #sidebar { width: 64px !important; transform: translateX(0) !important; }
-      #sidebar .nav-item { justify-content: center !important; padding: 10px !important; width: calc(100% - 16px) !important; margin: 2px 8px !important; font-size: 0 !important; }
+      #sidebar .nav-label, #sidebar .sidebar-brand-text, #sidebar .nav-category-header, #sidebar .faculty-info-wrap, #sidebar .nav-badge { display: none !important; }
+      #sidebar .nav-item { justify-content: center !important; padding: 10px !important; width: calc(100% - 16px) !important; margin: 2px 8px !important; }
       #sidebar .nav-item .material-symbols-outlined { font-size: 22px !important; }
-      #sidebar .badge, #sidebar p, #sidebar span:not(.material-symbols-outlined) { display: none !important; }
       #main { margin-left: 64px !important; }
     }
 
@@ -243,70 +266,105 @@
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <!-- ════════════════ SIDEBAR ════════════════ -->
-<aside id="sidebar">
+<aside id="sidebar" class="select-none">
   <!-- Logo -->
-  <div class="flex items-center gap-3 px-5 pt-5 pb-3">
-    <div class="w-9 h-9 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center shrink-0">
+  <div class="flex items-center gap-3 px-5 pt-5 pb-3 border-b border-white/8">
+    <div class="w-9 h-9 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center shrink-0 cursor-pointer" onclick="toggleSidebar()" title="Toggle Sidebar">
       <span class="material-symbols-outlined fill-icon text-gold text-xl">anchor</span>
     </div>
-    <div>
+    <div class="sidebar-brand-text overflow-hidden">
       <p class="font-display text-white text-lg leading-none tracking-widest">SINDHUPATH</p>
-      <p class="text-gold/70 text-[9px] font-sub tracking-widest uppercase">Maritime Academy</p>
+      <p class="text-gold/80 text-[9px] font-sub tracking-widest uppercase">Faculty Command Deck</p>
     </div>
   </div>
 
   <!-- Faculty Info -->
-  <div class="mx-4 mt-3 mb-2 p-3 rounded-xl bg-white/5 border border-white/8 flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-colors" onclick="switchTab('profile')" title="Edit Profile">
+  <div class="mx-3 mt-3 mb-2 p-2.5 rounded-xl bg-white/5 border border-white/8 flex items-center gap-2.5 cursor-pointer hover:bg-white/10 transition-colors" onclick="switchTab('profile')" title="Edit Profile">
     <div id="sb-avatar-wrap" class="w-10 h-10 rounded-full bg-teal/20 border-2 border-teal/40 flex items-center justify-center shrink-0 overflow-hidden">
       <span class="material-symbols-outlined fill-icon text-teal text-xl" id="sb-avatar-icon">person</span>
     </div>
-    <div class="overflow-hidden flex-1 min-w-0">
-      <p id="sb-faculty-name" class="text-white text-sm font-semibold truncate">Faculty</p>
-      <span class="badge bg-teal/20 text-teal border border-teal/30">Faculty</span>
+    <div class="overflow-hidden flex-1 min-w-0 faculty-info-wrap">
+      <p id="sb-faculty-name" class="text-white text-sm font-semibold truncate">Faculty Officer</p>
+      <span class="badge bg-gold/20 text-gold border border-gold/30 text-[9px] font-bold">INSTRUCTOR</span>
     </div>
-    <span class="material-symbols-outlined text-white/30 text-base shrink-0">edit</span>
+    <span class="material-symbols-outlined text-white/30 text-base shrink-0 faculty-info-wrap">edit</span>
   </div>
 
   <!-- Nav Items -->
-  <nav class="flex-1 py-2 overflow-y-auto">
-    <button type="button" class="nav-item active" onclick="switchTab('dashboard')">
-      <span class="material-symbols-outlined">dashboard</span> Dashboard
+  <nav class="flex-1 py-2 overflow-y-auto px-1 space-y-0.5">
+    <!-- Group: Command -->
+    <div class="px-3 pt-2 pb-1 nav-category-header">
+      <p class="text-[10px] font-sub uppercase tracking-wider text-gold/60 font-semibold">Command Bridge</p>
+    </div>
+    <button type="button" class="nav-item active" onclick="switchTab('dashboard')" title="Dashboard">
+      <span class="material-symbols-outlined">space_dashboard</span>
+      <span class="nav-label">Dashboard</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('classes')">
-      <span class="material-symbols-outlined">class</span> My Classes
+
+    <!-- Group: Academics -->
+    <div class="px-3 pt-3 pb-1 nav-category-header">
+      <p class="text-[10px] font-sub uppercase tracking-wider text-gold/60 font-semibold">Academic Operations</p>
+    </div>
+    <button type="button" class="nav-item" onclick="switchTab('classes')" title="My Classes & Curriculum">
+      <span class="material-symbols-outlined">school</span>
+      <span class="nav-label">Classes &amp; Curriculum</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('students')">
-      <span class="material-symbols-outlined">groups</span> Students
+    <button type="button" class="nav-item" onclick="switchTab('schedule')" title="Schedule & Calendar">
+      <span class="material-symbols-outlined">calendar_month</span>
+      <span class="nav-label">Schedule &amp; Timetable</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('materials')">
-      <span class="material-symbols-outlined">upload_file</span> Upload Materials
+    <button type="button" class="nav-item" onclick="switchTab('materials')" title="Upload Courseware & Materials">
+      <span class="material-symbols-outlined">upload_file</span>
+      <span class="nav-label">Study Courseware</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('notice')">
-      <span class="material-symbols-outlined">campaign</span> Post Notice
+
+    <!-- Group: Cadet Operations -->
+    <div class="px-3 pt-3 pb-1 nav-category-header">
+      <p class="text-[10px] font-sub uppercase tracking-wider text-gold/60 font-semibold">Cadet Management</p>
+    </div>
+    <button type="button" class="nav-item" onclick="switchTab('students')" title="Commissioned Cadet Roster">
+      <span class="material-symbols-outlined">groups</span>
+      <span class="nav-label">Cadet Roster</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('attendance')">
-      <span class="material-symbols-outlined">fact_check</span> Attendance
+    <button type="button" class="nav-item" onclick="switchTab('attendance')" title="DG Shipping Muster & Attendance">
+      <span class="material-symbols-outlined">fact_check</span>
+      <span class="nav-label">DG Muster &amp; Roll Call</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('mocktests')">
-      <span class="material-symbols-outlined">quiz</span> Mock Tests
+    <button type="button" class="nav-item" onclick="switchTab('mocktests')" title="IMU-CET CBT & Sponsorship Assessments">
+      <span class="material-symbols-outlined">quiz</span>
+      <span class="nav-label">CBT Engine &amp; Tests</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('schedule')">
-      <span class="material-symbols-outlined">calendar_month</span> Schedule
+
+    <!-- Group: Communications -->
+    <div class="px-3 pt-3 pb-1 nav-category-header">
+      <p class="text-[10px] font-sub uppercase tracking-wider text-gold/60 font-semibold">Communications</p>
+    </div>
+    <button type="button" class="nav-item" onclick="switchTab('notice')" title="Post Academy Notices">
+      <span class="material-symbols-outlined">campaign</span>
+      <span class="nav-label">Post Notice</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('chat')">
-      <span class="material-symbols-outlined">forum</span> Messages &amp; Chat
-      <span id="chat-unread-dot" class="ml-auto badge bg-teal text-white font-bold text-[9px] px-1.5 py-0.5">Live</span>
+    <button type="button" class="nav-item" onclick="switchTab('chat')" title="Bridge Live Chat">
+      <span class="material-symbols-outlined">forum</span>
+      <span class="nav-label">Bridge Live Chat</span>
+      <span id="chat-unread-dot" class="ml-auto badge bg-gold/20 text-gold border border-gold/40 font-bold text-[9px] px-1.5 py-0.5 nav-badge">Live</span>
     </button>
-    <button type="button" class="nav-item" onclick="switchTab('profile')">
-      <span class="material-symbols-outlined">manage_accounts</span> Profile
+
+    <!-- Group: Officer Settings -->
+    <div class="px-3 pt-3 pb-1 nav-category-header">
+      <p class="text-[10px] font-sub uppercase tracking-wider text-gold/60 font-semibold">Officer Account</p>
+    </div>
+    <button type="button" class="nav-item" onclick="switchTab('profile')" title="Officer Profile & Settings">
+      <span class="material-symbols-outlined">manage_accounts</span>
+      <span class="nav-label">Officer Profile</span>
     </button>
   </nav>
 
   <!-- Logout -->
-  <div class="px-4 pb-5">
-    <div class="nav-item text-red-400 hover:text-red-300 hover:bg-red-500/10" onclick="doLogout()">
-      <span class="material-symbols-outlined">logout</span> Logout
-    </div>
+  <div class="px-3 py-3 border-t border-white/8">
+    <button type="button" class="nav-item text-red-400 hover:text-red-300 hover:bg-red-500/10 w-full" onclick="doLogout()" title="Logout">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="nav-label">Sign Out</span>
+    </button>
   </div>
 </aside>
 
@@ -314,14 +372,28 @@
 <div id="main">
 
   <!-- Top Bar: Bridge Command Deck -->
-  <div id="topbar">
-    <!-- Mobile Brand / Anchor Emblem (< 768px) -->
-    <div class="md:hidden flex items-center justify-center w-8 h-8 rounded-xl bg-deep-sea text-gold shrink-0 border border-gold/30">
-      <span class="material-symbols-outlined text-lg">anchor</span>
-    </div>
-    <div class="flex-1 min-w-0 pl-1">
-      <h1 id="page-title" class="font-sub text-deep-sea text-base sm:text-lg uppercase tracking-wide leading-none truncate">Dashboard</h1>
-      <p id="page-subtitle" class="text-slate text-[11px] sm:text-xs mt-0.5 truncate">Welcome back</p>
+  <header id="topbar">
+    <!-- Left: Collapse toggle + Mobile brand + Page Title -->
+    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+      <!-- Desktop collapse toggle -->
+      <button id="sidebar-toggle" class="hidden md:flex text-gray-500 hover:text-deep-sea transition-colors p-1.5 rounded-lg hover:bg-gray-100" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <span class="material-symbols-outlined text-2xl">menu</span>
+      </button>
+
+      <!-- Mobile hamburger (< 768px) -->
+      <button class="md:hidden flex text-gray-600 hover:text-deep-sea transition-colors p-1.5 rounded-lg hover:bg-gray-100" onclick="openSidebar()" title="Open Navigation Drawer">
+        <span class="material-symbols-outlined text-2xl">menu</span>
+      </button>
+
+      <!-- Mobile Brand Emblem (< 768px) -->
+      <div class="md:hidden flex items-center justify-center w-8 h-8 rounded-xl bg-deep-sea text-gold shrink-0 border border-gold/30">
+        <span class="material-symbols-outlined text-lg">anchor</span>
+      </div>
+
+      <div class="min-w-0 pl-1">
+        <h1 id="page-title" class="font-sub text-deep-sea text-base sm:text-lg uppercase tracking-wide leading-none truncate">Dashboard</h1>
+        <p id="page-subtitle" class="text-slate text-[11px] sm:text-xs mt-0.5 truncate hidden sm:block">Faculty Command Deck · Sindhupath Naval Academy</p>
+      </div>
     </div>
 
     <!-- Live Marine Chronometer (IST & UTC) -->
@@ -344,19 +416,22 @@
       <span class="text-[10px] uppercase font-bold text-teal">CHENNAI FLEET BASE</span>
     </div>
 
-    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+    <!-- Right: Notice Bell & Officer Profile Pill -->
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
       <button class="relative p-2 rounded-xl hover:bg-gray-100 transition-colors" title="Bridge Notifications" onclick="switchTab('notice')">
         <span class="material-symbols-outlined text-slate text-xl">notifications</span>
         <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gold"></span>
       </button>
+
       <div id="top-avatar-wrap" class="flex items-center gap-2 bg-canvas border border-gray-200 rounded-xl px-2 sm:px-3 py-1 cursor-pointer hover:bg-gray-100 transition-colors" onclick="switchTab('profile')" title="Faculty Profile">
         <div class="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-teal/20 border border-teal/30 flex items-center justify-center overflow-hidden shrink-0" id="header-avatar-wrap">
           <span class="material-symbols-outlined fill-icon text-teal text-sm" id="header-avatar-icon">person</span>
         </div>
-        <span id="header-name" class="hidden sm:inline text-deep-sea text-xs font-semibold max-w-[100px] truncate">Faculty</span>
+        <span id="header-name" class="hidden sm:inline text-deep-sea text-xs font-semibold max-w-[100px] truncate">Faculty Officer</span>
+        <span class="badge bg-gold/15 text-gold-dark text-[9px] font-bold hidden md:inline">INSTRUCTOR</span>
       </div>
     </div>
-  </div>
+  </header>
 
   <!-- ════════ TAB: DASHBOARD ════════ -->
   <section id="tab-dashboard" class="tab-content active">
@@ -512,24 +587,99 @@
   </section>
 
 
-  <!-- ════════ TAB: MY CLASSES ════════ -->
+  <!-- ════════ TAB: MY CLASSES & CURRICULUM HUB ════════ -->
   <section id="tab-classes" class="tab-content">
-    <div class="mb-6">
-      <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">My Classes</h2>
-      <p class="text-sm text-slate mt-1">All classes assigned to you this semester.</p>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-200">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge bg-gold/15 text-gold border border-gold/40 font-bold text-xs">ACADEMIC COMMAND</span>
+          <span class="badge bg-blue-100 text-blue-800 border border-blue-300 text-xs">6 IMU-CET SUBJECTS</span>
+          <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs">DG-APPROVED</span>
+        </div>
+        <h2 class="font-sub text-2xl text-deep-sea uppercase tracking-wide">Classes &amp; Curriculum Operations</h2>
+        <p class="text-sm text-slate mt-0.5">Faculty course governance, live lecture links (Google Meet / Zoom), syllabus oversight, and study materials.</p>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="openLiveClassModal('new')" class="btn-gold text-xs flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-sm">video_call</span> Set Live Class Link
+        </button>
+        <button onclick="switchTab('schedule')" class="btn-outline text-xs flex items-center gap-1.5 bg-white shadow-sm">
+          <span class="material-symbols-outlined text-sm">calendar_month</span> Timetable
+        </button>
+      </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5" id="classes-grid">
-      <!-- Populated by JS -->
+
+    <!-- Quick Curriculum KPI Metrics -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="material-symbols-outlined text-deep-sea/40 text-xl">menu_book</span>
+          <span class="badge bg-blue-50 text-blue-700 text-[10px]">Active</span>
+        </div>
+        <p class="text-2xl font-display text-deep-sea">6 Subjects</p>
+        <p class="text-[11px] text-slate font-sub uppercase tracking-wider mt-0.5">Core Curriculum Hub</p>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="material-symbols-outlined text-gold/60 text-xl">school</span>
+          <span class="badge bg-gold/15 text-gold text-[10px]">Cohorts</span>
+        </div>
+        <p class="text-2xl font-display text-deep-sea">4 Batches</p>
+        <p class="text-[11px] text-slate font-sub uppercase tracking-wider mt-0.5">DNS, IMU, GME &amp; Pre-Sea</p>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="material-symbols-outlined text-teal/60 text-xl">video_camera_front</span>
+          <span class="badge bg-teal/15 text-teal text-[10px]">Live GMeet</span>
+        </div>
+        <p class="text-2xl font-display text-deep-sea" id="kpi-live-links-count">6 Configured</p>
+        <p class="text-[11px] text-slate font-sub uppercase tracking-wider mt-0.5">Online Lecture Links</p>
+      </div>
+      <div class="stat-card">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="material-symbols-outlined text-emerald-600/60 text-xl">verified</span>
+          <span class="badge bg-emerald-50 text-emerald-700 text-[10px]">Syllabus</span>
+        </div>
+        <p class="text-2xl font-display text-deep-sea">82.4%</p>
+        <p class="text-[11px] text-slate font-sub uppercase tracking-wider mt-0.5">Academy Average Completion</p>
+      </div>
+    </div>
+
+    <!-- Curriculum View Tabs / Mode Selector -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-1.5 p-1 bg-white border border-gray-200 rounded-xl shadow-xs self-start">
+        <button id="view-curriculum-btn" onclick="toggleClassesView('curriculum')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs">
+          <span class="material-symbols-outlined text-sm align-middle mr-1">menu_book</span> 6 Core Subjects
+        </button>
+        <button id="view-batches-btn" onclick="toggleClassesView('batches')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all">
+          <span class="material-symbols-outlined text-sm align-middle mr-1">groups</span> Training Batches
+        </button>
+      </div>
+      <span class="text-xs text-slate font-mono hidden sm:inline">Click "Class Link" to edit Google Meet or "Attach Notes" to add courseware</span>
+    </div>
+
+    <!-- 1. The 6 Core IMU-CET Curriculum Subjects Grid -->
+    <div id="curriculum-subjects-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <!-- Populated dynamically by renderCurriculumSubjects() -->
+    </div>
+
+    <!-- 2. The Active Training Batches Grid -->
+    <div id="classes-grid" class="hidden grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <!-- Populated by renderClasses() -->
     </div>
   </section>
 
 
   <!-- ════════ TAB: STUDENTS ════════ -->
   <section id="tab-students" class="tab-content">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-200">
       <div>
-        <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">Commissioned Cadet Roster</h2>
-        <p class="text-sm text-slate mt-1">Official cadet dossier, INDoS registration, sponsorship status, and DG compliance.</p>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge bg-gold/15 text-gold border border-gold/40 font-bold text-xs">CADET DIRECTORY</span>
+          <span class="badge bg-canvas text-slate border border-gray-200 text-xs font-mono" id="cadet-count-badge">142 TOTAL</span>
+        </div>
+        <h2 class="font-sub text-2xl text-deep-sea uppercase tracking-wide">Commissioned Cadet Dossiers</h2>
+        <p class="text-sm text-slate mt-0.5">Official cadet records, INDoS verification, DG attendance compliance, and fleet sponsorship status.</p>
       </div>
       <div class="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto">
         <select id="student-batch-filter" onchange="filterStudents()" class="form-input text-xs w-full sm:w-44">
@@ -546,9 +696,22 @@
           <option value="Synergy">Synergy Marine</option>
           <option value="Anglo">Anglo-Eastern</option>
         </select>
-        <input id="student-search" type="text" placeholder="Search cadet or INDoS..." onkeyup="filterStudents()" class="form-input text-xs w-full sm:w-48">
+        <input id="student-search" type="text" placeholder="Search cadet, roll, INDoS..." onkeyup="filterStudents()" class="form-input text-xs w-full sm:w-48">
       </div>
     </div>
+
+    <!-- Quick Filter Badges -->
+    <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-1 text-xs">
+      <span class="text-slate font-sub uppercase tracking-wider text-[11px] mr-1 shrink-0">Filter By Status:</span>
+      <button type="button" onclick="setStudentQuickFilter('all')" id="qf-all" class="filter-pill active text-xs py-1 px-3">All Cadets</button>
+      <button type="button" onclick="setStudentQuickFilter('at-risk')" id="qf-at-risk" class="filter-pill text-xs py-1 px-3 text-red-600 border-red-200 hover:bg-red-50">
+        <span class="material-symbols-outlined text-xs mr-1 text-red-600 align-middle">warning</span> DG Audit Risk (&lt;85%)
+      </button>
+      <button type="button" onclick="setStudentQuickFilter('shortlisted')" id="qf-shortlisted" class="filter-pill text-xs py-1 px-3 text-emerald-700 border-emerald-200 hover:bg-emerald-50">
+        <span class="material-symbols-outlined text-xs mr-1 text-emerald-600 align-middle">verified</span> Sponsorship Shortlisted
+      </button>
+    </div>
+
     <!-- Desktop Data Table (md:block) -->
     <div class="card overflow-x-auto hidden md:block">
       <table class="data-table" id="students-table">
@@ -561,7 +724,7 @@
             <th>Target Fleet</th>
             <th>Sponsorship Stage</th>
             <th>DG Attendance</th>
-            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="students-tbody"><!-- JS --></tbody>
@@ -813,9 +976,10 @@
           <label class="form-label">Muster Date</label>
           <input id="att-date" type="date" class="form-input">
         </div>
-        <div class="flex items-end gap-2">
-          <button onclick="markAll('P')" class="btn-outline flex-1 text-xs" title="Mark All Present">✓ All Deck</button>
-          <button onclick="markAll('A')" class="btn-danger flex-1 text-xs" title="Mark All Absent">✗ All Absent</button>
+        <div class="flex items-end gap-1.5">
+          <button onclick="markAll('P')" class="btn-outline flex-1 text-xs py-2 px-1" title="Mark All Present">✓ Deck</button>
+          <button onclick="markAll('SP')" class="btn-outline flex-1 text-xs py-2 px-1" title="Mark All Shore Pass">⚓ Shore</button>
+          <button onclick="markAll('A')" class="btn-danger flex-1 text-xs py-2 px-1" title="Mark All Absent">✗ Absent</button>
         </div>
       </div>
     </div>
@@ -1451,8 +1615,6 @@
             </button>
           </div>
         </form>
-          </div>
-        </form>
 
         <!-- Change Password -->
         <div class="border-t border-gray-100 mt-6 pt-6">
@@ -1739,6 +1901,82 @@
   </div>
 </div>
 
+<!-- ════════ MODAL: CONFIGURE LIVE CLASS / MEETING LINK ════════ -->
+<div id="modal-live-class" class="modal-backdrop" role="dialog" aria-modal="true" onclick="if(event.target===this) closeLiveClassModal()">
+  <div class="modal-box" style="max-width: 560px;">
+    <div class="modal-header">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge bg-teal/15 text-teal border border-teal/40 font-bold text-xs">VIRTUAL BRIDGE</span>
+          <span class="badge bg-gold/15 text-gold text-xs font-bold">ONLINE CLASSROOM</span>
+        </div>
+        <h3 class="font-sub text-lg font-bold text-deep-sea uppercase tracking-wide">Configure Live Class Session</h3>
+        <p class="text-xs text-slate mt-0.5">Set the Google Meet / Zoom link, class topic, and broadcast to enrolled cadets.</p>
+      </div>
+      <button onclick="closeLiveClassModal()" aria-label="Close modal" class="text-slate hover:text-deep-sea p-1 rounded-lg hover:bg-gray-100 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <form onsubmit="saveLiveClassLink(event)" class="space-y-4 pt-2">
+      <div class="modal-body space-y-3.5">
+        <div>
+          <label class="form-label">Select Subject *</label>
+          <select id="lc-subject" class="form-input" required onchange="onLiveClassSubjectChange()">
+            <option value="math">Mathematics (Calculus &amp; Vectors)</option>
+            <option value="physics">Physics (Mechanics &amp; Thermodynamics)</option>
+            <option value="chem">Chemistry (Physical &amp; Marine Chemistry)</option>
+            <option value="english">English &amp; Communication (Maritime SMCP)</option>
+            <option value="gk">General Knowledge &amp; Maritime Affairs (IMO/SOLAS)</option>
+            <option value="nautical">Nautical Knowledge &amp; Seamanship (Navigation)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label">Lecture Topic / Title *</label>
+          <input type="text" id="lc-topic" placeholder="e.g. Celestial Navigation: Sight Reduction Tables &amp; Meridian Altitudes" class="form-input" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">Scheduled Date *</label>
+            <input type="date" id="lc-date" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Watch / Class Time *</label>
+            <input type="time" id="lc-time" class="form-input" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Live Class URL (Google Meet / Zoom / Teams) *</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate text-base">link</span>
+            <input type="url" id="lc-url" placeholder="https://meet.google.com/sp-..." class="form-input pl-10 font-mono text-xs" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Target Cadet Cohort</label>
+          <select id="lc-cohort" class="form-input">
+            <option value="All Batches">All Enrolled Cadets (All Batches)</option>
+            <option value="Batch Alpha">Batch Alpha (DNS Deck Cadets)</option>
+            <option value="Batch Winter">Batch Winter (IMU Rankers)</option>
+            <option value="Batch Bravo">Batch Bravo (GME &amp; Pre-Sea)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+        <button type="button" onclick="closeLiveClassModal()" class="btn-outline">Cancel</button>
+        <button type="submit" class="btn-gold flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-sm">broadcast_on_home</span> Publish Live Class Link
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- ════════════════ JAVASCRIPT ════════════════ -->
 <script>
 'use strict';
@@ -1878,8 +2116,35 @@ async function doLogout() {
 }
 
 // ── Sidebar & Action Sheet ───────────────────
-function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('show'); }
-function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('show'); }
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const mc = document.getElementById('main');
+  const ov = document.getElementById('sidebar-overlay');
+  if (window.innerWidth < 768) {
+    if (sb && sb.classList.contains('open')) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  } else {
+    if (sb) sb.classList.toggle('collapsed');
+    if (mc) mc.classList.toggle('sidebar-collapsed');
+    const isCollapsed = sb && sb.classList.contains('collapsed');
+    try { localStorage.setItem('sp_faculty_sidebar_collapsed', isCollapsed ? '1' : '0'); } catch(e) {}
+  }
+}
+function openSidebar()  {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  if (sb) sb.classList.add('open');
+  if (ov) ov.classList.add('show');
+}
+function closeSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  if (sb) sb.classList.remove('open');
+  if (ov) ov.classList.remove('show');
+}
 
 function openMoreSheet() {
   const backdrop = document.getElementById('more-sheet-backdrop');
@@ -1908,16 +2173,16 @@ function handleSheetNavigate(tabId) {
 
 // ── Tab switching ────────────────────────────
 const TAB_META = {
-  dashboard: ['Dashboard',       'Welcome back'],
-  classes:   ['My Classes',      'Your assigned class modules'],
-  students:  ['Students',        'Roster across your batches'],
-  materials: ['Upload Materials','Share notes and PDFs'],
-  notice:    ['Post Notice',     'Publish announcements'],
-  attendance:['Attendance',      'Mark and review class attendance'],
-  mocktests: ['IMU-CET CBT Engine', 'Proctored exams, negative marking & sponsorship ranking'],
-  schedule:  ['Schedule',        'Your weekly class timetable'],
-  chat:      ['Faculty & Student Chat', 'Live communication with cadets and faculty'],
-  profile:   ['Profile',         'Manage your professional details'],
+  dashboard:  ['Command Dashboard', 'Operational summary & key maritime academy metrics'],
+  classes:    ['Classes & Curriculum Hub', '6 IMU-CET core subjects, live lecture links & module governance'],
+  students:   ['Commissioned Cadet Roster', 'Cadet dossiers, INDoS records & DG compliance tracking'],
+  materials:  ['Maritime Study Courseware', 'Bridge & engine room publications, PDF repository'],
+  notice:     ['Command Bulletins & Notices', 'Publish official announcements to student portal'],
+  attendance: ['DG Shipping Muster & Roll Call', 'Official watch-shift muster log & audit exports'],
+  mocktests:  ['CBT Examination & Merit Engine', 'IMU-CET test scheduler, negative marking & sponsorship radar'],
+  schedule:   ['Schedule & Flight Plan', 'Interactive calendar, timetable & lecture scheduler'],
+  chat:       ['Bridge Live Communications', 'Real-time faculty & cadet messaging channels'],
+  profile:    ['Faculty Officer Profile', 'Instructor credentials, rank & account security'],
 };
 
 function switchTab(id) {
@@ -1931,14 +2196,16 @@ function switchTab(id) {
   const tabEl = document.getElementById('tab-' + id);
   if (tabEl) tabEl.classList.add('active');
   const [title, sub] = TAB_META[id] || ['Portal', ''];
-  document.getElementById('page-title').textContent    = title;
-  document.getElementById('page-subtitle').textContent = sub;
+  const pageTitleEl = document.getElementById('page-title');
+  if (pageTitleEl) pageTitleEl.textContent = title;
+  const pageSubEl = document.getElementById('page-subtitle');
+  if (pageSubEl) pageSubEl.textContent = sub;
   if (window.innerWidth < 768) {
     closeSidebar();
     closeMoreSheet();
   }
   if (id === 'students')   renderStudents();
-  if (id === 'classes')    renderClasses();
+  if (id === 'classes')    { renderCurriculumSubjects(); renderClasses(); }
   if (id === 'materials')  renderMaterials();
   if (id === 'notice')     renderNotices();
   if (id === 'attendance') loadAttendanceRoster();
@@ -2168,6 +2435,141 @@ function toast(msg, type = 'info') {
     text: msg, duration: 3000, gravity: 'top', position: 'right',
     style: { background: type==='success'?'#16A34A':type==='error'?'#DC2626':type==='gold'?'#C89B3C':'#0B2345', color:'#fff', fontFamily:'Montserrat', fontSize:'13px', borderRadius:'12px' }
   }).showToast();
+}
+
+// ══════════════════════════════════════════════
+//  6 CORE IMU-CET & NAUTICAL CURRICULUM SUBJECTS
+// ══════════════════════════════════════════════
+const CURRICULUM_SUBJECTS_DATA = [
+  {
+    id: 'math',
+    name: 'Mathematics',
+    sub: 'Calculus, Vectors, Trigonometry, Matrices & Probability',
+    code: 'IMU-MATH-101',
+    batches: 'Batch Alpha (DNS), Batch Winter (IMU)',
+    instructor: 'Lt. Cdr. S. Raman (Retd.)',
+    icon: 'calculate',
+    color: 'deep-sea',
+    progress: 88,
+    modules: 14,
+    notes: 8,
+    tests: 4,
+    defaultMeeting: 'https://meet.google.com/sp-math-imu',
+    schedule: 'Mon / Wed · 07:30 AM',
+    topic: 'Calculus: Integration by Parts & Definite Integrals'
+  },
+  {
+    id: 'physics',
+    name: 'Physics',
+    sub: 'Mechanics, Thermodynamics, Wave Motion & Optics',
+    code: 'IMU-PHYS-102',
+    batches: 'Batch Alpha (DNS), Batch Bravo (GME)',
+    instructor: 'Capt. R. Deshmukh',
+    icon: 'bolt',
+    color: 'deep-sea',
+    progress: 82,
+    modules: 16,
+    notes: 12,
+    tests: 5,
+    defaultMeeting: 'https://meet.google.com/sp-phys-imu',
+    schedule: 'Tue / Thu · 10:00 AM',
+    topic: 'Thermodynamics: Heat Engines, Entropy & Marine Boilers'
+  },
+  {
+    id: 'chem',
+    name: 'Chemistry',
+    sub: 'Physical Chemistry, Solutions, Hydrocarbons & Marine Fuels',
+    code: 'IMU-CHEM-103',
+    batches: 'Batch Alpha (DNS), Batch Winter (IMU)',
+    instructor: 'Chief Engr. P. Varma',
+    icon: 'science',
+    color: 'deep-sea',
+    progress: 75,
+    modules: 10,
+    notes: 7,
+    tests: 3,
+    defaultMeeting: 'https://meet.google.com/sp-chem-imu',
+    schedule: 'Fri · 02:00 PM',
+    topic: 'Electrochemistry: Galvanic Corrosion & Cathodic Protection'
+  },
+  {
+    id: 'english',
+    name: 'English & Communication',
+    sub: 'Maritime SMCP, Comprehension, Technical Reports & Grammar',
+    code: 'IMU-ENG-104',
+    batches: 'All Commissioned Batches',
+    instructor: 'Prof. Ananya Sen',
+    icon: 'record_voice_over',
+    color: 'deep-sea',
+    progress: 92,
+    modules: 12,
+    notes: 9,
+    tests: 4,
+    defaultMeeting: 'https://meet.google.com/sp-eng-smcp',
+    schedule: 'Mon / Fri · 04:30 PM',
+    topic: 'Standard Marine Communication Phrases: Distress Traffic'
+  },
+  {
+    id: 'gk',
+    name: 'General Knowledge & Maritime Affairs',
+    sub: 'IMO Conventions, SOLAS 74, MARPOL Annexes & STCW 2010',
+    code: 'IMU-GK-105',
+    batches: 'All Commissioned Batches',
+    instructor: 'Capt. N. K. Rao (Master Mariner)',
+    icon: 'public',
+    color: 'gold',
+    progress: 85,
+    modules: 18,
+    notes: 15,
+    tests: 6,
+    defaultMeeting: 'https://meet.google.com/sp-gk-maritime',
+    schedule: 'Sat · 10:00 AM',
+    topic: 'IMO Regulatory Framework: MARPOL Annexes & Port State Control'
+  },
+  {
+    id: 'nautical',
+    name: 'Nautical Knowledge & Seamanship',
+    sub: 'Celestial Navigation, Chartwork, COLREGs & Ship Maneuvering',
+    code: 'IMU-NAUT-106',
+    batches: 'Batch Alpha (Deck), Batch Bravo',
+    instructor: 'Capt. M. S. Gill (Extra Master)',
+    icon: 'explore',
+    color: 'teal',
+    progress: 79,
+    modules: 20,
+    notes: 18,
+    tests: 7,
+    defaultMeeting: 'https://meet.google.com/sp-naut-deck',
+    schedule: 'Wed / Sat · 02:00 PM',
+    topic: 'Celestial Navigation: Sight Reduction Tables & Meridian Altitudes'
+  }
+];
+
+const LS_LIVE_CLASSES = 'sp_faculty_live_classes_v1';
+function getLiveMeetingData() {
+  try {
+    const raw = localStorage.getItem(LS_LIVE_CLASSES);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {};
+}
+function getLiveMeetingLink(subjId) {
+  const store = getLiveMeetingData();
+  if (store[subjId]?.url) return store[subjId].url;
+  const def = CURRICULUM_SUBJECTS_DATA.find(s => s.id === subjId);
+  return def ? def.defaultMeeting : 'https://meet.google.com/sp-bridge-class';
+}
+function copyMeetingLink(subjId) {
+  const url = getLiveMeetingLink(subjId);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      toast('Live Class Google Meet link copied to clipboard!', 'success');
+    }).catch(() => {
+      prompt('Copy Google Meet Link:', url);
+    });
+  } else {
+    prompt('Copy Google Meet Link:', url);
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -2507,8 +2909,176 @@ let attState = {}; // index → 'P' | 'A' | 'M' | 'SP'
 //  RENDER FUNCTIONS
 // ══════════════════════════════════════════════
 
+function toggleClassesView(view) {
+  const currBtn = document.getElementById('view-curriculum-btn');
+  const batchBtn = document.getElementById('view-batches-btn');
+  const currGrid = document.getElementById('curriculum-subjects-grid');
+  const batchGrid = document.getElementById('classes-grid');
+
+  if (view === 'curriculum') {
+    if (currBtn) currBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs';
+    if (batchBtn) batchBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all';
+    if (currGrid) currGrid.classList.remove('hidden');
+    if (batchGrid) batchGrid.classList.add('hidden');
+    renderCurriculumSubjects();
+  } else {
+    if (batchBtn) batchBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs';
+    if (currBtn) currBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all';
+    if (currGrid) currGrid.classList.add('hidden');
+    if (batchGrid) batchGrid.classList.remove('hidden');
+    renderClasses();
+  }
+}
+
+function renderCurriculumSubjects() {
+  const container = document.getElementById('curriculum-subjects-grid');
+  if (!container) return;
+
+  const store = getLiveMeetingData();
+
+  container.innerHTML = CURRICULUM_SUBJECTS_DATA.map(s => {
+    const custom = store[s.id] || {};
+    const meetingUrl = custom.url || s.defaultMeeting;
+    const topic = custom.topic || s.topic;
+    const sched = custom.schedule || s.schedule;
+
+    return `
+      <div class="card hover:shadow-md transition-all border border-gray-200 flex flex-col justify-between">
+        <div>
+          <!-- Card Header -->
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-deep-sea/10 border border-deep-sea/20 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-deep-sea text-2xl">${s.icon}</span>
+              </div>
+              <div class="min-w-0">
+                <span class="badge bg-gold/15 text-gold-dark border border-gold/30 text-[9px] font-bold font-mono">${s.code}</span>
+                <h4 class="font-sub text-deep-sea font-bold text-base uppercase tracking-wide leading-tight mt-0.5">${s.name}</h4>
+              </div>
+            </div>
+            <span class="badge bg-canvas text-slate border border-gray-200 text-[10px] shrink-0 font-mono">${s.modules} Modules</span>
+          </div>
+
+          <p class="text-xs text-slate mb-3 leading-relaxed">${s.sub}</p>
+
+          <!-- Live Classroom Link Section -->
+          <div class="p-3 rounded-xl bg-canvas border border-gray-200 mb-3 space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-deep-sea uppercase tracking-wider text-[10px] flex items-center gap-1 font-sub">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Virtual Bridge Lecture
+              </span>
+              <button type="button" onclick="copyMeetingLink('${s.id}')" class="text-xs text-teal font-semibold hover:underline flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">content_copy</span> Copy Link
+              </button>
+            </div>
+            <p class="text-xs font-semibold text-deep-sea truncate" title="${topic}">
+              ${topic}
+            </p>
+            <div class="flex items-center justify-between text-[11px] text-slate font-mono pt-1 border-t border-gray-200/60">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-gold">schedule</span> ${sched}</span>
+              <a href="${meetingUrl}" target="_blank" rel="noopener noreferrer" class="text-teal font-semibold hover:underline truncate max-w-[140px] text-right">${meetingUrl.replace('https://', '')}</a>
+            </div>
+          </div>
+
+          <!-- Syllabus Progress Bar -->
+          <div class="mb-3">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate font-medium">Syllabus Completion</span>
+              <span class="font-bold text-deep-sea">${s.progress}%</span>
+            </div>
+            <div class="prog-wrap"><div class="prog-fill" style="width:${s.progress}%"></div></div>
+          </div>
+        </div>
+
+        <!-- Faculty Management Actions -->
+        <div class="pt-3 border-t border-gray-100 flex flex-wrap gap-2">
+          <button type="button" onclick="openLiveClassModal('${s.id}')" class="btn-primary text-xs py-2 px-3 flex-1 flex items-center justify-center gap-1.5" title="Set Google Meet link & topic">
+            <span class="material-symbols-outlined text-sm text-gold">video_call</span> Set Class Link
+          </button>
+          <button type="button" onclick="jumpToMaterials('${s.name}')" class="btn-outline text-xs py-2 px-3 flex-1 flex items-center justify-center gap-1.5 bg-white" title="Upload Courseware for this subject">
+            <span class="material-symbols-outlined text-sm text-teal">upload_file</span> Attach Notes
+          </button>
+          <button type="button" onclick="switchTab('students')" class="btn-outline text-xs py-2 px-2.5 flex items-center justify-center text-slate hover:text-deep-sea bg-white" title="View Enrolled Cadets">
+            <span class="material-symbols-outlined text-sm">groups</span>
+          </button>
+          <button type="button" onclick="switchTab('mocktests')" class="btn-outline text-xs py-2 px-2.5 flex items-center justify-center text-slate hover:text-deep-sea bg-white" title="Schedule Mock CBT Exam">
+            <span class="material-symbols-outlined text-sm">quiz</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function jumpToMaterials(subjectName) {
+  switchTab('materials');
+  const titleInput = document.getElementById('m-title');
+  if (titleInput && subjectName) {
+    titleInput.value = `${subjectName}: `;
+    titleInput.focus();
+  }
+}
+
+function openLiveClassModal(subjectId = 'math') {
+  const modal = document.getElementById('modal-live-class');
+  if (!modal) return;
+  const sel = document.getElementById('lc-subject');
+  if (sel && subjectId && subjectId !== 'new') sel.value = subjectId;
+
+  const currentId = sel ? sel.value : 'math';
+  const def = CURRICULUM_SUBJECTS_DATA.find(s => s.id === currentId);
+  const store = getLiveMeetingData();
+  const custom = store[currentId] || {};
+
+  const topicInput = document.getElementById('lc-topic');
+  if (topicInput) topicInput.value = custom.topic || def?.topic || '';
+
+  const urlInput = document.getElementById('lc-url');
+  if (urlInput) urlInput.value = custom.url || def?.defaultMeeting || 'https://meet.google.com/sp-bridge-class';
+
+  const dateInput = document.getElementById('lc-date');
+  if (dateInput) dateInput.value = custom.date || new Date().toISOString().split('T')[0];
+
+  const timeInput = document.getElementById('lc-time');
+  if (timeInput) timeInput.value = custom.time || '10:00';
+
+  modal.classList.add('open');
+}
+
+function closeLiveClassModal() {
+  const modal = document.getElementById('modal-live-class');
+  if (modal) modal.classList.remove('open');
+}
+
+function onLiveClassSubjectChange() {
+  const sel = document.getElementById('lc-subject');
+  if (sel) openLiveClassModal(sel.value);
+}
+
+function saveLiveClassLink(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const subjId = document.getElementById('lc-subject')?.value || 'math';
+  const topic  = document.getElementById('lc-topic')?.value || '';
+  const url    = document.getElementById('lc-url')?.value || '';
+  const date   = document.getElementById('lc-date')?.value || '';
+  const time   = document.getElementById('lc-time')?.value || '';
+  const cohort = document.getElementById('lc-cohort')?.value || 'All Batches';
+
+  const store = getLiveMeetingData();
+  store[subjId] = { topic, url, date, time, cohort, schedule: `${date} · ${time}` };
+  try {
+    localStorage.setItem(LS_LIVE_CLASSES, JSON.stringify(store));
+  } catch(err) {}
+
+  toast(`Live class published for ${subjId.toUpperCase()}! Cadets can now join via Google Meet.`, 'success');
+  closeLiveClassModal();
+  renderCurriculumSubjects();
+}
+
 function renderClasses() {
-  document.getElementById('classes-grid').innerHTML = CLASSES_DATA.map(c => `
+  const grid = document.getElementById('classes-grid');
+  if (!grid) return;
+  grid.innerHTML = CLASSES_DATA.map(c => `
     <div class="card hover:shadow-md transition-shadow">
       <div class="flex items-start justify-between mb-3">
         <div class="w-11 h-11 rounded-xl bg-${c.color}/10 flex items-center justify-center">
@@ -2527,12 +3097,21 @@ function renderClasses() {
         <button onclick="switchTab('students')" class="btn-outline flex-1 text-xs flex items-center justify-center gap-1">
           <span class="material-symbols-outlined text-sm">groups</span> Students (${c.students})
         </button>
-        <button onclick="switchTab('attendance')" class="btn-primary text-xs px-3 flex items-center gap-1">
-          <span class="material-symbols-outlined text-sm">fact_check</span>
+        <button onclick="openLiveClassModal('math')" class="btn-primary text-xs px-3 flex items-center gap-1" title="Set Online Class Link">
+          <span class="material-symbols-outlined text-sm">video_call</span>
         </button>
       </div>
     </div>
   `).join('');
+}
+
+let currentStudentQuickFilter = 'all';
+function setStudentQuickFilter(type) {
+  currentStudentQuickFilter = type;
+  document.querySelectorAll('#tab-students .filter-pill').forEach(p => p.classList.remove('active'));
+  const btn = document.getElementById('qf-' + type);
+  if (btn) btn.classList.add('active');
+  renderStudents();
 }
 
 function renderStudents() {
@@ -2552,6 +3131,12 @@ function renderStudents() {
     return batchOk && fleetOk && searchOk;
   });
 
+  if (currentStudentQuickFilter === 'at-risk') {
+    rows = rows.filter(s => s.attendance < 85);
+  } else if (currentStudentQuickFilter === 'shortlisted') {
+    rows = rows.filter(s => s.sponsorship.toLowerCase().includes('cleared') || s.sponsorship.toLowerCase().includes('shortlisted') || s.sponsorship.toLowerCase().includes('offer'));
+  }
+
   const dgAttBadge = a => {
     if (a >= 85) return `<span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono"><i class="fas fa-check text-[9px] mr-1"></i>${a}% DG-PASS</span>`;
     if (a >= 75) return `<span class="badge bg-amber-100 text-amber-800 border border-amber-300 font-mono"><i class="fas fa-triangle-exclamation text-[9px] mr-1"></i>${a}% AUDIT WARN</span>`;
@@ -2565,39 +3150,43 @@ function renderStudents() {
     return `<span class="badge bg-gray-50 text-gray-700 border border-gray-200">${st}</span>`;
   };
 
-  document.getElementById('students-tbody').innerHTML = rows.map(s => `
-    <tr>
-      <td>
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-deep-sea text-gold flex items-center justify-center font-bold text-xs shrink-0 border border-gold/30">
-            <span class="material-symbols-outlined text-sm">sailing</span>
+  const tbody = document.getElementById('students-tbody');
+  if (tbody) {
+    tbody.innerHTML = rows.map(s => `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td>
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-deep-sea text-gold flex items-center justify-center font-bold text-xs shrink-0 border border-gold/30">
+              <span class="material-symbols-outlined text-sm">sailing</span>
+            </div>
+            <div>
+              <div class="font-semibold text-deep-sea text-sm cursor-pointer hover:text-gold transition-colors" onclick="openScorecardModal('${s.roll}', 1)">${s.name}</div>
+              <div class="text-[10px] text-slate font-mono">${s.stream}</div>
+            </div>
           </div>
-          <div>
-            <div class="font-semibold text-deep-sea text-sm">${s.name}</div>
-            <div class="text-[10px] text-slate font-mono">${s.stream}</div>
+        </td>
+        <td>
+          <div class="font-mono text-xs font-bold text-deep-sea">${s.roll}</div>
+          <div class="font-mono text-[10px] text-slate">INDoS: ${s.indos}</div>
+        </td>
+        <td><span class="font-medium text-xs text-gray-700">${s.stream}</span></td>
+        <td><span class="badge bg-deep-sea/10 text-deep-sea border border-deep-sea/20">Batch ${s.batch}</span></td>
+        <td>
+          <div class="flex items-center gap-1.5 font-semibold text-xs text-deep-sea">
+            <i class="fas fa-anchor text-gold text-xs"></i> ${s.fleet}
           </div>
-        </div>
-      </td>
-      <td>
-        <div class="font-mono text-xs font-bold text-deep-sea">${s.roll}</div>
-        <div class="font-mono text-[10px] text-slate">INDoS: ${s.indos}</div>
-      </td>
-      <td><span class="font-medium text-xs text-gray-700">${s.stream}</span></td>
-      <td><span class="badge bg-deep-sea/10 text-deep-sea border border-deep-sea/20">Batch ${s.batch}</span></td>
-      <td>
-        <div class="flex items-center gap-1.5 font-semibold text-xs text-deep-sea">
-          <i class="fas fa-anchor text-gold text-xs"></i> ${s.fleet}
-        </div>
-      </td>
-      <td>${sponsorBadge(s.sponsorship)}</td>
-      <td>${dgAttBadge(s.attendance)}</td>
-      <td>
-        <span class="badge ${s.attendance >= 85 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-          ${s.attendance >= 85 ? 'Board Approved' : 'Review Required'}
-        </span>
-      </td>
-    </tr>
-  `).join('') || '<tr><td colspan="8" class="text-center py-8 text-slate text-sm font-mono">NO CADET DOSSIERS MATCHING CRITERIA</td></tr>';
+        </td>
+        <td>${sponsorBadge(s.sponsorship)}</td>
+        <td>${dgAttBadge(s.attendance)}</td>
+        <td>
+          <button type="button" onclick="openScorecardModal('${s.roll}', 1)" class="btn-outline py-1 px-2.5 text-xs flex items-center gap-1 hover:bg-gold/10 hover:border-gold whitespace-nowrap shadow-2xs" title="View Cadet Dossier & Scorecard">
+            <span class="material-symbols-outlined text-xs text-gold">visibility</span>
+            <span>Dossier</span>
+          </button>
+        </td>
+      </tr>
+    `).join('') || '<tr><td colspan="8" class="text-center py-8 text-slate text-sm font-mono">NO CADET DOSSIERS MATCHING CRITERIA</td></tr>';
+  }
 
   // Render Mobile Cadet Cards (< 768px)
   const mobileContainer = document.getElementById('students-cards-mobile');
@@ -2610,7 +3199,7 @@ function renderStudents() {
               <span class="material-symbols-outlined text-sm">sailing</span>
             </div>
             <div class="min-w-0">
-              <div class="font-semibold text-deep-sea text-sm truncate">${s.name}</div>
+              <div class="font-semibold text-deep-sea text-sm truncate cursor-pointer" onclick="openScorecardModal('${s.roll}', 1)">${s.name}</div>
               <div class="text-[10px] text-slate font-mono">${s.stream} · Batch ${s.batch}</div>
             </div>
           </div>
@@ -2633,6 +3222,12 @@ function renderStudents() {
         <div class="flex items-center justify-between text-xs pt-1">
           <span class="text-[10px] text-slate font-mono uppercase">Sponsorship Stage</span>
           <div>${sponsorBadge(s.sponsorship)}</div>
+        </div>
+        <div class="mt-2.5 pt-2 border-t border-gray-100">
+          <button type="button" onclick="openScorecardModal('${s.roll}', 1)" class="btn-outline w-full py-1.5 px-3 text-xs flex items-center justify-center gap-1.5 hover:bg-gold/10 hover:border-gold">
+            <span class="material-symbols-outlined text-sm text-gold">visibility</span>
+            <span>View Full Cadet Dossier &amp; Scorecard</span>
+          </button>
         </div>
       </div>
     `).join('') || '<div class="bg-white border border-gray-200 rounded-2xl p-6 text-center text-slate text-sm font-mono">NO CADET DOSSIERS MATCHING CRITERIA</div>';
@@ -4495,6 +5090,15 @@ function resetChatMessages() {
   await loadDynamicClasses();
   await loadDynamicMaterials();
 
+  // Render Core Curriculum Subjects
+  renderCurriculumSubjects();
+
+  // Restore collapsed sidebar state on desktop
+  if (localStorage.getItem('sp_faculty_sidebar_collapsed') === '1' && window.innerWidth >= 768) {
+    document.getElementById('sidebar')?.classList.add('collapsed');
+    document.getElementById('main')?.classList.add('sidebar-collapsed');
+  }
+
   // Pre-load attendance for default class
   loadAttendanceRoster();
 
@@ -4519,6 +5123,7 @@ function resetChatMessages() {
     if (e.key === 'Escape') {
       closeScheduleModal();
       closeScorecardModal();
+      closeLiveClassModal();
       closeMoreSheet();
     }
   });
@@ -4540,7 +5145,7 @@ function resetChatMessages() {
     <span>Schedule</span>
   </button>
   <button type="button" class="mobile-dock-btn" data-tab="classes" onclick="switchTab('classes')">
-    <span class="material-symbols-outlined text-xl">class</span>
+    <span class="material-symbols-outlined text-xl">school</span>
     <span>Classes</span>
   </button>
   <button type="button" class="mobile-dock-btn" id="mobile-dock-more-btn" onclick="openMoreSheet()">
