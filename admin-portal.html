@@ -1496,7 +1496,7 @@
                 <div style="display:flex;flex-direction:column;gap:10px;">
                   <div style="display:flex;justify-content:space-between;align-items:center;">
                     <span style="font-size:13px;color:#374151;">Project URL</span>
-                    <span style="font-size:12px;color:#64748b;font-family:monospace;" id="settings-project-ref">jqmivbtedttaczkuyxcn</span>
+                    <span style="font-size:12px;color:#64748b;font-family:monospace;" id="settings-project-ref">lbdunyobsfdwtmdhuapb</span>
                   </div>
                   <div style="display:flex;justify-content:space-between;align-items:center;">
                     <span style="font-size:13px;color:#374151;">Connection Status</span>
@@ -2226,8 +2226,8 @@
 'use strict';
 
 // ─── Supabase Configuration & Client Initialization ───
-const SUPABASE_URL = 'https://jqmivbtedttaczkuyxcn.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxbWl2YnRlZHR0YWN6a3V5eGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNjM5NTgsImV4cCI6MjEwNjczOTk1OH0.4-5cZBFziRMcaeVEgTTrtwAz99N1EdJpolv2dp3zwzw';
+const SUPABASE_URL = 'https://lbdunyobsfdwtmdhuapb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHVueW9ic2Zkd3RtZGh1YXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NDExNDYsImV4cCI6MjEwNTUxNzE0Nn0.vnCG22PHUHJ1TitPQCwBJY23xZiH8deVtwnlkLTMAt4';
 let sbClient = null;
 let sbAuthProvisionClient = null;
 
@@ -2528,7 +2528,20 @@ async function loadAllData() {
 
 // ─── Data loaders (static — backend will be wired later) ───
 // ─── Data loaders & Local Persistence ───
-function loadStudents() {
+async function loadStudents() {
+  try {
+    if (sbClient) {
+      const { data, error } = await sbClient.from('students').select('*').order('created_at', { ascending: false });
+      if (!error && data && data.length > 0) {
+        console.log('Loaded from Supabase students table:', data.length);
+        const existingRolls = new Set(data.map(s => (s.roll || '').toLowerCase()));
+        appStudents = [...data, ...FALLBACK_STUDENTS.filter(fb => !existingRolls.has((fb.roll || fb.roll_number || '').toLowerCase()))];
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn('Supabase students load error:', err);
+  }
   try {
     const saved = JSON.parse(localStorage.getItem('sindhupath_saved_students') || '[]');
     if (saved.length > 0) {
@@ -2540,7 +2553,20 @@ function loadStudents() {
   appStudents = [...FALLBACK_STUDENTS];
 }
 
-function loadFaculty() {
+async function loadFaculty() {
+  try {
+    if (sbClient) {
+      const { data, error } = await sbClient.from('faculty').select('*').order('created_at', { ascending: false });
+      if (!error && data && data.length > 0) {
+        console.log('Loaded from Supabase faculty table:', data.length);
+        const existingIds = new Set(data.map(f => (f.id || '').toLowerCase()));
+        appFaculty = [...data, ...FALLBACK_FACULTY.filter(fb => !existingIds.has((fb.id || '').toLowerCase()))];
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn('Supabase faculty load error:', err);
+  }
   try {
     const saved = JSON.parse(localStorage.getItem('sindhupath_saved_faculty') || '[]');
     if (saved.length > 0) {
@@ -2738,7 +2764,7 @@ async function saveStudent() {
   savedStudents.unshift(newStudent);
   localStorage.setItem('sindhupath_saved_students', JSON.stringify(savedStudents));
 
-  // 3. Register directly with Supabase Auth
+  // 3. Register directly with Supabase Auth & persist to public.students table
   let supabaseSuccess = false;
   let supabaseMsg = '';
   if (sbAuthProvisionClient) {
@@ -2759,6 +2785,24 @@ async function saveStudent() {
       } else if (data?.user) {
         supabaseSuccess = true;
         console.log('Supabase signup success:', data.user);
+      }
+
+      // Also persist row to public.students table
+      if (sbClient) {
+        sbClient.from('students').insert([{
+          user_id: data?.user?.id || null,
+          roll: newStudent.roll,
+          name: newStudent.name,
+          email: newStudent.email,
+          mobile: newStudent.mobile,
+          course: newStudent.course,
+          batch: newStudent.batch,
+          attendance: newStudent.attendance,
+          fees_status: newStudent.fees_status,
+          joined: newStudent.joined
+        }]).then(res => {
+          console.log('Student row inserted in public.students table:', res);
+        }).catch(e => console.warn('Students table insert note:', e));
       }
     } catch (err) {
       supabaseMsg = err.message || 'Network exception';
@@ -2921,7 +2965,7 @@ async function saveFaculty() {
   savedFaculty.unshift(newF);
   localStorage.setItem('sindhupath_saved_faculty', JSON.stringify(savedFaculty));
 
-  // 3. Register directly with Supabase Auth
+  // 3. Register directly with Supabase Auth & persist to public.faculty table
   let supabaseSuccess = false;
   let supabaseMsg = '';
   if (sbAuthProvisionClient) {
@@ -2943,6 +2987,26 @@ async function saveFaculty() {
       } else if (data?.user) {
         supabaseSuccess = true;
         console.log('Supabase signup success:', data.user);
+      }
+
+      // Also persist row to public.faculty table
+      if (sbClient) {
+        sbClient.from('faculty').insert([{
+          id: newF.id,
+          user_id: data?.user?.id || null,
+          name: newF.name,
+          email: newF.email,
+          designation: newF.designation,
+          department: newF.department || 'Maritime Training',
+          subject: newF.subject,
+          qualification: newF.qual,
+          experience: newF.exp,
+          mobile: newF.mobile,
+          status: newF.status,
+          joined: newF.joined
+        }]).then(res => {
+          console.log('Faculty row inserted in public.faculty table:', res);
+        }).catch(e => console.warn('Faculty table insert note:', e));
       }
     } catch (err) {
       supabaseMsg = err.message || 'Network exception';

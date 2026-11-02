@@ -697,6 +697,10 @@
           <option value="Anglo">Anglo-Eastern</option>
         </select>
         <input id="student-search" type="text" placeholder="Search cadet, roll, INDoS..." onkeyup="filterStudents()" class="form-input text-xs w-full sm:w-48">
+        <button type="button" onclick="openEnrollCadetModal()" class="btn-primary text-xs flex items-center justify-center gap-1.5 py-2 px-3 bg-deep-sea text-gold hover:bg-navy border border-gold/40 rounded-lg font-bold shadow-sm whitespace-nowrap">
+          <span class="material-symbols-outlined text-sm">person_add</span>
+          <span>Enroll Cadet</span>
+        </button>
       </div>
     </div>
 
@@ -1977,17 +1981,129 @@
   </div>
 </div>
 
+<!-- ════════ MODAL: ENROLL NEW CADET ════════ -->
+<div id="modal-enroll-cadet" class="modal-backdrop" role="dialog" aria-modal="true" onclick="if(event.target===this) closeEnrollCadetModal()">
+  <div class="modal-box" style="max-width: 580px;">
+    <div class="modal-header">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge bg-gold/15 text-gold border border-gold/40 font-bold text-xs">CADET ADMISSION</span>
+          <span class="badge bg-deep-sea/10 text-deep-sea text-xs font-bold font-mono">SUPABASE SYNC</span>
+        </div>
+        <h3 class="font-sub text-lg font-bold text-deep-sea uppercase tracking-wide">Enroll Cadet Officer</h3>
+        <p class="text-xs text-slate mt-0.5">Creates credentials in Supabase Auth &amp; saves to Supabase Students table.</p>
+      </div>
+      <button onclick="closeEnrollCadetModal()" aria-label="Close modal" class="text-slate hover:text-deep-sea p-1 rounded-lg hover:bg-gray-100 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <form onsubmit="saveEnrolledCadet(event)" class="space-y-4 pt-2">
+      <div class="modal-body space-y-3.5">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">First Name *</label>
+            <input type="text" id="cadet-fname" placeholder="e.g. Vikram" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Last Name *</label>
+            <input type="text" id="cadet-lname" placeholder="e.g. Rathore" class="form-input" required>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;" class="space-y-3">
+          <div class="flex items-center gap-1.5 text-deep-sea font-bold text-xs uppercase tracking-wider">
+            <span class="material-symbols-outlined text-sm text-gold">badge</span>
+            <span>Cadet Portal Credentials (Supabase Auth)</span>
+          </div>
+          <div>
+            <label class="form-label">Gmail / Login Email *</label>
+            <input type="email" id="cadet-email" placeholder="cadet.name@gmail.com" class="form-input" required>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="form-label mb-0">Initial Password (min 6 chars) *</label>
+              <button type="button" onclick="generateFacultyCadetPassword()" class="text-xs text-gold hover:underline font-semibold flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">casino</span> Auto-generate
+              </button>
+            </div>
+            <div class="relative">
+              <input type="password" id="cadet-password" placeholder="Min 6 characters" class="form-input pr-10" required minlength="6">
+              <button type="button" onclick="toggleFacultyCadetPassword()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate hover:text-deep-sea">
+                <span class="material-symbols-outlined text-sm" id="cadet-pwd-toggle-icon">visibility</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">Training Stream / Course *</label>
+            <select id="cadet-stream" class="form-input" required>
+              <option value="DNS Deck Cadet">DNS Deck Cadet</option>
+              <option value="B.Tech Marine">B.Tech Marine Engineering</option>
+              <option value="GME Engine">GME (Graduate Marine Engine)</option>
+              <option value="IMU-CET Ranker">IMU-CET Preparatory</option>
+              <option value="Sponsorship Only">Shipping Sponsorship Prep</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Assigned Batch *</label>
+            <select id="cadet-batch" class="form-input" required>
+              <option value="A">Batch Alpha (DNS Deck)</option>
+              <option value="B">Batch Winter (IMU Rankers)</option>
+              <option value="C">Batch Bravo (Sponsorship)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">Target Shipping Fleet</label>
+            <select id="cadet-fleet" class="form-input">
+              <option value="Maersk Line">Maersk Line</option>
+              <option value="Fleet Management">Fleet Management</option>
+              <option value="MSC Geneva">MSC Geneva</option>
+              <option value="Synergy Marine">Synergy Marine</option>
+              <option value="Anglo-Eastern">Anglo-Eastern</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Mobile Number</label>
+            <input type="tel" id="cadet-mobile" placeholder="+91 98765 43210" class="form-input">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
+        <button type="button" onclick="closeEnrollCadetModal()" class="btn-outline">Cancel</button>
+        <button type="submit" id="cadet-enroll-btn" class="btn-gold flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-sm">person_add</span> Enroll &amp; Sync to Supabase
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- ════════════════ JAVASCRIPT ════════════════ -->
 <script>
 'use strict';
 
 // ── Supabase client ──────────────────────────
-const SUPABASE_URL      = 'https://jqmivbtedttaczkuyxcn.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxbWl2YnRlZHR0YWN6a3V5eGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNjM5NTgsImV4cCI6MjEwNjczOTk1OH0.4-5cZBFziRMcaeVEgTTrtwAz99N1EdJpolv2dp3zwzw';
+const SUPABASE_URL      = 'https://lbdunyobsfdwtmdhuapb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHVueW9ic2Zkd3RtZGh1YXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NDExNDYsImV4cCI6MjEwNTUxNzE0Nn0.vnCG22PHUHJ1TitPQCwBJY23xZiH8deVtwnlkLTMAt4';
 let sbClient = null;
+let sbAuthProvisionClient = null;
 try {
   if (window.supabase) {
     sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    sbAuthProvisionClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false
+      }
+    });
   }
 } catch(e) { console.warn('Supabase init error:', e); }
 
@@ -5057,6 +5173,174 @@ function resetChatMessages() {
   toast('Chat messages reset.', 'info');
 }
 
+function openEnrollCadetModal() {
+  document.getElementById('modal-enroll-cadet')?.classList.add('open');
+}
+function closeEnrollCadetModal() {
+  document.getElementById('modal-enroll-cadet')?.classList.remove('open');
+}
+function generateFacultyCadetPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$';
+  const rand = Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const pwd = `Cadet@${rand}!`;
+  const el = document.getElementById('cadet-password');
+  if (el) el.value = pwd;
+  toast(`🎲 Generated password: ${pwd}`, 'info', 4000);
+}
+function toggleFacultyCadetPassword() {
+  const el = document.getElementById('cadet-password');
+  const ic = document.getElementById('cadet-pwd-toggle-icon');
+  if (!el) return;
+  if (el.type === 'password') {
+    el.type = 'text';
+    if (ic) ic.textContent = 'visibility_off';
+  } else {
+    el.type = 'password';
+    if (ic) ic.textContent = 'visibility';
+  }
+}
+
+async function saveEnrolledCadet(e) {
+  e.preventDefault();
+  const fname = document.getElementById('cadet-fname').value.trim();
+  const lname = document.getElementById('cadet-lname').value.trim();
+  const email = (document.getElementById('cadet-email')?.value || '').trim().toLowerCase();
+  const password = document.getElementById('cadet-password')?.value || '';
+  const stream = document.getElementById('cadet-stream')?.value || 'DNS Deck Cadet';
+  const batch = document.getElementById('cadet-batch')?.value || 'A';
+  const fleet = document.getElementById('cadet-fleet')?.value || 'Maersk Line';
+  const mobile = document.getElementById('cadet-mobile')?.value || '';
+  const name = `${fname} ${lname}`;
+  const roll = `SP-2026-${batch}${String(STUDENTS_DATA.length + 1).padStart(3, '0')}`;
+
+  if (!fname || !lname) { toast('Please fill cadet name', 'error'); return; }
+  if (!email || !email.includes('@')) { toast('Please provide a valid Gmail / Email', 'error'); return; }
+  if (!password || password.length < 6) { toast('Password must be at least 6 characters', 'error'); return; }
+
+  const submitBtn = document.getElementById('cadet-enroll-btn');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Enrolling...';
+  }
+
+  let sbSuccess = false;
+  let sbMsg = '';
+  let authUserId = null;
+
+  // 1. Register with Supabase Auth
+  if (sbAuthProvisionClient) {
+    try {
+      const { data, error } = await sbAuthProvisionClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: 'student',
+            full_name: name
+          }
+        }
+      });
+      if (error) {
+        sbMsg = error.message;
+        console.warn('Supabase Auth error:', error);
+      } else if (data?.user) {
+        sbSuccess = true;
+        authUserId = data.user.id;
+        console.log('Supabase Auth success:', data.user);
+      }
+    } catch(err) {
+      sbMsg = err.message || 'Network error';
+    }
+  }
+
+  // 2. Persist to public.students table
+  if (sbClient) {
+    try {
+      const { error: tblError } = await sbClient.from('students').insert([{
+        user_id: authUserId,
+        roll,
+        name,
+        email,
+        mobile,
+        course: stream,
+        batch,
+        attendance: 90,
+        fees_status: 'Paid',
+        joined: new Date().toISOString().split('T')[0]
+      }]);
+      if (tblError) console.warn('Students table insert note:', tblError);
+    } catch(tblEx) {
+      console.warn('Students table error:', tblEx);
+    }
+  }
+
+  // 3. Update local array & UI
+  const newCadet = {
+    id: Date.now(),
+    name,
+    roll,
+    indos: mobile || roll,
+    stream,
+    batch,
+    fleet,
+    sponsorship: 'Enrolled (Pre-Sea)',
+    attendance: 90,
+    last_score: 85,
+    email
+  };
+  STUDENTS_DATA.unshift(newCadet);
+  renderStudents();
+  closeEnrollCadetModal();
+
+  // Reset form
+  ['cadet-fname','cadet-lname','cadet-email','cadet-password','cadet-mobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm">person_add</span> Enroll &amp; Sync to Supabase';
+  }
+
+  if (sbSuccess) {
+    toast(`✓ Cadet "${name}" enrolled & synced to Supabase!`, 'success');
+  } else if (sbMsg) {
+    toast(`Cadet enrolled locally. Supabase note: ${sbMsg}`, 'warning');
+  } else {
+    toast(`✓ Cadet "${name}" enrolled!`, 'success');
+  }
+}
+
+async function loadFacultyStudentsFromSupabase() {
+  if (!sbClient) return;
+  try {
+    const { data, error } = await sbClient.from('students').select('*').order('created_at', { ascending: false });
+    if (!error && data && data.length > 0) {
+      console.log('Loaded students from Supabase table:', data.length);
+      data.forEach(dbS => {
+        if (!STUDENTS_DATA.some(s => (s.roll && s.roll.toLowerCase() === dbS.roll.toLowerCase()) || (s.email && s.email.toLowerCase() === (dbS.email || '').toLowerCase()))) {
+          STUDENTS_DATA.unshift({
+            id: dbS.id,
+            name: dbS.name,
+            roll: dbS.roll,
+            indos: dbS.mobile || dbS.roll,
+            stream: dbS.course || 'DNS Deck Cadet',
+            batch: dbS.batch || 'A',
+            fleet: 'Maersk Line',
+            sponsorship: dbS.fees_status === 'Paid' ? 'Offer Received' : 'Shortlisted',
+            attendance: dbS.attendance || 85,
+            last_score: 85,
+            email: dbS.email
+          });
+        }
+      });
+      renderStudents();
+    }
+  } catch(e) {
+    console.warn('Error loading students from Supabase:', e);
+  }
+}
+
 // ══════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════
@@ -5156,9 +5440,10 @@ function resetChatMessages() {
   updateMarineChronometer();
   setInterval(updateMarineChronometer, 1000);
 
-  // Load dynamic classes and materials from Supabase
+  // Load dynamic classes, materials, and cadets from Supabase
   await loadDynamicClasses();
   await loadDynamicMaterials();
+  await loadFacultyStudentsFromSupabase();
 
   // Render Core Curriculum Subjects
   renderCurriculumSubjects();
