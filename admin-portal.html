@@ -545,54 +545,54 @@
             <div class="kpi-icon" style="background:rgba(200,155,60,.12);">
               <span class="material-symbols-outlined" style="color:#C89B3C;">school</span>
             </div>
-            <div class="kpi-value" id="kpi-students">284</div>
+            <div class="kpi-value" id="kpi-students">0</div>
             <div class="kpi-label">Total Students</div>
-            <div class="kpi-change" style="color:#16a34a;">↑ 12 this month</div>
+            <div class="kpi-change" id="kpi-students-sub" style="color:#16a34a;">Live from Database</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-accent" style="background:#2563eb;"></div>
             <div class="kpi-icon" style="background:rgba(37,99,235,.1);">
               <span class="material-symbols-outlined" style="color:#2563eb;">group</span>
             </div>
-            <div class="kpi-value" id="kpi-faculty">18</div>
+            <div class="kpi-value" id="kpi-faculty">0</div>
             <div class="kpi-label">Active Faculty</div>
-            <div class="kpi-change" style="color:#64748b;">2 on leave</div>
+            <div class="kpi-change" id="kpi-faculty-sub" style="color:#64748b;">Live from Database</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-accent" style="background:#f59e0b;"></div>
             <div class="kpi-icon" style="background:rgba(245,158,11,.1);">
               <span class="material-symbols-outlined" style="color:#f59e0b;">assignment_ind</span>
             </div>
-            <div class="kpi-value" id="kpi-admissions">37</div>
+            <div class="kpi-value" id="kpi-admissions">0</div>
             <div class="kpi-label">Pending Admissions</div>
-            <div class="kpi-change" style="color:#f59e0b;">↑ 8 new today</div>
+            <div class="kpi-change" id="kpi-admissions-sub" style="color:#f59e0b;">0 in review</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-accent" style="background:#16a34a;"></div>
             <div class="kpi-icon" style="background:rgba(22,163,74,.1);">
               <span class="material-symbols-outlined" style="color:#16a34a;">payments</span>
             </div>
-            <div class="kpi-value" id="kpi-revenue">₹8.4L</div>
-            <div class="kpi-label">Revenue This Month</div>
-            <div class="kpi-change" style="color:#16a34a;">↑ 18% vs last month</div>
+            <div class="kpi-value" id="kpi-revenue">₹0</div>
+            <div class="kpi-label">Fees Collected</div>
+            <div class="kpi-change" id="kpi-revenue-sub" style="color:#16a34a;">0 paid cadets</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-accent" style="background:#8b5cf6;"></div>
             <div class="kpi-icon" style="background:rgba(139,92,246,.1);">
               <span class="material-symbols-outlined" style="color:#8b5cf6;">event</span>
             </div>
-            <div class="kpi-value">6</div>
-            <div class="kpi-label">Upcoming Exams</div>
-            <div class="kpi-change" style="color:#64748b;">Next: Oct 5</div>
+            <div class="kpi-value" id="kpi-exams">0</div>
+            <div class="kpi-label">Scheduled Batches</div>
+            <div class="kpi-change" id="kpi-exams-sub" style="color:#64748b;">Active sessions</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-accent" style="background:#06b6d4;"></div>
             <div class="kpi-icon" style="background:rgba(6,182,212,.1);">
               <span class="material-symbols-outlined" style="color:#06b6d4;">campaign</span>
             </div>
-            <div class="kpi-value">11</div>
+            <div class="kpi-value" id="kpi-notices">0</div>
             <div class="kpi-label">Open Notices</div>
-            <div class="kpi-change" style="color:#64748b;">3 priority</div>
+            <div class="kpi-change" id="kpi-notices-sub" style="color:#64748b;">Live notices</div>
           </div>
         </div>
 
@@ -759,6 +759,9 @@
             <div class="page-subtitle">Manage all enrolled students</div>
           </div>
           <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" id="btn-sync-students" onclick="syncStudentsFromSupabase(true)" title="Fetch latest students directly from Supabase">
+              <span class="material-symbols-outlined" style="font-size:14px;">sync</span> Sync Supabase
+            </button>
             <button class="btn btn-ghost btn-sm" onclick="exportCSV('students')">
               <span class="material-symbols-outlined" style="font-size:14px;">download</span> Export CSV
             </button>
@@ -818,9 +821,14 @@
             <div class="page-title">Faculty</div>
             <div class="page-subtitle">Teaching staff and instructors</div>
           </div>
-          <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-faculty')">
-            <span class="material-symbols-outlined" style="font-size:14px;">person_add</span> Add Faculty
-          </button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" id="btn-sync-faculty" onclick="syncFacultyFromSupabase(true)" title="Fetch latest faculty directly from Supabase">
+              <span class="material-symbols-outlined" style="font-size:14px;">sync</span> Sync Supabase
+            </button>
+            <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-faculty')">
+              <span class="material-symbols-outlined" style="font-size:14px;">person_add</span> Add Faculty
+            </button>
+          </div>
         </div>
         <div class="card">
           <div class="card-header">
@@ -2312,12 +2320,12 @@ const FALLBACK_FEES = [
 ];
 
 // ─── App state ───
-let appStudents    = [...FALLBACK_STUDENTS];
-let appFaculty     = [...FALLBACK_FACULTY];
-let appAdmissions  = [...FALLBACK_ADMISSIONS];
+let appStudents    = [];
+let appFaculty     = [];
+let appAdmissions  = [];
 let appCourses     = [...FALLBACK_COURSES];
-let appNotices     = [...FALLBACK_NOTICES];
-let appFees        = [...FALLBACK_FEES];
+let appNotices     = [];
+let appFees        = [];
 let currentAdminEmail = '';
 let currentPayStudent = '';
 let sidebarCollapsed = false;
@@ -2355,17 +2363,38 @@ function toggleMobileSidebar() {
 function switchTab(tab, navEl) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  if (navEl) navEl.classList.add('active');
-  // Lazy-load data
-  if (tab === 'students')    renderStudents();
-  if (tab === 'faculty')     renderFaculty();
+  const targetId = (tab === 'overview' ? 'tab-dashboard' : 'tab-' + tab);
+  const panel = document.getElementById(targetId) || document.getElementById('tab-' + tab);
+  if (panel) panel.classList.add('active');
+  const targetNav = navEl || document.querySelector(`.nav-item[onclick*="'${tab}'"]`);
+  if (targetNav) targetNav.classList.add('active');
+  // Lazy-load & live-check data with Supabase
+  if (tab === 'overview' || tab === 'dashboard') { updateOverviewKPIs(); }
+  if (tab === 'students')    { renderStudents(); loadStudents(false); }
+  if (tab === 'faculty')     { renderFaculty(); loadFaculty(false); }
   if (tab === 'admissions')  renderAdmissions();
   if (tab === 'courses')     { renderCourses(); renderAdminCourseLocks(); }
   if (tab === 'noticeboard') fetchAdminNotices();
-  if (tab === 'fees')        renderFees();
+  if (tab === 'fees')        { syncFeesFromStudents(); renderFees(); }
   if (tab === 'messages')    { loadChatMessages(); selectChatChannel('general'); }
 }
+
+function handleUrlHashRouting() {
+  if (window.location.hash) {
+    const rawTab = window.location.hash.replace('#', '').trim().toLowerCase();
+    const validTabs = ['dashboard', 'overview', 'students', 'faculty', 'admissions', 'courses', 'messages', 'noticeboard', 'fees', 'reports', 'settings'];
+    if (validTabs.includes(rawTab)) {
+      const tabToUse = (rawTab === 'overview' ? 'dashboard' : rawTab);
+      switchTab(tabToUse);
+      if (rawTab === 'noticeboard') {
+        const nbPanel = document.getElementById('tab-noticeboard');
+        if (nbPanel) nbPanel.scrollIntoView({ behavior: 'smooth' });
+        toast('📌 Notice Board & Bulletins tab opened', '#C89B3C');
+      }
+    }
+  }
+}
+window.addEventListener('hashchange', handleUrlHashRouting);
 
 // ─── Admin Auth & Screen Management ───
 function showLogin() {
@@ -2396,6 +2425,7 @@ function showApp(user) {
 
   initApp();
   fetchAdminNotices();
+  handleUrlHashRouting();
 }
 
 function showAdminAuthMsg(text, type) {
@@ -2501,7 +2531,150 @@ function saveAdminProfile() {
   toast('Admin profile updated!', '#16a34a');
 }
 
-// ─── Static init (no auth — backend will be wired later) ───
+// ─── Static init & Supabase Realtime Setup ───
+let realtimeSyncChannel = null;
+function setupSupabaseRealtime() {
+  if (!sbClient) return;
+  if (realtimeSyncChannel) {
+    try { sbClient.removeChannel(realtimeSyncChannel); } catch(e) {}
+  }
+  try {
+    realtimeSyncChannel = sbClient.channel('admin-portal-db-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, (payload) => {
+        console.log('Realtime event on public.students:', payload.eventType);
+        loadStudents(false);
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'faculty' }, (payload) => {
+        console.log('Realtime event on public.faculty:', payload.eventType);
+        loadFaculty(false);
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, (payload) => {
+        console.log('Realtime event on public.profiles:', payload.eventType);
+        loadStudents(false);
+        loadFaculty(false);
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notices' }, (payload) => {
+        console.log('Realtime event on public.notices:', payload.eventType);
+        fetchAdminNotices();
+      })
+      .subscribe((status) => {
+        console.log('Supabase Realtime subscription status:', status);
+        const liveBadge = document.getElementById('settings-sb-status');
+        if (liveBadge && status === 'SUBSCRIBED') {
+          liveBadge.innerHTML = '● Realtime Connected';
+        }
+      });
+  } catch(e) {
+    console.warn('Realtime subscription setup notice:', e);
+  }
+}
+
+async function syncStudentsFromSupabase(showToast = true) {
+  const btn = document.getElementById('btn-sync-students');
+  const icon = btn?.querySelector('.material-symbols-outlined');
+  if (icon) icon.classList.add('animate-spin');
+  try {
+    await loadStudents(showToast);
+  } finally {
+    if (icon) icon.classList.remove('animate-spin');
+  }
+}
+
+async function syncFacultyFromSupabase(showToast = true) {
+  const btn = document.getElementById('btn-sync-faculty');
+  const icon = btn?.querySelector('.material-symbols-outlined');
+  if (icon) icon.classList.add('animate-spin');
+  try {
+    await loadFaculty(showToast);
+  } finally {
+    if (icon) icon.classList.remove('animate-spin');
+  }
+}
+
+let adminLivePosters = [];
+let adminLiveBulletins = [];
+
+function syncFeesFromStudents() {
+  if (appStudents && appStudents.length > 0) {
+    appFees = appStudents.map((s, idx) => {
+      const isPaid = (s.fees_status || s.fee_status || '').toLowerCase() === 'paid';
+      const totalAmount = (s.course && s.course.toLowerCase().includes('dns')) ? 65000 : 55000;
+      return {
+        id: s.id || (idx + 1),
+        student: s.name || s.full_name || 'Cadet',
+        course: s.course || 'IMU-CET Coaching',
+        total: totalAmount,
+        paid: isPaid ? totalAmount : 0,
+        due_date: s.joined || s.created_at || new Date().toISOString().split('T')[0]
+      };
+    });
+  }
+}
+
+function updateOverviewKPIs() {
+  // 1. Total Students
+  const totalStudents = appStudents.length;
+  const kpiStudentsEl = document.getElementById('kpi-students');
+  const kpiStudentsSub = document.getElementById('kpi-students-sub');
+  if (kpiStudentsEl) kpiStudentsEl.textContent = totalStudents;
+  if (kpiStudentsSub) kpiStudentsSub.textContent = totalStudents > 0 ? `${totalStudents} live cadets` : 'No cadets yet';
+
+  // 2. Active Faculty
+  const totalFaculty = appFaculty.length;
+  const kpiFacultyEl = document.getElementById('kpi-faculty');
+  const kpiFacultySub = document.getElementById('kpi-faculty-sub');
+  if (kpiFacultyEl) kpiFacultyEl.textContent = totalFaculty;
+  if (kpiFacultySub) kpiFacultySub.textContent = totalFaculty > 0 ? `${totalFaculty} on roster` : '0 on roster';
+
+  // 3. Pending Admissions / Inquiries
+  const totalAdmissions = appAdmissions.length;
+  const kpiAdmissionsEl = document.getElementById('kpi-admissions');
+  const kpiAdmissionsSub = document.getElementById('kpi-admissions-sub');
+  if (kpiAdmissionsEl) kpiAdmissionsEl.textContent = totalAdmissions;
+  if (kpiAdmissionsSub) kpiAdmissionsSub.textContent = `${totalAdmissions} in review`;
+
+  // 4. Fees / Revenue
+  let totalRevenue = 0;
+  let paidCadets = 0;
+  if (appStudents && appStudents.length > 0) {
+    appStudents.forEach(s => {
+      const isPaid = (s.fees_status || s.fee_status || '').toLowerCase() === 'paid';
+      const feeAmount = (s.course && s.course.toLowerCase().includes('dns')) ? 65000 : 55000;
+      if (isPaid) {
+        totalRevenue += feeAmount;
+        paidCadets++;
+      }
+    });
+  } else if (appFees && appFees.length > 0) {
+    totalRevenue = appFees.reduce((sum, f) => sum + (f.paid || 0), 0);
+    paidCadets = appFees.filter(f => f.paid > 0).length;
+  }
+  const kpiRevenueEl = document.getElementById('kpi-revenue');
+  const kpiRevenueSub = document.getElementById('kpi-revenue-sub');
+  if (kpiRevenueEl) {
+    kpiRevenueEl.textContent = totalRevenue >= 100000 
+      ? `₹${(totalRevenue / 100000).toFixed(1)}L` 
+      : `₹${totalRevenue.toLocaleString()}`;
+  }
+  if (kpiRevenueSub) {
+    kpiRevenueSub.textContent = `${paidCadets} cleared fees`;
+  }
+
+  // 5. Open Notices
+  const noticeCountEl = document.getElementById('kpi-notices');
+  const noticeCountSub = document.getElementById('kpi-notices-sub');
+  const totalNotices = adminLivePosters.length + adminLiveBulletins.length;
+  if (noticeCountEl) noticeCountEl.textContent = totalNotices;
+  if (noticeCountSub) noticeCountSub.textContent = `${totalNotices} published`;
+
+  // 6. Batches
+  const kpiExamsEl = document.getElementById('kpi-exams');
+  const kpiExamsSub = document.getElementById('kpi-exams-sub');
+  const uniqueBatches = new Set(appStudents.map(s => s.batch || s.course).filter(Boolean)).size;
+  if (kpiExamsEl) kpiExamsEl.textContent = uniqueBatches > 0 ? uniqueBatches : 2;
+  if (kpiExamsSub) kpiExamsSub.textContent = 'Active batches';
+}
+
 function initApp() {
   const savedName = localStorage.getItem('sp_admin_name') || 'Administrator';
   document.getElementById('sidebar-admin-name').textContent = savedName;
@@ -2510,72 +2683,180 @@ function initApp() {
   if (inputName) inputName.value = savedName;
   loadAllData();
   loadChatMessages();
+  setupSupabaseRealtime();
 }
 
-// ─── Load data from Supabase (with fallback) ───
+// ─── Load data from Supabase ───
 async function loadAllData() {
   await Promise.all([
-    loadStudents(), loadFaculty(), loadAdmissions()
+    loadStudents(false), loadFaculty(false), loadAdmissions()
   ]);
+  syncFeesFromStudents();
   renderStudents();
   renderFaculty();
   renderAdmissions();
   renderCourses();
-  fetchAdminNotices();
+  await fetchAdminNotices();
   renderFees();
   checkSupabaseConn();
+  updateOverviewKPIs();
 }
 
-// ─── Data loaders (static — backend will be wired later) ───
-// ─── Data loaders & Local Persistence ───
-async function loadStudents() {
+// ─── Data loaders & Supabase Database Sync ───
+async function loadStudents(showToast = false) {
+  let fetchedFromSupabase = false;
   try {
     if (sbClient) {
-      const { data, error } = await sbClient.from('students').select('*').order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
-        console.log('Loaded from Supabase students table:', data.length);
-        const existingRolls = new Set(data.map(s => (s.roll || '').toLowerCase()));
-        appStudents = [...data, ...FALLBACK_STUDENTS.filter(fb => !existingRolls.has((fb.roll || fb.roll_number || '').toLowerCase()))];
+      // Query both public.students and public.profiles (students)
+      const [studentsRes, profilesRes] = await Promise.all([
+        sbClient.from('students').select('*').order('created_at', { ascending: false }),
+        sbClient.from('profiles').select('*').eq('role', 'student')
+      ]);
+
+      if (!studentsRes.error) {
+        fetchedFromSupabase = true;
+        let liveStudents = studentsRes.data || [];
+        const profiles = (!profilesRes.error && profilesRes.data) ? profilesRes.data : [];
+
+        // Auto-bridge profiles that don't yet exist in students table
+        const existingEmails = new Set(liveStudents.map(s => (s.email || '').toLowerCase().trim()));
+        const existingUserIds = new Set(liveStudents.map(s => s.user_id).filter(Boolean));
+
+        const newlyBridged = [];
+        profiles.forEach(p => {
+          const email = (p.email || '').toLowerCase().trim();
+          if ((email && !existingEmails.has(email)) && (!p.id || !existingUserIds.has(p.id))) {
+            const bridged = {
+              user_id: p.id || null,
+              roll: 'SP-' + (p.id ? p.id.slice(0, 6).toUpperCase() : String(Date.now()).slice(-4)),
+              name: p.full_name || (email ? email.split('@')[0] : 'Cadet'),
+              email: p.email || '',
+              mobile: p.mobile || '',
+              course: p.course || 'DNS Deck Cadet',
+              batch: p.batch || 'Batch Alpha',
+              attendance: 85,
+              fees_status: 'Pending',
+              joined: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
+            };
+            liveStudents.push(bridged);
+            newlyBridged.push(bridged);
+          }
+        });
+
+        // If newly bridged students found from profiles, persist into public.students table
+        if (newlyBridged.length > 0) {
+          sbClient.from('students').insert(newlyBridged).then(res => {
+            console.log('Auto-bridged profiles into students table:', res);
+          }).catch(e => console.warn('Bridged student insert notice:', e));
+        }
+
+        // Remove mock data: show ONLY real Supabase records
+        appStudents = liveStudents;
+        localStorage.setItem('sindhupath_saved_students', JSON.stringify(appStudents));
+        syncFeesFromStudents();
+        renderStudents();
+        renderFees();
+        updateOverviewKPIs();
+        if (showToast) toast(`✓ Synced ${appStudents.length} student(s) from Supabase`, '#16a34a');
         return;
       }
     }
   } catch (err) {
     console.warn('Supabase students load error:', err);
   }
-  try {
-    const saved = JSON.parse(localStorage.getItem('sindhupath_saved_students') || '[]');
-    if (saved.length > 0) {
-      const existingRolls = new Set(saved.map(s => (s.roll || s.roll_number || '').toLowerCase()));
-      appStudents = [...saved, ...FALLBACK_STUDENTS.filter(fb => !existingRolls.has((fb.roll || fb.roll_number || '').toLowerCase()))];
-      return;
-    }
-  } catch(e) { console.warn('Load students error:', e); }
-  appStudents = [...FALLBACK_STUDENTS];
+
+  // Fallback cache if Supabase query failed (offline)
+  if (!fetchedFromSupabase) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('sindhupath_saved_students') || '[]');
+      if (saved.length > 0) {
+        appStudents = saved;
+        renderStudents();
+        return;
+      }
+    } catch(e) { console.warn('Load students cache error:', e); }
+    appStudents = [];
+    renderStudents();
+    if (showToast) toast('Unable to reach Supabase. Check internet connection.', '#dc2626');
+  }
 }
 
-async function loadFaculty() {
+async function loadFaculty(showToast = false) {
+  let fetchedFromSupabase = false;
   try {
     if (sbClient) {
-      const { data, error } = await sbClient.from('faculty').select('*').order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
-        console.log('Loaded from Supabase faculty table:', data.length);
-        const existingIds = new Set(data.map(f => (f.id || '').toLowerCase()));
-        appFaculty = [...data, ...FALLBACK_FACULTY.filter(fb => !existingIds.has((fb.id || '').toLowerCase()))];
+      // Query both public.faculty and public.profiles (faculty)
+      const [facultyRes, profilesRes] = await Promise.all([
+        sbClient.from('faculty').select('*').order('created_at', { ascending: false }),
+        sbClient.from('profiles').select('*').eq('role', 'faculty')
+      ]);
+
+      if (!facultyRes.error) {
+        fetchedFromSupabase = true;
+        let liveFaculty = facultyRes.data || [];
+        const profiles = (!profilesRes.error && profilesRes.data) ? profilesRes.data : [];
+
+        // Auto-bridge profiles that don't yet exist in faculty table
+        const existingEmails = new Set(liveFaculty.map(f => (f.email || '').toLowerCase().trim()));
+        const existingUserIds = new Set(liveFaculty.map(f => f.user_id).filter(Boolean));
+
+        const newlyBridged = [];
+        profiles.forEach(p => {
+          const email = (p.email || '').toLowerCase().trim();
+          if ((email && !existingEmails.has(email)) && (!p.id || !existingUserIds.has(p.id))) {
+            const bridged = {
+              id: 'FAC-' + (p.id ? p.id.slice(0, 6).toUpperCase() : String(Date.now()).slice(-4)),
+              user_id: p.id || null,
+              name: p.full_name || (email ? email.split('@')[0] : 'Instructor'),
+              email: p.email || '',
+              designation: p.designation || 'Instructor',
+              department: p.department || 'Nautical Studies',
+              subject: p.subject || 'Nautical Science',
+              qualification: p.qualification || 'Master Mariner / CoC',
+              experience: p.experience || '5+ years',
+              mobile: p.mobile || '',
+              status: 'Active',
+              joined: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
+            };
+            liveFaculty.push(bridged);
+            newlyBridged.push(bridged);
+          }
+        });
+
+        // Persist newly bridged faculty into public.faculty table
+        if (newlyBridged.length > 0) {
+          sbClient.from('faculty').insert(newlyBridged).then(res => {
+            console.log('Auto-bridged profiles into faculty table:', res);
+          }).catch(e => console.warn('Bridged faculty insert notice:', e));
+        }
+
+        // Remove mock data: show ONLY real Supabase records
+        appFaculty = liveFaculty;
+        localStorage.setItem('sindhupath_saved_faculty', JSON.stringify(appFaculty));
+        renderFaculty();
+        updateOverviewKPIs();
+        if (showToast) toast(`✓ Synced ${appFaculty.length} faculty member(s) from Supabase`, '#16a34a');
         return;
       }
     }
   } catch (err) {
     console.warn('Supabase faculty load error:', err);
   }
-  try {
-    const saved = JSON.parse(localStorage.getItem('sindhupath_saved_faculty') || '[]');
-    if (saved.length > 0) {
-      const existingIds = new Set(saved.map(f => (f.id || '').toLowerCase()));
-      appFaculty = [...saved, ...FALLBACK_FACULTY.filter(fb => !existingIds.has((fb.id || '').toLowerCase()))];
-      return;
-    }
-  } catch(e) { console.warn('Load faculty error:', e); }
-  appFaculty = [...FALLBACK_FACULTY];
+
+  // Fallback cache if Supabase query failed (offline)
+  if (!fetchedFromSupabase) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('sindhupath_saved_faculty') || '[]');
+      if (saved.length > 0) {
+        appFaculty = saved;
+        renderFaculty();
+        return;
+      }
+    } catch(e) { console.warn('Load faculty cache error:', e); }
+    appFaculty = [];
+    renderFaculty();
+    if (showToast) toast('Unable to reach Supabase. Check internet connection.', '#dc2626');
+  }
 }
 
 function loadAdmissions() { /* uses FALLBACK_ADMISSIONS */ }
@@ -2665,8 +2946,8 @@ function renderStudents(list = null) {
         <td style="font-size:12px;color:#94a3b8;">${fmtDate(s.joined || s.created_at)}</td>
         <td>
           <div style="display:flex;gap:4px;">
-            <button class="btn btn-ghost btn-xs" onclick="editStudent(${s.id})">Edit</button>
-            <button class="btn btn-danger btn-xs" onclick="deleteStudent(${s.id})">Del</button>
+            <button class="btn btn-ghost btn-xs" onclick="editStudent('${s.id}')">Edit</button>
+            <button class="btn btn-danger btn-xs" onclick="deleteStudent('${s.id}')">Del</button>
           </div>
         </td>
       </tr>`).join('');
@@ -2832,14 +3113,21 @@ async function saveStudent() {
 function editStudent(id) {
   toast('Edit mode — open student detail view', '#C89B3C');
 }
-function deleteStudent(id) {
+async function deleteStudent(id) {
   if (!confirm('Delete this student record?')) return;
-  appStudents = appStudents.filter(s => s.id !== id);
+  appStudents = appStudents.filter(s => String(s.id) !== String(id));
   try {
     let savedStudents = JSON.parse(localStorage.getItem('sindhupath_saved_students') || '[]');
-    savedStudents = savedStudents.filter(s => s.id !== id);
+    savedStudents = savedStudents.filter(s => String(s.id) !== String(id));
     localStorage.setItem('sindhupath_saved_students', JSON.stringify(savedStudents));
   } catch(e) {}
+  if (sbClient) {
+    try {
+      await sbClient.from('students').delete().eq('id', id);
+    } catch(e) {
+      console.warn('Supabase deleteStudent notice:', e);
+    }
+  }
   renderStudents();
   toast('Student removed', '#dc2626');
 }
@@ -2899,14 +3187,21 @@ function facultyStatusBadge(s) {
   const m = { Active:'badge-green','On Leave':'badge-yellow', Inactive:'badge-gray' };
   return `<span class="badge ${m[s]||'badge-gray'}">${s||'Unknown'}</span>`;
 }
-function deleteFaculty(id) {
+async function deleteFaculty(id) {
   if (!confirm('Remove this faculty member?')) return;
-  appFaculty = appFaculty.filter(f => f.id !== id);
+  appFaculty = appFaculty.filter(f => String(f.id) !== String(id));
   try {
     let savedFaculty = JSON.parse(localStorage.getItem('sindhupath_saved_faculty') || '[]');
-    savedFaculty = savedFaculty.filter(f => f.id !== id);
+    savedFaculty = savedFaculty.filter(f => String(f.id) !== String(id));
     localStorage.setItem('sindhupath_saved_faculty', JSON.stringify(savedFaculty));
   } catch(e) {}
+  if (sbClient) {
+    try {
+      await sbClient.from('faculty').delete().eq('id', id);
+    } catch(e) {
+      console.warn('Supabase deleteFaculty notice:', e);
+    }
+  }
   renderFaculty();
   toast('Faculty removed', '#dc2626');
 }
@@ -2999,8 +3294,8 @@ async function saveFaculty() {
           designation: newF.designation,
           department: newF.department || 'Maritime Training',
           subject: newF.subject,
-          qualification: newF.qual,
-          experience: newF.exp,
+          qualification: newF.qualification,
+          experience: newF.experience,
           mobile: newF.mobile,
           status: newF.status,
           joined: newF.joined
@@ -3327,7 +3622,7 @@ async function uploadPoster() {
   const btn = document.getElementById('admin-upload-btn');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading to Supabase...</span>';
+    btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading to Supabase Storage...</span>';
   }
 
   try {
@@ -3335,10 +3630,24 @@ async function uploadPoster() {
 
     if (file) {
       const fileName = 'poster_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const { error: upErr } = await sbClient.storage.from('posters').upload(fileName, file, { cacheControl: '3600', upsert: true });
-      if (upErr) throw upErr;
-      const { data: pub } = sbClient.storage.from('posters').getPublicUrl(fileName);
-      finalUrl = pub.publicUrl;
+      
+      // Upload directly to dedicated 'posters' bucket in Supabase Storage
+      const { data: uploadData, error: upErr } = await sbClient.storage
+        .from('posters')
+        .upload(fileName, file, { 
+          cacheControl: '3600', 
+          upsert: true,
+          contentType: file.type || 'image/png'
+        });
+
+      if (upErr) {
+        console.error('Supabase Storage Upload Failure:', upErr);
+        throw new Error('Supabase Storage: ' + (upErr.message || 'Upload failed. Run sql/07_complete_storage_and_rls_repair.sql in Supabase SQL editor.'));
+      }
+
+      // Retrieve public CDN URL for the uploaded object
+      const { data: pubData } = sbClient.storage.from('posters').getPublicUrl(fileName);
+      finalUrl = pubData ? pubData.publicUrl : '';
     }
 
     const { error: dbErr } = await sbClient.from('notices').insert([{
@@ -3348,8 +3657,8 @@ async function uploadPoster() {
 
     if (dbErr) throw dbErr;
 
-    showNoticeStatus('Poster uploaded & published live to website!', 'success');
-    toast('✓ Poster uploaded & published live!', '#16a34a');
+    showNoticeStatus('Poster uploaded to Supabase Storage & published live!', 'success');
+    if (typeof toast === 'function') toast('✓ Poster uploaded to Supabase Storage & published live!', '#16a34a');
     if (fileInput) fileInput.value = '';
     if (uploadLabel) uploadLabel.textContent = 'Click to select poster image';
     if (urlInput) urlInput.value = '';
@@ -3450,13 +3759,17 @@ async function fetchAdminNotices() {
 
     if (data && data.length > 0) {
       data.forEach(item => {
-        if (item.title && item.title.startsWith('BULLETIN:')) {
+        if (item.title && item.title.startsWith('BULLETIN:') && !item.image_url?.startsWith('data:image/')) {
           bulletins.push(item);
         } else {
           posters.push(item);
         }
       });
     }
+
+    adminLivePosters = posters;
+    adminLiveBulletins = bulletins;
+    updateOverviewKPIs();
 
     if (countEl) countEl.textContent = posters.length;
     if (bulletinCountEl) bulletinCountEl.textContent = bulletins.length;
@@ -3839,7 +4152,7 @@ function openPayment(studentName) {
   document.getElementById('pay-ref').value = '';
   openModal('modal-payment');
 }
-function recordPayment() {
+async function recordPayment() {
   const amount = parseInt(document.getElementById('pay-amount').value)||0;
   if (!amount) { toast('Enter a valid amount','#dc2626'); return; }
   appFees = appFees.map(f => {
@@ -3848,7 +4161,20 @@ function recordPayment() {
     }
     return f;
   });
+
+  // Sync to Supabase students table
+  if (sbClient) {
+    try {
+      await sbClient.from('students').update({ fees_status: 'Paid' }).eq('name', currentPayStudent);
+      const matched = appStudents.find(s => s.name === currentPayStudent);
+      if (matched) matched.fees_status = 'Paid';
+    } catch(err) {
+      console.warn('Could not sync fee payment to Supabase:', err);
+    }
+  }
+
   renderFees();
+  updateOverviewKPIs();
   closeModal('modal-payment');
   toast(`✓ Payment of ₹${amount.toLocaleString()} recorded for ${currentPayStudent}`, '#16a34a');
 }

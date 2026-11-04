@@ -58,7 +58,7 @@
 
     /* ── Sidebar ── */
     #sidebar {
-      width: 260px;
+      width: 210px;
       min-height: 100vh;
       background: linear-gradient(180deg, #071322 0%, #0B2345 100%);
       border-right: 1px solid rgba(200,155,60,0.15);
@@ -70,29 +70,30 @@
     #sidebar.collapsed .nav-label,
     #sidebar.collapsed .sidebar-brand-text,
     #sidebar.collapsed .student-info-wrap { display: none; }
+    #sidebar.collapsed #student-card-wrap { justify-content: center; padding: 6px 0; margin: 4px auto; width: 44px; background: transparent; border: none !important; }
     #sidebar.collapsed .nav-item { justify-content: center; padding: 10px; width: calc(100% - 16px); margin: 2px 8px; }
 
-    #main-content { transition: margin-left 0.3s ease; margin-left: 260px; }
+    #main-content { transition: margin-left 0.3s ease; margin-left: 210px; }
     #main-content.sidebar-collapsed { margin-left: 64px; }
 
     /* Nav item button */
     .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 18px; cursor: pointer; border-radius: 8px;
-      margin: 2px 10px; font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 12px; cursor: pointer; border-radius: 8px;
+      margin: 2px 8px; font-size: 13px; font-weight: 500;
       color: #CBD5E1; transition: all 0.2s;
-      user-select: none; width: calc(100% - 20px); text-align: left;
+      user-select: none; width: calc(100% - 16px); text-align: left;
       border: none; background: transparent;
-      outline-offset: 2px;
+      outline-offset: 2px; white-space: nowrap;
     }
     .nav-item:hover, .nav-item:focus-visible { background: rgba(200,155,60,0.15); color: #fff; outline: 2px solid #C89B3C; }
     .nav-item.active {
       background: linear-gradient(90deg, rgba(200,155,60,0.25), rgba(200,155,60,0.08));
       color: #C89B3C;
       border-left: 3px solid #C89B3C;
-      padding-left: 15px;
+      padding-left: 10px;
     }
-    .nav-item .material-symbols-outlined { font-size: 20px; flex-shrink: 0; }
+    .nav-item .material-symbols-outlined { font-size: 19px; flex-shrink: 0; }
 
     /* Content panel tabs */
     .tab-content { display: none; }
@@ -281,6 +282,7 @@
       #sidebar .nav-label,
       #sidebar .sidebar-brand-text,
       #sidebar .student-info-wrap { display: none !important; }
+      #sidebar #student-card-wrap { justify-content: center !important; padding: 6px 0 !important; margin: 4px auto !important; width: 44px !important; background: transparent !important; border: none !important; }
       #sidebar .nav-item { justify-content: center !important; padding: 10px !important; width: calc(100% - 16px) !important; margin: 2px 8px !important; }
       #main-content { margin-left: 64px !important; }
     }
@@ -320,24 +322,24 @@
   <aside id="sidebar" class="fixed top-0 left-0 flex flex-col select-none">
 
     <!-- Logo -->
-    <div class="flex items-center gap-3 px-5 py-5 border-b border-white/8">
-      <div class="w-9 h-9 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
-        <img src="../logo.png" alt="SP" class="w-7 h-7 object-contain" onerror="this.onerror=null;this.parentElement.innerHTML='<span class=\'material-symbols-outlined fill-icon text-gold text-xl\'>anchor</span>'">
+    <div class="flex items-center gap-2.5 px-3.5 py-4 border-b border-white/8">
+      <div class="w-8 h-8 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+        <img src="../logo.png" alt="SP" class="w-6 h-6 object-contain" onerror="this.onerror=null;this.parentElement.innerHTML='<span class=\'material-symbols-outlined fill-icon text-gold text-lg\'>anchor</span>'">
       </div>
-      <div class="sidebar-brand-text">
-        <span class="font-display text-xl text-white tracking-widest block leading-none">SINDHUPATH</span>
-        <span class="text-[9px] text-gold/80 uppercase tracking-[0.2em] font-sub">Student Portal</span>
+      <div class="sidebar-brand-text min-w-0">
+        <span class="font-display text-lg text-white tracking-widest block leading-none truncate">SINDHUPATH</span>
+        <span class="text-[9px] text-gold/80 uppercase tracking-[0.18em] font-sub block truncate">Student Portal</span>
       </div>
     </div>
 
     <!-- Student Info -->
-    <div class="mx-4 mt-4 mb-2 p-3 rounded-xl bg-white/5 border border-white/8 flex items-center gap-3 cursor-pointer hover:bg-white/8 transition-colors" onclick="switchTab('profile')" title="Edit Profile">
-      <div id="sb-avatar-wrap" class="w-10 h-10 rounded-full bg-gold/20 border-2 border-gold/40 flex items-center justify-center shrink-0 overflow-hidden">
-        <span class="material-symbols-outlined fill-icon text-gold text-xl" id="sb-avatar-icon">person</span>
+    <div id="student-card-wrap" class="mx-2.5 mt-3 mb-2 p-2.5 rounded-xl bg-white/5 flex items-center gap-2.5 cursor-pointer hover:bg-white/8 transition-colors" onclick="switchTab('profile')" title="Edit Profile">
+      <div id="sb-avatar-wrap" class="w-9 h-9 rounded-full bg-gold/20 border-2 border-gold/40 flex items-center justify-center shrink-0 overflow-hidden">
+        <span class="material-symbols-outlined fill-icon text-gold text-lg" id="sb-avatar-icon">person</span>
       </div>
       <div class="overflow-hidden flex-1 min-w-0 student-info-wrap">
-        <p id="sb-student-name" class="text-white text-sm font-semibold truncate">Cadet</p>
-        <span class="badge bg-gold/20 text-gold border border-gold/30">Cadet</span>
+        <p id="sb-student-name" class="text-white text-xs font-semibold truncate">Cadet</p>
+        <span class="badge bg-gold/20 text-gold border border-gold/30 text-[9px] px-1.5 py-0.5">Cadet</span>
       </div>
     </div>
 
@@ -378,7 +380,7 @@
         <span class="nav-label">Profile</span>
       </button>
 
-      <div class="my-3 mx-4 border-t border-white/10"></div>
+      <div class="my-2.5 mx-3 border-t border-white/10"></div>
 
       <button type="button" class="nav-item" onclick="doLogout()">
         <span class="material-symbols-outlined text-red-400">logout</span>
@@ -387,7 +389,7 @@
     </nav>
 
     <!-- Footer -->
-    <div class="px-5 py-3 text-[10px] text-white/25 border-t border-white/8">
+    <div class="px-3.5 py-3 text-[10px] text-white/25 border-t border-white/8 truncate">
       © 2026 Sindhupath Academy
     </div>
   </aside>
@@ -447,7 +449,8 @@
           </div>
           <h2 class="font-sub text-xl sm:text-3xl font-bold tracking-wide mb-2 truncate" id="dash-welcome-name">LOADING...</h2>
           <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3">
-            <span class="badge bg-gold/25 text-gold border border-gold/30 text-[10px]">IMU-CET 2026</span>
+            <span id="dash-welcome-course" class="badge bg-gold/25 text-gold border border-gold/30 text-[10px]">IMU-CET 2026</span>
+            <span id="dash-welcome-batch" class="badge bg-gold/25 text-gold border border-gold/30 text-[10px]">Batch A</span>
           </div>
           <div class="flex items-center justify-between pt-2.5 border-t border-white/10 text-xs">
             <span class="text-white/60 text-[10px] sm:text-[11px]">Examination Readiness</span>
@@ -466,7 +469,7 @@
             <div class="min-w-0">
               <div class="flex items-center gap-2">
                 <span class="text-xs text-slate font-sub uppercase tracking-wider font-semibold">Study Materials</span>
-                <span class="badge bg-emerald-100 text-emerald-700 text-[9px] font-bold">18 Files</span>
+                <span id="dash-materials-count" class="badge bg-emerald-100 text-emerald-700 text-[9px] font-bold">10 Files</span>
               </div>
               <p class="text-sm font-bold text-deep-sea mt-0.5 truncate">Lecture Notes, PDFs &amp; Books</p>
               <p class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
@@ -647,27 +650,27 @@
         </div>
 
         <!-- 1. The Minimalist Reference Calendar Card -->
-        <div class="bg-white rounded-3xl border border-gray-200 p-6 sm:p-8 shadow-sm mb-6 max-w-4xl mx-auto">
+        <div class="bg-white rounded-3xl border border-gray-200 p-6 sm:p-9 md:p-10 shadow-sm mb-8 max-w-5xl mx-auto">
           <!-- Calendar Header: Month + Year & Month Nav -->
           <div class="flex items-center justify-between mb-6 pb-2">
             <div id="cal-month-title-wrapper" class="flex items-baseline gap-2">
-              <h3 id="cal-month-title" class="text-3xl font-bold text-gray-900 font-sub tracking-tight">October</h3>
-              <span id="cal-year-title" class="text-3xl text-slate-400 font-normal font-sub ml-1">2026</span>
+              <h3 id="cal-month-title" class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 font-sub tracking-tight">October</h3>
+              <span id="cal-year-title" class="text-3xl sm:text-4xl md:text-5xl text-slate-400 font-normal font-sub ml-1 sm:ml-2">2026</span>
             </div>
             
-            <div class="flex items-center gap-1.5">
-              <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-full border border-gray-200 text-slate-500 hover:text-deep-sea hover:border-gold flex items-center justify-center transition-colors" title="Previous Month">
-                <span class="material-symbols-outlined text-base">chevron_left</span>
+            <div class="flex items-center gap-2">
+              <button onclick="changeMonth(-1)" class="w-10 h-10 rounded-full border border-gray-200 text-slate-500 hover:text-deep-sea hover:border-gold flex items-center justify-center transition-colors shadow-2xs" title="Previous Month">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
               </button>
-              <button onclick="goToCurrentMonth()" class="px-3 py-1 rounded-full border border-gold/40 bg-gold/10 text-deep-sea text-xs font-bold hover:bg-gold transition-colors">Today</button>
-              <button onclick="changeMonth(1)" class="w-8 h-8 rounded-full border border-gray-200 text-slate-500 hover:text-deep-sea hover:border-gold flex items-center justify-center transition-colors" title="Next Month">
-                <span class="material-symbols-outlined text-base">chevron_right</span>
+              <button onclick="goToCurrentMonth()" class="px-4 py-1.5 rounded-full border border-gold/40 bg-gold/10 text-deep-sea text-xs sm:text-sm font-bold hover:bg-gold transition-colors">Today</button>
+              <button onclick="changeMonth(1)" class="w-10 h-10 rounded-full border border-gray-200 text-slate-500 hover:text-deep-sea hover:border-gold flex items-center justify-center transition-colors shadow-2xs" title="Next Month">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
               </button>
             </div>
           </div>
 
           <!-- Weekdays Header Row -->
-          <div class="grid grid-cols-7 text-center font-medium text-xs sm:text-sm text-slate-400 pb-3 border-b border-gray-100">
+          <div class="grid grid-cols-7 gap-2 sm:gap-3 text-center font-bold text-sm sm:text-base text-slate-400 pb-3.5 border-b border-gray-100 mb-3">
             <div>S</div>
             <div>M</div>
             <div>T</div>
@@ -683,54 +686,56 @@
           </div>
 
           <!-- Legend Row Matching Reference Image -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 pt-6 mt-2 gap-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm text-slate-500 pt-6 mt-3 gap-3 border-t border-gray-100/80">
             <div class="flex items-center gap-4 sm:gap-6 flex-wrap">
               <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#22c55e]"></span>
+                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#22c55e]"></span>
                 <span class="font-medium text-slate-700">Completed</span>
               </span>
               <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span>
+                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#3b82f6]"></span>
                 <span class="font-medium text-slate-700">Online</span>
               </span>
               <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#f59e0b]"></span>
                 <span class="font-medium text-slate-700">Postponed</span>
               </span>
               <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full border-2 border-[#ef4444] bg-white"></span>
+                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border-2 border-[#ef4444] bg-white"></span>
                 <span class="font-medium text-slate-700">Cancelled</span>
               </span>
             </div>
-            <div class="text-slate-400 text-xs sm:text-[13px] font-normal">
-              Two dots per day · 07:00 and 08:15
+            <div class="text-slate-400 text-xs sm:text-sm font-normal">
+              Two slots per day · 07:00 PM &amp; 08:15 PM
             </div>
           </div>
         </div>
 
         <!-- Faculty Exception Message Banner (Hidden by default; appears ONLY when cancelled / postponed / time changed) -->
-        <div id="sched-faculty-message-card" class="hidden max-w-4xl mx-auto mb-6 p-4 sm:p-5 rounded-2xl transition-all shadow-2xs"></div>
+        <div id="sched-faculty-message-card" class="hidden max-w-5xl mx-auto mb-8 p-5 sm:p-6 rounded-2xl transition-all shadow-2xs"></div>
 
         <!-- 3. Selected Date Sessions & Live Class Inspection Card -->
-        <div class="bg-white rounded-3xl border border-gray-200 p-5 sm:p-6 shadow-sm max-w-4xl mx-auto">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-gray-100">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-teal text-xl">devices</span>
-                <h3 id="scheduled-events-title" class="font-sub text-base sm:text-lg font-bold text-deep-sea uppercase tracking-wide">Today's Class</h3>
+        <div class="bg-white rounded-3xl border border-gray-200 p-6 sm:p-8 md:p-9 shadow-sm max-w-5xl mx-auto">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-teal/10 text-teal flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-2xl sm:text-3xl">devices</span>
               </div>
-              <p id="sched-view-date-text" class="hidden text-xs text-slate-500 mt-0.5"></p>
+              <div>
+                <h3 id="scheduled-events-title" class="font-sub text-lg sm:text-2xl font-bold text-deep-sea uppercase tracking-wide leading-tight">Today's Class</h3>
+                <p id="sched-view-date-text" class="hidden text-xs sm:text-sm text-slate-500 mt-0.5 font-medium"></p>
+              </div>
             </div>
 
             <div class="flex items-center gap-2">
-              <button id="btn-clear-date-filter" onclick="clearDateFilter()" class="hidden text-xs font-bold text-teal hover:underline flex items-center gap-1 px-3 py-1.5 rounded-xl border border-teal/30 bg-teal/5">
+              <button id="btn-clear-date-filter" onclick="clearDateFilter()" class="hidden text-xs sm:text-sm font-bold text-teal hover:underline flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-teal/30 bg-teal/5">
                 <span class="material-symbols-outlined text-sm">today</span> Back to Today
               </button>
             </div>
           </div>
 
           <!-- Class List (Populated by JS with 2 classes & Join buttons / Notices) -->
-          <div id="scheduled-events-list" class="space-y-3">
+          <div id="scheduled-events-list" class="space-y-4">
             <!-- Dynamically populated by JS renderScheduledEventsList() -->
           </div>
         </div>
@@ -1132,8 +1137,8 @@
             <p id="profile-display-email" class="text-xs text-slate-500 mt-0.5">cadet@sindhupath.in</p>
             
             <div class="flex flex-wrap justify-center gap-2 mt-3">
-              <span class="badge bg-deep-sea text-white font-semibold">IMU-CET 2026</span>
-              <span class="badge bg-gold/20 text-gold-dark border border-gold/40 font-semibold">Batch A</span>
+              <span id="profile-badge-course" class="badge bg-deep-sea text-white font-semibold">IMU-CET 2026</span>
+              <span id="profile-badge-batch" class="badge bg-gold/20 text-gold-dark border border-gold/40 font-semibold">Batch A</span>
             </div>
 
             <!-- Stats Grid -->
@@ -1141,19 +1146,19 @@
               <div class="grid grid-cols-2 gap-2 text-xs">
                 <div class="bg-canvas rounded-xl p-3 border border-gray-100">
                   <p class="text-slate-500 text-[11px]">Roll No.</p>
-                  <p class="font-bold text-deep-sea mt-0.5">SP-2026-042</p>
+                  <p id="profile-stat-roll" class="font-bold text-deep-sea mt-0.5">SP-2026-042</p>
                 </div>
                 <div class="bg-canvas rounded-xl p-3 border border-gray-100">
                   <p class="text-slate-500 text-[11px]">Enrolled</p>
-                  <p class="font-bold text-deep-sea mt-0.5">Apr 2026</p>
+                  <p id="profile-stat-enrolled" class="font-bold text-deep-sea mt-0.5">Apr 2026</p>
                 </div>
                 <div class="bg-canvas rounded-xl p-3 border border-gray-100">
                   <p class="text-slate-500 text-[11px]">Attendance</p>
-                  <p class="font-bold text-emerald-600 mt-0.5">84%</p>
+                  <p id="profile-stat-attendance" class="font-bold text-emerald-600 mt-0.5">84%</p>
                 </div>
                 <div class="bg-canvas rounded-xl p-3 border border-gray-100">
-                  <p class="text-slate-500 text-[11px]">Avg. Score</p>
-                  <p class="font-bold text-gold-dark mt-0.5">76%</p>
+                  <p class="text-slate-500 text-[11px]">Fees Status</p>
+                  <p id="profile-stat-fees" class="font-bold text-emerald-600 mt-0.5">Paid</p>
                 </div>
               </div>
             </div>
@@ -1912,21 +1917,132 @@ try {
   }
 } catch(e) { console.warn('Supabase init error:', e); }
 
+// ── Student Session & Identity State ─────────────────────────
+let currentUserId = null;
+let currentStudentEmail = '';
+let currentStudentRecord = null;
+
 // ── localStorage keys ───────────────────────
 const LS_NAME  = 'sp_student_name';
 const LS_IMG   = 'sp_student_avatar';
 
+function getUserScopedKey(baseKey) {
+  if (currentUserId) return `${baseKey}_${currentUserId}`;
+  if (currentStudentEmail) {
+    try {
+      return `${baseKey}_${btoa(currentStudentEmail.toLowerCase()).replace(/[^a-zA-Z0-9]/g, '')}`;
+    } catch(e) {
+      return `${baseKey}_${currentStudentEmail.replace(/[^a-zA-Z0-9]/g, '')}`;
+    }
+  }
+  return baseKey;
+}
+
+// ── Apply student data across all UI spots ──────────────────
+function applyStudentDataToUI(student) {
+  if (!student) return;
+  currentStudentRecord = student;
+
+  // 1. Full Name
+  if (student.name) {
+    setStudentName(student.name);
+  }
+
+  // 2. Email
+  if (student.email) {
+    currentStudentEmail = student.email;
+    const emailEl = document.getElementById('pf-email');
+    if (emailEl) emailEl.value = student.email;
+    const displayEmailEl = document.getElementById('profile-display-email');
+    if (displayEmailEl) displayEmailEl.textContent = student.email;
+  }
+
+  // 3. Roll Number
+  const roll = student.roll || student.roll_number || 'Cadet';
+  const pfRoll = document.getElementById('pf-roll-display');
+  if (pfRoll) pfRoll.value = roll;
+  const statRoll = document.getElementById('profile-stat-roll');
+  if (statRoll) statRoll.textContent = roll;
+
+  // 4. Course
+  const course = student.course || 'IMU-CET Coaching & Sponsorship Prep';
+  const pfCourse = document.getElementById('pf-course-display');
+  if (pfCourse) pfCourse.value = course;
+  const badgeCourse = document.getElementById('profile-badge-course');
+  if (badgeCourse) badgeCourse.textContent = course;
+  const dashCourse = document.getElementById('dash-welcome-course');
+  if (dashCourse) dashCourse.textContent = course;
+
+  // 5. Batch
+  const batch = student.batch || 'Batch Alpha';
+  const pfBatch = document.getElementById('pf-batch-display');
+  if (pfBatch) pfBatch.value = batch;
+  const badgeBatch = document.getElementById('profile-badge-batch');
+  if (badgeBatch) badgeBatch.textContent = batch;
+  const dashBatch = document.getElementById('dash-welcome-batch');
+  if (dashBatch) dashBatch.textContent = batch;
+
+  // 6. Mobile / Phone
+  if (student.mobile || student.phone) {
+    const phoneEl = document.getElementById('pf-phone');
+    if (phoneEl) phoneEl.value = student.mobile || student.phone;
+  }
+
+  // 7. Attendance
+  const attVal = student.attendance != null ? student.attendance : 85;
+  const statAtt = document.getElementById('profile-stat-attendance');
+  if (statAtt) {
+    statAtt.textContent = attVal + '%';
+    statAtt.className = 'font-bold mt-0.5 ' + (attVal >= 75 ? 'text-emerald-600' : 'text-amber-600');
+  }
+
+  // 8. Fees Status
+  const feesVal = student.fees_status || student.fee_status || 'Paid';
+  const statFees = document.getElementById('profile-stat-fees');
+  if (statFees) {
+    statFees.textContent = feesVal;
+    statFees.className = 'font-bold mt-0.5 ' + (feesVal.toLowerCase() === 'paid' ? 'text-emerald-600' : 'text-gold-dark');
+  }
+
+  // 9. Enrolled / Joined Date
+  if (student.joined || student.created_at) {
+    try {
+      const d = new Date(student.joined || student.created_at);
+      if (!isNaN(d.getTime())) {
+        const formattedDate = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        const statEnrolled = document.getElementById('profile-stat-enrolled');
+        if (statEnrolled) statEnrolled.textContent = formattedDate;
+      }
+    } catch(e) {}
+  }
+
+  // 10. City
+  if (student.city) {
+    const cityEl = document.getElementById('pf-city');
+    if (cityEl) cityEl.value = student.city;
+  }
+}
+
 // ── Apply name across all UI spots ──────────
 function setStudentName(name) {
   const formatted = name ? (name.charAt(0).toUpperCase() + name.slice(1)) : 'Cadet';
-  document.getElementById('sb-student-name').textContent       = formatted;
-  document.getElementById('header-name').textContent            = formatted;
-  document.getElementById('dash-welcome-name').textContent      = formatted.toUpperCase();
-  document.getElementById('profile-display-name').textContent   = formatted;
-  document.getElementById('pf-name').value                      = formatted;
-  document.getElementById('quick-name-input').value             = formatted !== 'Cadet' ? formatted : '';
+  const sbName = document.getElementById('sb-student-name');
+  if (sbName) sbName.textContent       = formatted;
+  const hName = document.getElementById('header-name');
+  if (hName) hName.textContent            = formatted;
+  const dwName = document.getElementById('dash-welcome-name');
+  if (dwName) dwName.textContent      = formatted.toUpperCase();
+  const pdName = document.getElementById('profile-display-name');
+  if (pdName) pdName.textContent   = formatted;
+  const pfName = document.getElementById('pf-name');
+  if (pfName) pfName.value                      = formatted;
+  const qName = document.getElementById('quick-name-input');
+  if (qName) qName.value             = formatted !== 'Cadet' ? formatted : '';
   const sheetName = document.getElementById('sheet-student-name');
   if (sheetName) sheetName.textContent                          = formatted;
+  try {
+    localStorage.setItem(getUserScopedKey(LS_NAME), formatted);
+  } catch(e) {}
   localStorage.setItem(LS_NAME, formatted);
 }
 
@@ -1987,6 +2103,7 @@ function handleAvatarUpload(event) {
   reader.onload = (e) => {
     const dataUrl = e.target.result;
     try {
+      localStorage.setItem(getUserScopedKey(LS_IMG), dataUrl);
       localStorage.setItem(LS_IMG, dataUrl);
     } catch(err) {
       // localStorage quota exceeded (large image) — still apply but don't persist
@@ -2002,6 +2119,9 @@ function handleAvatarUpload(event) {
 
 // ── Remove avatar ────────────────────────────
 function removeAvatar() {
+  try {
+    localStorage.removeItem(getUserScopedKey(LS_IMG));
+  } catch(e) {}
   localStorage.removeItem(LS_IMG);
   setStudentAvatar(null);
   toast('Profile photo removed.', 'info');
@@ -2013,6 +2133,8 @@ function removeAvatar() {
 // ── Logout ──────────────────────────────────
 async function doLogout() {
   localStorage.removeItem('sindhupath_active_user');
+  localStorage.removeItem(LS_NAME);
+  localStorage.removeItem(LS_IMG);
   if (sbClient) await sbClient.auth.signOut();
   window.location.href = 'login.html';
 }
@@ -2337,14 +2459,14 @@ function getSessionDotStatus(dateStr, sessionTime) {
 
 function getDotHtml(status) {
   if (status === 'completed') {
-    return '<span class="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#22c55e]" title="Completed"></span>';
+    return '<span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#22c55e]" title="Completed"></span>';
   } else if (status === 'cancelled') {
-    return '<span class="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border-2 border-[#ef4444] bg-white" title="Cancelled"></span>';
+    return '<span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full border-2 border-[#ef4444] bg-white" title="Cancelled"></span>';
   } else if (status === 'postponed') {
-    return '<span class="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#f59e0b]" title="Postponed"></span>';
+    return '<span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#f59e0b]" title="Postponed"></span>';
   } else {
     // Online / Scheduled
-    return '<span class="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#3b82f6]" title="Online"></span>';
+    return '<span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#3b82f6]" title="Online"></span>';
   }
 }
 
@@ -2396,17 +2518,17 @@ function renderCalendar() {
   }
 
   grid.innerHTML = weeks.map(week => `
-    <div class="grid grid-cols-7 border-b border-gray-100/90 py-3 sm:py-3.5">
+    <div class="grid grid-cols-7 gap-2 sm:gap-3 mb-2 sm:mb-3">
       ${week.map(c => {
         if (c.isEmpty) {
-          return '<div class="h-10 sm:h-12 flex items-center justify-center"></div>';
+          return '<div class="min-h-[58px] sm:min-h-[76px] md:min-h-[88px] rounded-2xl border border-transparent"></div>';
         }
 
         if (c.isSunday) {
           return `
-            <div onclick="selectCalendarDate('${c.dateStr}')" class="h-10 sm:h-12 flex flex-col items-center justify-center cursor-pointer select-none rounded-xl hover:bg-slate-50 transition-colors">
-              <span class="text-xs sm:text-sm font-medium ${c.isSelected ? 'w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-gold text-deep-sea flex items-center justify-center font-bold' : 'text-slate-300'}">${c.day}</span>
-              <div class="h-2 mt-1 sm:mt-1.5"></div>
+            <div onclick="selectCalendarDate('${c.dateStr}')" class="min-h-[58px] sm:min-h-[76px] md:min-h-[88px] p-2 sm:p-2.5 flex flex-col items-center justify-center cursor-pointer select-none rounded-2xl border border-gray-200/70 bg-gray-50/40 hover:bg-slate-100/70 hover:border-gray-300 transition-all ${c.isSelected ? 'border-gold ring-2 ring-gold/40 bg-gold/10' : ''}">
+              <span class="text-sm sm:text-base md:text-lg font-medium ${c.isSelected ? 'w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gold text-deep-sea flex items-center justify-center font-bold text-sm' : 'text-slate-400'}">${c.day}</span>
+              <span class="text-[10px] sm:text-xs text-slate-400/80 uppercase font-semibold leading-none mt-1 sm:mt-1.5">Off</span>
             </div>
           `;
         }
@@ -2418,17 +2540,17 @@ function renderCalendar() {
         const dot1Html = getDotHtml(dot1Status);
         const dot2Html = getDotHtml(dot2Status);
 
-        let dayBadgeHtml = `<span class="text-xs sm:text-sm font-semibold text-gray-800">${c.day}</span>`;
+        let dayBadgeHtml = `<span class="text-sm sm:text-base md:text-lg font-bold text-gray-800">${c.day}</span>`;
         if (c.isToday) {
-          dayBadgeHtml = `<span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#18181b] text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-sm ${c.isSelected ? 'ring-2 ring-gold ring-offset-2' : ''}">${c.day}</span>`;
+          dayBadgeHtml = `<span class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-deep-sea text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-xs ${c.isSelected ? 'ring-2 ring-gold ring-offset-2' : ''}">${c.day}</span>`;
         } else if (c.isSelected) {
-          dayBadgeHtml = `<span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-gold text-deep-sea flex items-center justify-center font-bold text-xs sm:text-sm shadow-2xs">${c.day}</span>`;
+          dayBadgeHtml = `<span class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-gold text-deep-sea flex items-center justify-center font-bold text-sm sm:text-base shadow-xs">${c.day}</span>`;
         }
 
         return `
-          <div onclick="selectCalendarDate('${c.dateStr}')" class="h-10 sm:h-12 flex flex-col items-center justify-center cursor-pointer select-none rounded-xl hover:bg-slate-50 transition-colors">
+          <div onclick="selectCalendarDate('${c.dateStr}')" class="min-h-[58px] sm:min-h-[76px] md:min-h-[88px] p-2 sm:p-2.5 flex flex-col items-center justify-center cursor-pointer select-none rounded-2xl border transition-all ${c.isSelected ? 'border-gold ring-2 ring-gold/40 bg-gold/10 shadow-sm' : c.isToday ? 'border-deep-sea/40 bg-deep-sea/5 shadow-2xs hover:border-deep-sea' : 'border-gray-200/90 bg-white hover:border-gold/60 hover:bg-gold/5 hover:shadow-2xs'}">
             ${dayBadgeHtml}
-            <div class="flex items-center justify-center gap-1.5 mt-1 sm:mt-1.5">
+            <div class="flex items-center justify-center gap-2 mt-1.5 sm:mt-2">
               ${dot1Html}
               ${dot2Html}
             </div>
@@ -2507,26 +2629,26 @@ function renderScheduledEventsList(filterDate = null) {
       const reasonText = exceptionClass.reason || (isCancelled ? 'Class cancelled due to emergency duty.' : 'Class postponed.');
       const rescheduleText = exceptionClass.rescheduledTo ? `<span class="block mt-1 text-slate-800 font-semibold">Rescheduled to: ${exceptionClass.rescheduledTo}</span>` : '';
 
-      msgBanner.className = `max-w-4xl mx-auto mb-6 p-4 sm:p-5 rounded-2xl border ${bannerBg} flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-2xs transition-all`;
+      msgBanner.className = `max-w-5xl mx-auto mb-8 p-5 sm:p-6 rounded-2xl border ${bannerBg} flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs sm:text-sm shadow-2xs transition-all`;
       msgBanner.innerHTML = `
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 rounded-xl ${iconColor} flex items-center justify-center shrink-0 shadow-xs mt-0.5">
-            <span class="material-symbols-outlined text-xl">record_voice_over</span>
+        <div class="flex items-start gap-3.5">
+          <div class="w-12 h-12 rounded-2xl ${iconColor} flex items-center justify-center shrink-0 shadow-xs mt-0.5">
+            <span class="material-symbols-outlined text-2xl">record_voice_over</span>
           </div>
           <div>
-            <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <span class="badge ${badgeStyle} font-bold text-[10px] uppercase tracking-wider">${statusTitle}</span>
-              <span class="font-bold text-deep-sea text-xs">Official Notice from ${exceptionClass.faculty}</span>
-              <span class="text-slate-500 text-[11px]">· ${exceptionClass.subject} (${exceptionClass.time})</span>
+            <div class="flex items-center gap-2.5 mb-1.5 flex-wrap">
+              <span class="badge ${badgeStyle} font-bold text-xs uppercase tracking-wider px-2.5 py-0.5">${statusTitle}</span>
+              <span class="font-bold text-deep-sea text-sm">Official Notice from ${exceptionClass.faculty}</span>
+              <span class="text-slate-500 text-xs">· ${exceptionClass.subject} (${exceptionClass.time})</span>
             </div>
-            <p class="text-slate-700 leading-relaxed font-medium">
+            <p class="text-slate-700 leading-relaxed font-medium text-xs sm:text-sm">
               ${reasonText}
               ${rescheduleText}
             </p>
           </div>
         </div>
-        <button onclick="switchTab('notices')" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-deep-sea font-bold border border-gray-300 transition-colors shrink-0 flex items-center gap-1.5 shadow-2xs self-start sm:self-auto">
-          <span class="material-symbols-outlined text-sm text-teal">campaign</span>
+        <button onclick="switchTab('notices')" class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-deep-sea font-bold border border-gray-300 transition-colors shrink-0 flex items-center gap-2 shadow-2xs self-start sm:self-auto text-xs sm:text-sm">
+          <span class="material-symbols-outlined text-base text-teal">campaign</span>
           <span>View in Notices</span>
         </button>
       `;
@@ -2535,10 +2657,10 @@ function renderScheduledEventsList(filterDate = null) {
 
   if (list.length === 0) {
     container.innerHTML = `
-      <div class="p-6 rounded-2xl bg-canvas text-center text-xs text-slate">
-        <span class="material-symbols-outlined text-3xl text-gray-300 mb-1">event_busy</span>
-        <p class="font-bold text-deep-sea">No online classes scheduled for this date.</p>
-        <p class="text-slate/80 mt-0.5">Sundays are reserved for self-study and scheduled 1-on-1 sponsorship mock interviews.</p>
+      <div class="p-8 sm:p-10 rounded-2xl bg-canvas text-center text-xs sm:text-sm text-slate">
+        <span class="material-symbols-outlined text-4xl text-gray-300 mb-2">event_busy</span>
+        <p class="font-bold text-deep-sea text-sm sm:text-base">No online classes scheduled for this date.</p>
+        <p class="text-slate/80 mt-1 max-w-md mx-auto">Sundays are reserved for self-study and scheduled 1-on-1 sponsorship mock interviews.</p>
       </div>
     `;
     return;
@@ -2562,80 +2684,80 @@ function renderScheduledEventsList(filterDate = null) {
     let noticeMarkup = '';
 
     if (ev.status === 'completed') {
-      statusBadge = '<span class="badge bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#22c55e]"></span> Completed Session</span>';
-      statusBorder = 'border-emerald-100 bg-emerald-50/20';
+      statusBadge = '<span class="badge bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold flex items-center gap-1.5 px-3 py-1 text-xs"><span class="w-2 h-2 rounded-full bg-[#22c55e]"></span> Completed Session</span>';
+      statusBorder = 'border-emerald-200 bg-emerald-50/20';
       actionButtons = `
-        <button onclick="toast('Loading lecture recordings and study notes...', 'info'); setTimeout(() => switchTab('materials'), 500);" class="px-4 py-2 rounded-xl bg-canvas hover:bg-gray-200 text-deep-sea border border-gray-200 text-xs font-bold flex items-center gap-1 transition-all">
-          <span class="material-symbols-outlined text-sm text-gold-dark">description</span>
+        <button onclick="toast('Loading lecture recordings and study notes...', 'info'); setTimeout(() => switchTab('materials'), 500);" class="px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-canvas hover:bg-gray-200 text-deep-sea border border-gray-200 text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-2xs">
+          <span class="material-symbols-outlined text-base text-gold-dark">description</span>
           <span>View Notes</span>
         </button>
       `;
     } else if (ev.status === 'cancelled') {
-      statusBadge = '<span class="badge bg-rose-50 text-rose-800 border border-rose-200 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full border border-rose-600 bg-white"></span> Cancelled</span>';
+      statusBadge = '<span class="badge bg-rose-50 text-rose-800 border border-rose-200 font-bold flex items-center gap-1.5 px-3 py-1 text-xs"><span class="w-2 h-2 rounded-full border-2 border-rose-600 bg-white"></span> Cancelled</span>';
       statusBorder = 'border-rose-200 bg-rose-50/30';
       noticeMarkup = `
-        <div class="mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 flex items-start justify-between gap-2">
-          <div class="flex items-start gap-2">
-            <span class="material-symbols-outlined text-rose-700 text-base shrink-0 mt-0.5">campaign</span>
+        <div class="mt-3.5 p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs sm:text-sm text-rose-900 flex items-start justify-between gap-3">
+          <div class="flex items-start gap-2.5">
+            <span class="material-symbols-outlined text-rose-700 text-lg shrink-0 mt-0.5">campaign</span>
             <div>
               <strong>Official Notice from ${ev.faculty}:</strong> ${ev.reason || 'Session cancelled due to emergency sailing schedule.'}
             </div>
           </div>
-          <button onclick="switchTab('notices')" class="px-2.5 py-1 rounded-lg bg-white border border-rose-300 text-rose-900 text-[11px] font-bold hover:bg-rose-100 shrink-0">
+          <button onclick="switchTab('notices')" class="px-3 py-1.5 rounded-lg bg-white border border-rose-300 text-rose-900 text-xs font-bold hover:bg-rose-100 shrink-0">
             View in Notices
           </button>
         </div>
       `;
     } else if (ev.status === 'postponed') {
-      statusBadge = '<span class="badge bg-amber-50 text-amber-900 border border-amber-300 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span> Postponed</span>';
+      statusBadge = '<span class="badge bg-amber-50 text-amber-900 border border-amber-300 font-bold flex items-center gap-1.5 px-3 py-1 text-xs"><span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span> Postponed</span>';
       statusBorder = 'border-amber-200 bg-amber-50/30';
       noticeMarkup = `
-        <div class="mt-2.5 p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-950 flex items-start justify-between gap-2">
-          <div class="flex items-start gap-2">
-            <span class="material-symbols-outlined text-amber-800 text-base shrink-0 mt-0.5">campaign</span>
+        <div class="mt-3.5 p-4 rounded-xl bg-amber-50 border border-amber-300 text-xs sm:text-sm text-amber-950 flex items-start justify-between gap-3">
+          <div class="flex items-start gap-2.5">
+            <span class="material-symbols-outlined text-amber-800 text-lg shrink-0 mt-0.5">campaign</span>
             <div>
               <strong>Official Notice from ${ev.faculty}:</strong> ${ev.reason || 'Class postponed.'} ${ev.rescheduledTo ? `· Rescheduled to <strong>${ev.rescheduledTo}</strong>` : ''}
             </div>
           </div>
-          <button onclick="switchTab('notices')" class="px-2.5 py-1 rounded-lg bg-white border border-amber-300 text-amber-900 text-[11px] font-bold hover:bg-amber-100 shrink-0">
+          <button onclick="switchTab('notices')" class="px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-amber-900 text-xs font-bold hover:bg-amber-100 shrink-0">
             View in Notices
           </button>
         </div>
       `;
     } else {
       // Online / Scheduled / Live
-      statusBadge = '<span class="badge bg-blue-50 text-blue-800 border border-blue-200 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#3b82f6]"></span> Online Session</span>';
+      statusBadge = '<span class="badge bg-blue-50 text-blue-800 border border-blue-200 font-bold flex items-center gap-1.5 px-3 py-1 text-xs"><span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span> Online Session</span>';
       statusBorder = 'border-blue-100 bg-blue-50/15';
       actionButtons = `
-        <a href="${facultyLink}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition-all">
-          <span class="material-symbols-outlined text-sm text-gold">videocam</span>
+        <a href="${facultyLink}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-deep-sea hover:bg-navy-mid text-white text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-2 shadow-xs transition-all">
+          <span class="material-symbols-outlined text-base text-gold">videocam</span>
           <span>Join Live Class</span>
         </a>
       `;
     }
 
     return `
-      <div class="p-4 sm:p-5 rounded-2xl border ${statusBorder} transition-all flex flex-col justify-between shadow-xs">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 pb-2 border-b border-gray-100">
-          <div class="flex items-center gap-2 flex-wrap">
+      <div class="p-5 sm:p-6 md:p-7 rounded-2xl border ${statusBorder} transition-all flex flex-col justify-between shadow-xs gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-gray-100">
+          <div class="flex items-center gap-3 flex-wrap">
             ${statusBadge}
-            <span class="text-xs font-bold text-deep-sea flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm text-gold-dark">schedule</span> ${ev.time} to ${ev.endTime || '08:00 PM'}
+            <span class="text-sm font-bold text-deep-sea flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-base text-gold-dark">schedule</span> ${ev.time} to ${ev.endTime || '08:00 PM'}
             </span>
           </div>
-          <div class="text-xs text-slate-500 font-medium">Fixed 60-min Academy Slot</div>
+          <div class="text-xs sm:text-sm text-slate-500 font-medium">Fixed 60-min Academy Slot</div>
         </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h4 class="font-sub text-base font-bold text-deep-sea ${ev.status === 'cancelled' ? 'line-through opacity-70' : ''}">${ev.subject}</h4>
-            <div class="flex items-center gap-2 mt-1 text-xs text-slate-600">
-              <span class="font-semibold text-deep-sea flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm text-teal">person</span> ${ev.faculty}
+            <h4 class="font-sub text-lg sm:text-xl md:text-2xl font-bold text-deep-sea ${ev.status === 'cancelled' ? 'line-through opacity-70' : ''}">${ev.subject}</h4>
+            <div class="flex items-center gap-3 mt-1.5 text-xs sm:text-sm text-slate-600 flex-wrap">
+              <span class="font-semibold text-deep-sea flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-base text-teal">person</span> ${ev.faculty}
               </span>
               <span>·</span>
-              <span class="text-emerald-700 font-medium flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">videocam</span> Live Online Room
+              <span class="text-emerald-700 font-medium flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-base">videocam</span> Live Online Room
               </span>
             </div>
           </div>
@@ -2916,18 +3038,104 @@ function renderDashboardTodaySchedule() {
 function toggleScheduleView(mode) {}
 
 // ── STUDY MATERIALS DATA + RENDER ───────────────────────────────
-const MATERIALS = [
-  { id:1, subject:'math',      title:'Trigonometry — Complete Notes',        desc:'Chapter-wise notes covering all identities, formulas, and applications.',  pages:42, type:'PDF', icon:'calculate', date:'20 Sep 2026' },
-  { id:2, subject:'math',      title:'Algebra & Quadratics Workbook',         desc:'Practice problems with step-by-step solutions for board and IMU-CET.',       pages:68, type:'PDF', icon:'calculate', date:'14 Sep 2026' },
-  { id:3, subject:'physics',   title:'Optics & Light — Theory Notes',         desc:'Reflection, refraction, lenses, and wave optics with diagrams.',             pages:38, type:'PDF', icon:'biotech',   date:'22 Sep 2026' },
-  { id:4, subject:'physics',   title:'Mechanics — Motion & Forces',           desc:'Newton\'s laws, momentum, friction, and circular motion.',                  pages:55, type:'PDF', icon:'biotech',   date:'18 Sep 2026' },
-  { id:5, subject:'english',   title:'Grammar Handbook — All Rules',          desc:'Tenses, voice, narration, and sentence correction with examples.',          pages:30, type:'PDF', icon:'spellcheck',date:'15 Sep 2026' },
-  { id:6, subject:'english',   title:'Comprehension Passages — Set 1',        desc:'20 unseen passages with questions and model answers for IMU-CET prep.',      pages:24, type:'PDF', icon:'spellcheck',date:'10 Sep 2026' },
-  { id:7, subject:'chemistry', title:'Chemical Bonding & Thermodynamics',     desc:'Core concepts, molecular structures, and thermochemical formulas.',         pages:46, type:'PDF', icon:'science',   date:'24 Sep 2026' },
-  { id:8, subject:'chemistry', title:'Periodic Table & Electrochemistry',     desc:'Periodic trends, cell potentials, and inorganic reaction mechanisms.',      pages:39, type:'PDF', icon:'science',   date:'21 Sep 2026' },
-  { id:9, subject:'aptitude',  title:'Logical Reasoning & Series Handbook',   desc:'Number series, blood relations, syllogisms, and coding-decoding shortcuts.',pages:52, type:'PDF', icon:'psychology',date:'19 Sep 2026' },
-  { id:10,subject:'gk',        title:'General Knowledge & General Science',   desc:'General science fundamentals, current affairs, and maritime conventions.',   pages:48, type:'PDF', icon:'travel_explore',date:'01 Oct 2026'}
+const BASE_CURRICULUM_MATERIALS = [
+  { id:1, subject:'math',      title:'Trigonometry — Complete Notes',        desc:'Chapter-wise notes covering all identities, formulas, and applications.',  pages:42, type:'PDF', icon:'calculate', date:'Recent' },
+  { id:2, subject:'math',      title:'Algebra & Quadratics Workbook',         desc:'Practice problems with step-by-step solutions for board and IMU-CET.',       pages:68, type:'PDF', icon:'calculate', date:'Recent' },
+  { id:3, subject:'physics',   title:'Optics & Light — Theory Notes',         desc:'Reflection, refraction, lenses, and wave optics with diagrams.',             pages:38, type:'PDF', icon:'biotech',   date:'Recent' },
+  { id:4, subject:'physics',   title:'Mechanics — Motion & Forces',           desc:'Newton\'s laws, momentum, friction, and circular motion.',                  pages:55, type:'PDF', icon:'biotech',   date:'Recent' },
+  { id:5, subject:'english',   title:'Grammar Handbook — All Rules',          desc:'Tenses, voice, narration, and sentence correction with examples.',          pages:30, type:'PDF', icon:'spellcheck',date:'Recent' },
+  { id:6, subject:'english',   title:'Comprehension Passages — Set 1',        desc:'20 unseen passages with questions and model answers for IMU-CET prep.',      pages:24, type:'PDF', icon:'spellcheck',date:'Recent' },
+  { id:7, subject:'chemistry', title:'Chemical Bonding & Thermodynamics',     desc:'Core concepts, molecular structures, and thermochemical formulas.',         pages:46, type:'PDF', icon:'science',   date:'Recent' },
+  { id:8, subject:'chemistry', title:'Periodic Table & Electrochemistry',     desc:'Periodic trends, cell potentials, and inorganic reaction mechanisms.',      pages:39, type:'PDF', icon:'science',   date:'Recent' },
+  { id:9, subject:'aptitude',  title:'Logical Reasoning & Series Handbook',   desc:'Number series, blood relations, syllogisms, and coding-decoding shortcuts.',pages:52, type:'PDF', icon:'psychology',date:'Recent' },
+  { id:10,subject:'gk',        title:'General Knowledge & General Science',   desc:'General science fundamentals, current affairs, and maritime conventions.',   pages:48, type:'PDF', icon:'travel_explore',date:'Recent' }
 ];
+
+let MATERIALS = [...BASE_CURRICULUM_MATERIALS];
+
+async function loadStudentMaterialsFromSupabase() {
+  let loaded = [];
+  if (typeof sbClient !== 'undefined' && sbClient) {
+    try {
+      const { data, error } = await sbClient
+        .from('materials')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        loaded = data.map(row => {
+          let subj = (row.subject || 'general').toLowerCase();
+          let icon = 'description';
+          if (subj.includes('math')) icon = 'calculate';
+          else if (subj.includes('phys')) icon = 'biotech';
+          else if (subj.includes('chem')) icon = 'science';
+          else if (subj.includes('eng')) icon = 'spellcheck';
+          else if (subj.includes('apt')) icon = 'psychology';
+          else if (subj.includes('gk') || subj.includes('knowl')) icon = 'travel_explore';
+          else if (subj.includes('nav') || subj.includes('mar')) icon = 'explore';
+
+          return {
+            id: row.id,
+            subject: subj,
+            title: row.title,
+            desc: row.description || `${row.subject || 'Course'} study notes uploaded by faculty.`,
+            pages: row.pages || 35,
+            type: (row.type || 'PDF').toUpperCase(),
+            icon: icon,
+            fileUrl: row.file_url || null,
+            date: row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : 'Recent'
+          };
+        });
+      }
+    } catch(err) {
+      console.warn('Supabase materials query notice:', err.message);
+    }
+  }
+
+  // Fallback to localStorage faculty materials if Supabase is offline or empty
+  if (loaded.length === 0) {
+    try {
+      const cached = localStorage.getItem('sp_faculty_materials');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          loaded = parsed.map(m => {
+            let subj = (m.subject || 'general').toLowerCase();
+            let icon = 'description';
+            if (subj.includes('math')) icon = 'calculate';
+            else if (subj.includes('phys')) icon = 'biotech';
+            else if (subj.includes('chem')) icon = 'science';
+            else if (subj.includes('eng')) icon = 'spellcheck';
+            else if (subj.includes('apt')) icon = 'psychology';
+            else if (subj.includes('gk') || subj.includes('knowl')) icon = 'travel_explore';
+            else if (subj.includes('nav') || subj.includes('mar')) icon = 'explore';
+            return {
+              id: m.id,
+              subject: subj,
+              title: m.title,
+              desc: m.desc || `${m.subject || 'Course'} study material.`,
+              pages: m.pages || 25,
+              type: (m.type || 'PDF').toUpperCase(),
+              icon: icon,
+              fileUrl: m.fileUrl || null,
+              date: m.date || 'Recent'
+            };
+          });
+        }
+      }
+    } catch(e) {}
+  }
+
+  if (loaded.length > 0) {
+    MATERIALS = loaded;
+  }
+
+  // Update quick access card badge count
+  const badgeEl = document.getElementById('dash-materials-count');
+  if (badgeEl) badgeEl.textContent = `${MATERIALS.length} Files`;
+
+  renderMaterials();
+}
 
 let currentFilter = 'all';
 let currentSearch = '';
@@ -2946,9 +3154,11 @@ function filterMaterials() {
 
 function renderMaterials() {
   const list = document.getElementById('materials-list');
+  if (!list) return;
   const items = MATERIALS.filter(m => {
-    const matchFilter = currentFilter === 'all' || m.subject === currentFilter;
-    const matchSearch = !currentSearch || m.title.toLowerCase().includes(currentSearch) || m.desc.toLowerCase().includes(currentSearch);
+    const s = (m.subject || '').toLowerCase();
+    const matchFilter = currentFilter === 'all' || s === currentFilter.toLowerCase() || s.includes(currentFilter.toLowerCase());
+    const matchSearch = !currentSearch || m.title.toLowerCase().includes(currentSearch) || (m.desc && m.desc.toLowerCase().includes(currentSearch));
     return matchFilter && matchSearch;
   });
   if (items.length === 0) {
@@ -2958,18 +3168,18 @@ function renderMaterials() {
   list.innerHTML = items.map(m => `
     <div class="bg-white rounded-2xl border border-gray-200 p-4 flex items-start gap-4 hover:shadow-md hover:border-gold/40 transition-all">
       <div class="w-11 h-11 rounded-xl bg-deep-sea/6 flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-deep-sea text-2xl">${m.icon}</span>
+        <span class="material-symbols-outlined text-deep-sea text-2xl">${m.icon || 'description'}</span>
       </div>
       <div class="flex-1 min-w-0">
         <h4 class="text-sm font-bold text-deep-sea leading-tight">${m.title}</h4>
-        <p class="text-xs text-slate mt-0.5 line-clamp-2">${m.desc}</p>
+        <p class="text-xs text-slate mt-0.5 line-clamp-2">${m.desc || ''}</p>
         <div class="flex items-center gap-3 mt-2 text-[10px] text-slate">
-          <span class="badge bg-gray-100 text-gray-600">${m.type}</span>
-          <span>${m.pages} pages</span>
-          <span>Added ${m.date}</span>
+          <span class="badge bg-gray-100 text-gray-600">${m.type || 'PDF'}</span>
+          <span>${m.pages ? m.pages + ' pages' : 'Online Document'}</span>
+          <span>Added ${m.date || 'Recent'}</span>
         </div>
       </div>
-      <button onclick="viewMaterial(${m.id})"
+      <button onclick="viewMaterial(${JSON.stringify(m.id)})"
         class="shrink-0 flex items-center justify-center gap-1 text-[11px] font-bold text-gold hover:text-deep-sea bg-gold/10 hover:bg-gold/20 px-3.5 py-2.5 rounded-xl transition-colors min-h-[44px] min-w-[44px] shadow-xs active:scale-95" title="View Material">
         <span class="material-symbols-outlined text-base">visibility</span>
       </button>
@@ -2978,14 +3188,18 @@ function renderMaterials() {
 }
 
 function viewMaterial(id) {
-  const m = MATERIALS.find(x => x.id === id);
+  const m = MATERIALS.find(x => String(x.id) === String(id));
   if (!m) return;
+  if (m.fileUrl && m.fileUrl.startsWith('http')) {
+    window.open(m.fileUrl, '_blank');
+    return;
+  }
   openSponsorshipPdfViewer({
     title: m.title,
     badge: m.type || 'STUDY MATERIAL',
-    meta: `Pages: ${m.pages} · Added ${m.date}`,
-    pages: `1 of ${m.pages}`,
-    description: m.desc
+    meta: `${m.pages ? 'Pages: ' + m.pages : 'Type: ' + (m.type || 'PDF')} · Added ${m.date || 'Recent'}`,
+    pages: m.pages ? `1 of ${m.pages}` : '1 of 1',
+    description: m.desc || 'Comprehensive maritime study guide.'
   });
 }
 function downloadMaterial(id) { viewMaterial(id); }
@@ -3554,51 +3768,121 @@ function reviewTestAnswers() {
 
 // ── NOTICE BOARD ────────────────────────────
 const FALLBACK_NOTICES = [
-  { tag:'Exam', title:'Mock Test Series 5 — Scheduled 2 Oct 2026', body:'IMU-CET Full Mock Test at 10:00 AM. All Batch A students are mandatory to attend. Bring your admit card.', date:'28 Sep 2026', priority:'urgent' },
-  { tag:'Result', title:'Series 4 Results Published', body:'Mock Test Series 4 results are now available on the portal. Check your Results & Progress tab for detailed analytics.', date:'26 Sep 2026', priority:'normal' },
-  { tag:'General', title:'New Physics Notes Uploaded', body:'Dr. Meera Iyer has uploaded Optics & Light notes (38 pages). Available in Study Materials.', date:'22 Sep 2026', priority:'normal' },
-  { tag:'Holiday', title:'Gandhi Jayanti — 2 Oct 2026', body:'Academy will remain closed on 2nd October. Mock test rescheduled to 3rd October. Regular classes resume on 4th.', date:'25 Sep 2026', priority:'normal' },
-  { tag:'Urgent', title:'Attendance Warning: Below 75%', body:'Some students have attendance below the required 75%. Please note: minimum 75% attendance is mandatory for the final certificate. Contact admin immediately.', date:'20 Sep 2026', priority:'urgent' },
-  { tag:'General', title:'Parent-Teacher Meeting — 10 Oct 2026', body:'PTM scheduled for 10th October from 9 AM to 1 PM. Parents of all Batch A students are requested to attend.', date:'18 Sep 2026', priority:'normal' },
+  { tag:'Exam', title:'IMU-CET Mock Exam Series Available', body:'Proctored CBT Mock Test Series is live on portal. All registered cadets are encouraged to attempt it before the weekend.', date: new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }), priority:'urgent' },
+  { tag:'General', title:'Curriculum Reference Handbooks Uploaded', body:'Comprehensive formula notes and practice problem sets have been updated in the Study Materials tab.', date: new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }), priority:'normal' },
+  { tag:'Urgent', title:'DG Shipping Minimum 85% Attendance Compliance', body:'Attendance criteria for sponsorship selection and certificate eligibility is strictly enforced. Review attendance in your profile.', date: new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }), priority:'urgent' }
 ];
 
-// ── NOTICE BOARD (static — backend will be wired later) ────────
+// ── NOTICE BOARD (Live Supabase Sync + Realtime) ────────
 async function fetchNotices() {
   const icon = document.getElementById('notices-sync-icon');
   if (icon) icon.classList.add('spin');
-  let notices = FALLBACK_NOTICES;
-  try {
-    const saved = localStorage.getItem('sp_notices');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        notices = parsed.map(n => ({
-          tag: n.category || n.tag || 'General',
-          title: n.title,
-          body: n.content || n.body || '',
-          date: n.date || 'Today',
-          priority: (n.priority || n.tag || '').toLowerCase()
-        }));
+  let notices = [];
+
+  // 1. Fetch live notices from Supabase
+  if (typeof sbClient !== 'undefined' && sbClient) {
+    try {
+      const { data, error } = await sbClient
+        .from('notices')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        notices = data.map(item => {
+          let tag = 'General';
+          let body = item.image_url || '';
+          let title = item.title || 'Academy Notice';
+          let priority = 'normal';
+
+          if (title.startsWith('BULLETIN:')) {
+            priority = 'urgent';
+            tag = 'Urgent';
+            title = title.replace('BULLETIN:', '').trim();
+          }
+          const catMatch = title.match(/\[.*?(Exam|Result|Holiday|Urgent|General|Academic|Announcement).*?\]/i);
+          if (catMatch) {
+            tag = catMatch[1];
+            title = title.replace(/\[.*?\]/, '').trim();
+          }
+
+          const d = item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : 'Recent';
+          const isImg = body.startsWith('http') && (body.match(/\.(jpeg|jpg|gif|png|webp)/i) || body.includes('/storage/v1/object/public/'));
+
+          return {
+            id: item.id,
+            tag: tag,
+            title: title,
+            body: isImg ? '' : body,
+            image: isImg ? body : null,
+            date: d,
+            priority: priority
+          };
+        });
       }
+    } catch(e) {
+      console.warn('Error fetching live notices from Supabase:', e);
     }
-  } catch(e) {}
-  renderNotices(notices);
-  // show notification dot
-  document.getElementById('notice-dot')?.classList.remove('hidden');
-  const nb = document.getElementById('notif-badge');
-  if (nb) {
-    nb.classList.remove('hidden');
-    nb.textContent = notices.length;
   }
+
+  // 2. Fallback to localStorage notices if offline
+  if (notices.length === 0) {
+    try {
+      const saved = localStorage.getItem('sp_notices');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          notices = parsed.map(n => ({
+            tag: n.category || n.tag || 'General',
+            title: n.title,
+            body: n.content || n.body || '',
+            date: n.date || 'Today',
+            priority: (n.priority || n.tag || '').toLowerCase()
+          }));
+        }
+      }
+    } catch(e) {}
+  }
+
+  // 3. Fallback to default academy notices only if empty
+  if (notices.length === 0) {
+    notices = FALLBACK_NOTICES;
+  }
+
+  renderNotices(notices);
+
+  // Update notification indicators
+  if (notices.length > 0) {
+    document.getElementById('notice-dot')?.classList.remove('hidden');
+    const nb = document.getElementById('notif-badge');
+    if (nb) {
+      nb.classList.remove('hidden');
+      nb.textContent = notices.length;
+    }
+  } else {
+    document.getElementById('notice-dot')?.classList.add('hidden');
+    const nb = document.getElementById('notif-badge');
+    if (nb) nb.classList.add('hidden');
+  }
+
   if (icon) setTimeout(() => icon.classList.remove('spin'), 600);
 }
 
 function renderNotices(notices) {
   const container = document.getElementById('notices-container');
-  const tagClass = { exam:'tag-exam', result:'tag-result', holiday:'tag-holiday', urgent:'tag-urgent', general:'tag-general' };
+  if (!container) return;
+  if (!notices || notices.length === 0) {
+    container.innerHTML = `
+      <div class="col-span-full text-center py-12 text-slate bg-white rounded-2xl border border-dashed border-gray-200">
+        <span class="material-symbols-outlined text-4xl block mb-2 text-slate/40">campaign</span>
+        <p class="font-bold text-deep-sea">No notices published yet</p>
+        <p class="text-xs mt-1">Official academy circulars and announcements will appear here in real-time.</p>
+      </div>`;
+    return;
+  }
+  const tagClass = { exam:'tag-exam', result:'tag-result', holiday:'tag-holiday', urgent:'tag-urgent', general:'tag-general', academic:'tag-general' };
   container.innerHTML = notices.map(n => {
-    const tc = tagClass[n.tag.toLowerCase()] || 'tag-general';
-    const urgentBorder = (n.tag.toLowerCase()==='urgent'||n.priority==='urgent') ? 'border-l-4 border-red-400' : '';
+    const tc = tagClass[(n.tag || '').toLowerCase()] || 'tag-general';
+    const urgentBorder = ((n.tag || '').toLowerCase()==='urgent'||n.priority==='urgent') ? 'border-l-4 border-red-400' : '';
     return `
     <div class="bg-white rounded-2xl border border-gray-200 ${urgentBorder} p-5 hover:shadow-md transition-shadow">
       <div class="flex items-start justify-between gap-3">
@@ -3609,6 +3893,7 @@ function renderNotices(notices) {
           </div>
           <h4 class="text-sm font-bold text-deep-sea leading-snug">${n.title}</h4>
           ${n.body ? `<p class="text-xs text-slate mt-2 leading-relaxed">${n.body}</p>` : ''}
+          ${n.image ? `<div class="mt-3"><img src="${n.image}" alt="Notice Banner" class="max-h-48 rounded-xl object-cover border border-gray-100 shadow-xs" onerror="this.style.display='none'"></div>` : ''}
         </div>
         <span class="material-symbols-outlined text-slate text-xl shrink-0 mt-0.5">campaign</span>
       </div>
@@ -6838,7 +7123,8 @@ const DEFAULT_CADET_DOCUMENTS = [
 
 function getCadetDocuments() {
   try {
-    const raw = localStorage.getItem(LS_CADET_DOCS);
+    const docKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_CADET_DOCS) : LS_CADET_DOCS;
+    const raw = localStorage.getItem(docKey) || localStorage.getItem(LS_CADET_DOCS);
     if (raw) return JSON.parse(raw);
   } catch(e) {}
   return DEFAULT_CADET_DOCUMENTS;
@@ -6894,7 +7180,7 @@ function updateProfileCompleteness() {
   }
 }
 
-function savePersonalDetails(e) {
+async function savePersonalDetails(e) {
   if (e) e.preventDefault();
   const name = document.getElementById('pf-name')?.value?.trim();
   const phone = document.getElementById('pf-phone')?.value?.trim();
@@ -6903,11 +7189,48 @@ function savePersonalDetails(e) {
   const city = document.getElementById('pf-city')?.value?.trim();
 
   if (name) setStudentName(name);
-  if (gName) localStorage.setItem(LS_GUARDIAN_NAME, gName);
-  if (gPhone) localStorage.setItem(LS_GUARDIAN_PHONE, gPhone);
+
+  const gKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_GUARDIAN_NAME) : LS_GUARDIAN_NAME;
+  const gpKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_GUARDIAN_PHONE) : LS_GUARDIAN_PHONE;
+  const gCityKey = typeof getUserScopedKey === 'function' ? getUserScopedKey('sp_cadet_city') : 'sp_cadet_city';
+
+  if (gName) {
+    localStorage.setItem(gKey, gName);
+    localStorage.setItem(LS_GUARDIAN_NAME, gName);
+  }
+  if (gPhone) {
+    localStorage.setItem(gpKey, gPhone);
+    localStorage.setItem(LS_GUARDIAN_PHONE, gPhone);
+  }
+  if (city) {
+    localStorage.setItem(gCityKey, city);
+  }
+
+  // Sync update to Supabase students table
+  if (sbClient && (currentUserId || currentStudentEmail)) {
+    try {
+      const updatePayload = {};
+      if (name) updatePayload.name = name;
+      if (phone) updatePayload.mobile = phone;
+
+      if (Object.keys(updatePayload).length > 0) {
+        let q = sbClient.from('students').update(updatePayload);
+        if (currentUserId && currentStudentEmail) {
+          q = q.or(`user_id.eq.${currentUserId},email.eq.${currentStudentEmail}`);
+        } else if (currentUserId) {
+          q = q.eq('user_id', currentUserId);
+        } else {
+          q = q.eq('email', currentStudentEmail);
+        }
+        await q;
+      }
+    } catch(err) {
+      console.warn('Could not sync profile update to Supabase:', err);
+    }
+  }
 
   updateProfileCompleteness();
-  toast('Personal details & guardian emergency contact saved!', 'success');
+  toast('Personal details saved!', 'success');
 }
 function saveProfile(e) { savePersonalDetails(e); }
 
@@ -7208,6 +7531,8 @@ function handleDocumentAction(docId, action) {
   } else if (action === 'upload' || action === 'replace') {
     doc.status = 'Uploaded';
     doc.date = 'Just Now (Verified)';
+    const docKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_CADET_DOCS) : LS_CADET_DOCS;
+    localStorage.setItem(docKey, JSON.stringify(docs));
     localStorage.setItem(LS_CADET_DOCS, JSON.stringify(docs));
     renderCadetDocuments();
     updateProfileCompleteness();
@@ -7216,19 +7541,29 @@ function handleDocumentAction(docId, action) {
 }
 
 function loadCadetProfileExtras() {
-  const gName = localStorage.getItem(LS_GUARDIAN_NAME);
-  const gPhone = localStorage.getItem(LS_GUARDIAN_PHONE);
+  const gKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_GUARDIAN_NAME) : LS_GUARDIAN_NAME;
+  const gpKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_GUARDIAN_PHONE) : LS_GUARDIAN_PHONE;
+  const gCityKey = typeof getUserScopedKey === 'function' ? getUserScopedKey('sp_cadet_city') : 'sp_cadet_city';
+
+  const gName = localStorage.getItem(gKey) || localStorage.getItem(LS_GUARDIAN_NAME);
+  const gPhone = localStorage.getItem(gpKey) || localStorage.getItem(LS_GUARDIAN_PHONE);
+  const city = localStorage.getItem(gCityKey);
+
   const gNameEl = document.getElementById('pf-guardian-name');
   const gPhoneEl = document.getElementById('pf-guardian-phone');
+  const cityEl = document.getElementById('pf-city');
   if (gNameEl && gName) gNameEl.value = gName;
   if (gPhoneEl && gPhone) gPhoneEl.value = gPhone;
+  if (cityEl && city && !cityEl.value) cityEl.value = city;
 
-  const is2Fa = localStorage.getItem(LS_2FA_ENABLED) === 'true';
+  const faKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_2FA_ENABLED) : LS_2FA_ENABLED;
+  const is2Fa = (localStorage.getItem(faKey) || localStorage.getItem(LS_2FA_ENABLED)) === 'true';
   const t2Fa = document.getElementById('pf-2fa-toggle');
   if (t2Fa) t2Fa.checked = is2Fa;
 
   try {
-    const rawNotifs = localStorage.getItem(LS_NOTIF_SETTINGS);
+    const notifKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_NOTIF_SETTINGS) : LS_NOTIF_SETTINGS;
+    const rawNotifs = localStorage.getItem(notifKey) || localStorage.getItem(LS_NOTIF_SETTINGS);
     if (rawNotifs) {
       const s = JSON.parse(rawNotifs);
       if (document.getElementById('notif-class-reminders')) document.getElementById('notif-class-reminders').checked = s.classReminders;
@@ -7562,6 +7897,8 @@ function resetChatMessages() {
 
 // ── INIT — verify Supabase session & restore saved state ────────
 (async function initFromStorage() {
+  let activeStudent = null;
+
   if (sbClient) {
     try {
       const { data: { session } } = await sbClient.auth.getSession();
@@ -7570,12 +7907,17 @@ function resetChatMessages() {
         let activeUser = null;
         try { activeUser = JSON.parse(localStorage.getItem('sindhupath_active_user') || 'null'); } catch(e) {}
         if (activeUser && activeUser.role === 'student') {
+          currentUserId = activeUser.id || null;
           currentStudentEmail = activeUser.email || '';
-          const emailEl = document.getElementById('pf-email');
-          if (emailEl) { emailEl.value = currentStudentEmail; emailEl.readOnly = true; }
-          const displayEmailEl = document.getElementById('profile-display-email');
-          if (displayEmailEl) { displayEmailEl.textContent = currentStudentEmail; }
-          if (activeUser.name) setStudentName(activeUser.name);
+          activeStudent = {
+            name: activeUser.name,
+            email: activeUser.email,
+            roll: activeUser.roll,
+            course: activeUser.course,
+            batch: activeUser.batch,
+            attendance: activeUser.attendance,
+            fees_status: activeUser.fees_status
+          };
           if (activeUser.must_change_password) {
             setTimeout(() => {
               toast('Welcome Cadet! Please change your initial password in Profile & Security.', '#C89B3C', 6000);
@@ -7586,23 +7928,75 @@ function resetChatMessages() {
           return;
         }
       } else {
+        currentUserId = session.user?.id || null;
         currentStudentEmail = session.user?.email || '';
-        const emailEl = document.getElementById('pf-email');
-        if (emailEl) { emailEl.value = currentStudentEmail; emailEl.readOnly = true; }
-        const displayEmailEl = document.getElementById('profile-display-email');
-        if (displayEmailEl) { displayEmailEl.textContent = currentStudentEmail; }
       }
     } catch(err) {
       console.warn('Session check warning:', err);
     }
   }
 
-  const savedName = localStorage.getItem(LS_NAME);
-  setStudentName(savedName || 'Cadet');
+  // 1. Fetch student's specific profile from Supabase students table
+  if (sbClient && (currentUserId || currentStudentEmail)) {
+    try {
+      let query = sbClient.from('students').select('*');
+      if (currentUserId && currentStudentEmail) {
+        query = query.or(`user_id.eq.${currentUserId},email.eq.${currentStudentEmail}`);
+      } else if (currentUserId) {
+        query = query.eq('user_id', currentUserId);
+      } else if (currentStudentEmail) {
+        query = query.eq('email', currentStudentEmail);
+      }
 
-  const savedImg = localStorage.getItem(LS_IMG);
+      const { data, error } = await query.limit(1).maybeSingle();
+      if (!error && data) {
+        activeStudent = data;
+        // Auto-link user_id on the student record if missing
+        if (currentUserId && !data.user_id) {
+          sbClient.from('students').update({ user_id: currentUserId }).eq('id', data.id).then();
+        }
+      } else {
+        // Fallback: check profiles table for this user
+        if (currentUserId) {
+          const { data: prof } = await sbClient.from('profiles').select('*').eq('id', currentUserId).maybeSingle();
+          if (prof) {
+            activeStudent = {
+              name: prof.full_name || 'Cadet',
+              email: prof.email || currentStudentEmail,
+              roll: 'SP-' + currentUserId.slice(0, 6).toUpperCase(),
+              course: 'IMU-CET Coaching & Sponsorship Prep',
+              batch: 'Batch Alpha',
+              attendance: 85,
+              fees_status: 'Paid'
+            };
+          }
+        }
+      }
+    } catch(e) {
+      console.warn('Failed to fetch student record from Supabase:', e);
+    }
+  }
+
+  // 2. Apply student data to UI
+  if (activeStudent) {
+    applyStudentDataToUI(activeStudent);
+  } else {
+    // If no record found in Supabase or local session, restore from user-scoped storage or fallback
+    const savedName = localStorage.getItem(getUserScopedKey(LS_NAME)) || localStorage.getItem(LS_NAME) || 'Cadet';
+    setStudentName(savedName);
+    const emailEl = document.getElementById('pf-email');
+    if (emailEl && currentStudentEmail) emailEl.value = currentStudentEmail;
+    const displayEmailEl = document.getElementById('profile-display-email');
+    if (displayEmailEl && currentStudentEmail) displayEmailEl.textContent = currentStudentEmail;
+  }
+
+  // 3. Restore avatar from user-scoped storage
+  const avatarKey = typeof getUserScopedKey === 'function' ? getUserScopedKey(LS_IMG) : LS_IMG;
+  const savedImg = localStorage.getItem(avatarKey) || localStorage.getItem(LS_IMG);
   if (savedImg) setStudentAvatar(savedImg);
 
+  // 4. Load cadet profile extras and chat
+  loadCadetProfileExtras();
   loadChatMessages();
 })();
 
@@ -7620,7 +8014,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-renderMaterials();
+loadStudentMaterialsFromSupabase();
 loadCadetProfileExtras();
 renderMockTestSubjectFilters();
 renderAvailableTests();

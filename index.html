@@ -224,9 +224,24 @@
               <span class="material-symbols-outlined text-sm font-bold opacity-80 group-hover:rotate-180 transition-transform duration-300">keyboard_arrow_down</span>
             </button>
             <div class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-48 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl py-2 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 origin-top">
-              <a href="#" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">Academy Portal</a>
-              <a href="#" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">Virtual Tour</a>
-              <a href="#" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">Student Life</a>
+              <a href="admin-portal.html" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm text-maritime-gold">admin_panel_settings</span>
+                Admin Portal
+              </a>
+              <a href="faculty-portal.html" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm text-maritime-gold">school</span>
+                Faculty Portal
+              </a>
+              <a href="student-portal.html" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm text-maritime-gold">person</span>
+                Student Portal
+              </a>
+              <a href="#announcements" class="block px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm text-maritime-gold">campaign</span>
+                Notice Board
+              </a>
+
+
             </div>
           </div>
 
@@ -274,6 +289,22 @@
     </button>
     <nav class="flex flex-col gap-5 text-left">
       <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#">Home</a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm flex items-center justify-between" href="admin-portal.html">
+        <span>Admin Portal</span>
+        <span class="material-symbols-outlined text-xs text-maritime-gold">admin_panel_settings</span>
+      </a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm flex items-center justify-between" href="faculty-portal.html">
+        <span>Faculty Portal</span>
+        <span class="material-symbols-outlined text-xs text-maritime-gold">school</span>
+      </a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm flex items-center justify-between" href="student-portal.html">
+        <span>Student Portal</span>
+        <span class="material-symbols-outlined text-xs text-maritime-gold">person</span>
+      </a>
+      <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm flex items-center justify-between" href="#announcements">
+        <span>Notice Board</span>
+        <span class="material-symbols-outlined text-xs text-maritime-gold">campaign</span>
+      </a>
       <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#courses" id="drawer-link-courses">Courses</a>
       <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#about" id="drawer-link-about">About</a>
       <a class="text-white/80 hover:text-white transition-colors font-medium border-b border-white/5 pb-2 text-sm" href="#contact" id="drawer-link-contact">Contact</a>
@@ -365,7 +396,11 @@
               <p class="text-[11px] text-white/70 leading-tight">Official Announcements & Latest Bulletins</p>
             </div>
           </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-2">
+            <a href="admin-portal.html#noticeboard" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-maritime-gold/20 hover:bg-maritime-gold text-maritime-gold hover:text-deep-sea transition-all border border-maritime-gold/30 hover:shadow-md" title="Manage Notices in Admin Portal">
+              <span class="material-symbols-outlined text-base">admin_panel_settings</span>
+              <span class="hidden sm:inline">Admin Manage</span>
+            </a>
             <button onclick="window.downloadCurrentPoster(event)" class="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors" title="Download Notice Poster">
               <span class="material-symbols-outlined text-lg">download</span>
             </button>
@@ -940,14 +975,10 @@
     const NEWS_KEY = 'sindhupath_news';
 
     // State Variables
-    let activePoster = localStorage.getItem(POSTER_KEY) || null;
-    let newsList = JSON.parse(localStorage.getItem(NEWS_KEY)) || null;
-    let tempPosterData = null; // store file base64 temporarily before saving
-
-    if (!newsList) {
-      newsList = [...defaultNews];
-      localStorage.setItem(NEWS_KEY, JSON.stringify(newsList));
-    }
+    let newsList = [];
+    let posterImages = []; // each entry: { id, title, primaryUrl }
+    let currentSlideIndex = 0;
+    let slideInterval = null;
 
     // Elements
     const posterDisplayContainer = document.getElementById('poster-display-container');
@@ -963,23 +994,54 @@
     // Supabase Live Storage & Database Integration
     // -------------------------------------------------------------
     const SUPABASE_URL = 'https://lbdunyobsfdwtmdhuapb.supabase.co';
-    let SUPABASE_ANON_KEY = localStorage.getItem('sindhupath_supabase_anon_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHVueW9ic2Zkd3RtZGh1YXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NDExNDYsImV4cCI6MjEwNTUxNzE0Nn0.vnCG22PHUHJ1TitPQCwBJY23xZiH8deVtwnlkLTMAt4';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiZHVueW9ic2Zkd3RtZGh1YXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NDExNDYsImV4cCI6MjEwNTUxNzE0Nn0.vnCG22PHUHJ1TitPQCwBJY23xZiH8deVtwnlkLTMAt4';
     let supabaseClient = null;
 
-    function initSupabaseClient() {
-      if (window.supabase && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+    function getSupabaseClient() {
+      if (supabaseClient) return supabaseClient;
+      if (window.supabase) {
         try {
           supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          return supabaseClient;
         } catch (e) {
           console.warn('Supabase initialization warning:', e);
         }
       }
+      return null;
+    }
+
+    let noticesRealtimeChannel = null;
+    function setupNoticesRealtime() {
+      const client = getSupabaseClient();
+      if (!client) return;
+      if (noticesRealtimeChannel) {
+        try { client.removeChannel(noticesRealtimeChannel); } catch(e) {}
+      }
+      try {
+        noticesRealtimeChannel = client.channel('landing-notices-realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'notices' }, (payload) => {
+            console.log('Realtime change in public.notices:', payload.eventType);
+            fetchSupabasePosters();
+          })
+          .subscribe((status) => {
+            console.log('Landing page notices realtime status:', status);
+          });
+      } catch (err) {
+        console.warn('Realtime subscription error:', err);
+      }
+    }
+
+    function initSupabaseClient() {
+      getSupabaseClient();
+      setupNoticesRealtime();
     }
     initSupabaseClient();
 
-    let posterImages = []; // each entry: { id, primaryUrl, cdnUrl, backupUrl }
-    let currentSlideIndex = 0;
-    let slideInterval = null;
+    function extractUrlFromText(text) {
+      if (!text) return null;
+      const match = text.match(/(https?:\/\/[^\s]+)/);
+      return match ? match[0] : null;
+    }
 
     // HTML Escaping Utility for XSS Prevention
     function escapeHTML(str) {
@@ -1119,25 +1181,28 @@
     async function fetchSupabasePosters() {
       if (!posterDisplayContainer) return;
       
-      // Render animated skeleton loading indicator if no images loaded yet
-      if (posterImages.length === 0) {
-        posterDisplayContainer.innerHTML = `
-          <div class="w-full h-full flex flex-col items-center justify-center bg-deep-sea/5 space-y-3">
-            <span class="material-symbols-outlined text-maritime-gold text-4xl animate-spin">sync</span>
-            <p class="text-xs font-semibold text-deep-sea/70 uppercase tracking-wider">Syncing Notice Board...</p>
-          </div>
-        `;
-      }
-
-      if (!supabaseClient) {
+      const client = getSupabaseClient();
+      if (!client) {
+        console.warn('Supabase client unavailable for notice board.');
         posterImages = [];
+        newsList = [];
         renderPosterSlideshow();
         renderNewsFeed();
         return;
       }
 
+      // Render animated skeleton loading indicator if no images or bulletins loaded yet
+      if (posterImages.length === 0 && newsList.length === 0) {
+        posterDisplayContainer.innerHTML = `
+          <div class="w-full h-full flex flex-col items-center justify-center bg-deep-sea/5 space-y-3">
+            <span class="material-symbols-outlined text-maritime-gold text-4xl animate-spin">sync</span>
+            <p class="text-xs font-semibold text-deep-sea/70 uppercase tracking-wider">Syncing Notice Board with Supabase...</p>
+          </div>
+        `;
+      }
+
       try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await client
           .from('notices')
           .select('*')
           .order('created_at', { ascending: false });
@@ -1149,10 +1214,10 @@
 
         if (data && data.length > 0) {
           data.forEach(item => {
-            const rawTitle = item.title || 'Notice Banner';
+            const rawTitle = item.title || 'Notice';
             const rawUrl = item.image_url || '';
 
-            if (rawTitle.startsWith('BULLETIN:') || !rawUrl.startsWith('http')) {
+            if (rawTitle.startsWith('BULLETIN:') && !rawUrl.startsWith('data:image/')) {
               // Parse Supabase Bulletin Item
               let tag = 'Notice';
               let titleText = rawTitle.replace('BULLETIN:', '').trim();
@@ -1162,20 +1227,29 @@
                 titleText = parts.slice(1).join(']').trim();
               }
               
-              let tagColor = 'bg-blue-500/10 text-blue-500 border border-blue-500/20';
-              if (tag.includes('Exam')) tagColor = 'bg-red-500/10 text-red-500 border border-red-500/20';
-              else if (tag.includes('Admission')) tagColor = 'bg-maritime-gold/20 text-maritime-gold border border-maritime-gold/30';
-              else if (tag.includes('Result')) tagColor = 'bg-green-500/10 text-green-500 border border-green-500/20';
+              let tagColor = 'bg-sky-500/10 text-sky-500 border border-sky-500/20';
+              const tagLower = tag.toLowerCase();
+              if (tagLower.includes('exam')) {
+                tagColor = 'bg-red-500/10 text-red-500 border border-red-500/20';
+              } else if (tagLower.includes('admission')) {
+                tagColor = 'bg-maritime-gold/20 text-maritime-gold border border-maritime-gold/30';
+              } else if (tagLower.includes('result')) {
+                tagColor = 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
+              } else if (tagLower.includes('urgent')) {
+                tagColor = 'bg-rose-500/10 text-rose-500 border border-rose-500/20';
+              }
+
+              const extractedLink = extractUrlFromText(rawUrl);
 
               liveBulletins.push({
                 id: item.id,
                 tag: tag,
                 tagColor: tagColor,
-                date: new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-                title: titleText,
+                date: item.created_at || new Date().toISOString(),
+                title: titleText || rawTitle,
                 desc: rawUrl,
-                link: null,
-                linkText: null
+                link: extractedLink,
+                linkText: extractedLink ? 'Open Link' : null
               });
             } else {
               // Parse Supabase Poster Photo
@@ -1186,17 +1260,14 @@
               });
             }
           });
-
-          posterImages = livePosters;
-          if (liveBulletins.length > 0) {
-            newsList = liveBulletins;
-          }
-        } else {
-          posterImages = [];
         }
+
+        posterImages = livePosters;
+        newsList = liveBulletins;
       } catch (err) {
         console.warn('Supabase poster fetch error:', err);
         posterImages = [];
+        newsList = [];
       }
       renderPosterSlideshow();
       renderNewsFeed();
@@ -1309,12 +1380,22 @@
 // Render News Feed View
     function renderNewsFeed() {
       if (!newsFeedContainer) return;
-      if (newsList.length === 0) {
+      if (!newsList || newsList.length === 0) {
         newsFeedContainer.innerHTML = `
-          <div class="text-center py-12 border border-dashed border-deep-sea/10 rounded-2xl bg-white/40 backdrop-blur-sm">
-            <span class="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">info</span>
-            <p class="font-bold text-deep-sea text-base">No active bulletins</p>
-            <p class="text-xs text-on-surface-variant">Check back later for academy news and updates.</p>
+          <div class="text-center py-10 border border-dashed border-deep-sea/15 rounded-2xl bg-white/50 backdrop-blur-sm p-6">
+            <span class="material-symbols-outlined text-4xl text-maritime-gold mb-2" style="font-variation-settings: 'FILL' 1;">campaign</span>
+            <p class="font-bold text-deep-sea text-base">No active announcements</p>
+            <p class="text-xs text-on-surface-variant mt-1">Notices and bulletins published from the Admin Portal will appear here live in realtime.</p>
+            <div class="mt-4 flex items-center justify-center gap-3">
+              <a href="admin-portal.html#noticeboard" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-deep-sea text-white hover:bg-maritime-gold hover:text-deep-sea transition-all shadow-sm">
+                <span class="material-symbols-outlined text-sm">post_add</span>
+                <span>Publish in Admin Portal</span>
+              </a>
+              <button onclick="window.syncNoticeBoard()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-surface-container hover:bg-surface-container-high text-deep-sea transition-all">
+                <span class="material-symbols-outlined text-sm">sync</span>
+                <span>Sync Now</span>
+              </button>
+            </div>
           </div>
         `;
         return;
@@ -1322,6 +1403,9 @@
 
       newsFeedContainer.innerHTML = newsList.map(item => {
         const parsed = parseDateStr(item.date);
+        const safeTitle = escapeHTML(item.title);
+        const safeDesc = escapeHTML(item.desc);
+        const safeTag = escapeHTML(item.tag);
         return `
           <div class="flex items-start gap-4 p-4 rounded-2xl bg-white/70 hover:bg-white/95 backdrop-blur-md border border-white/80 shadow-[0_4px_20px_rgba(11,35,69,0.04)] hover:shadow-[0_8px_30px_rgba(11,35,69,0.08)] transition-all duration-300 group reveal opacity-100 translate-y-0">
             <!-- Date Badge -->
@@ -1333,14 +1417,14 @@
             <div class="flex-grow min-w-0">
               <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <h4 class="font-subhead-md text-base md:text-lg font-bold text-deep-sea group-hover:text-maritime-gold transition-colors duration-300">
-                  ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>` : item.title}
+                  ${item.link ? `<a href="${escapeHTML(item.link)}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>` : safeTitle}
                 </h4>
-                <span class="${item.tagColor} text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">${item.tag}</span>
+                <span class="${item.tagColor} text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">${safeTag}</span>
               </div>
-              <p class="font-body-md text-xs md:text-sm text-on-surface-variant leading-relaxed mt-1">${item.desc}</p>
+              <p class="font-body-md text-xs md:text-sm text-on-surface-variant leading-relaxed mt-1">${safeDesc}</p>
               ${item.link ? `
-              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-maritime-gold hover:text-deep-sea transition-colors mt-2">
-                ${item.linkText || 'Read Details'}
+              <a href="${escapeHTML(item.link)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-maritime-gold hover:text-deep-sea transition-colors mt-2">
+                ${escapeHTML(item.linkText || 'Read Details')}
                 <span class="material-symbols-outlined text-xs">arrow_forward</span>
               </a>
               ` : ''}

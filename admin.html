@@ -330,17 +330,31 @@
 
       const btn = document.getElementById('admin-upload-btn');
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading to Supabase...</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">sync</span><span>Uploading to Supabase Storage...</span>';
 
       try {
         let finalUrl = urlValue;
 
         if (file) {
           const fileName = 'poster_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-          const { error: upErr } = await sbClient.storage.from('posters').upload(fileName, file, { cacheControl: '3600', upsert: true });
-          if (upErr) throw upErr;
-          const { data: pub } = sbClient.storage.from('posters').getPublicUrl(fileName);
-          finalUrl = pub.publicUrl;
+          
+          // Upload directly to dedicated 'posters' bucket in Supabase Storage
+          const { data: uploadData, error: upErr } = await sbClient.storage
+            .from('posters')
+            .upload(fileName, file, { 
+              cacheControl: '3600', 
+              upsert: true,
+              contentType: file.type || 'image/png'
+            });
+
+          if (upErr) {
+            console.error('Supabase Storage Upload Failure:', upErr);
+            throw new Error('Supabase Storage: ' + (upErr.message || 'Upload failed. Run sql/07_complete_storage_and_rls_repair.sql in Supabase SQL editor.'));
+          }
+
+          // Retrieve public CDN URL for the uploaded object
+          const { data: pubData } = sbClient.storage.from('posters').getPublicUrl(fileName);
+          finalUrl = pubData ? pubData.publicUrl : '';
         }
 
         const { error: dbErr } = await sbClient.from('notices').insert([{
@@ -350,7 +364,7 @@
 
         if (dbErr) throw dbErr;
 
-        showStatus('Poster uploaded & published live to website!', 'success');
+        showStatus('Poster uploaded to Supabase Storage & published live!', 'success');
         if (fileInput) { fileInput.value = ''; uploadLabel.textContent = 'Click to select poster image'; }
         document.getElementById('admin-url-input').value = '';
         fetchAdminNotices();
@@ -401,7 +415,7 @@
 
         if (data && data.length > 0) {
           data.forEach(item => {
-            if (item.title && item.title.startsWith('BULLETIN:')) {
+            if (item.title && item.title.startsWith('BULLETIN:') && !item.image_url?.startsWith('data:image/')) {
               bulletins.push(item);
             } else {
               posters.push(item);
@@ -424,7 +438,7 @@
                   <div class="min-w-0">
                     <p class="font-bold text-xs text-white truncate">${escapeHTML(item.title || 'Notice Banner')}</p>
                     <p class="text-[10px] text-on-surface-variant/70 mt-0.5">${new Date(item.created_at).toLocaleString()}</p>
-                    <a href="${escapeHTML(item.image_url)}" target="_blank" class="text-[10px] text-tertiary hover:underline truncate block mt-0.5">${escapeHTML(item.image_url)}</a>
+                    <a href="${escapeHTML(item.image_url)}" target="_blank" class="text-[10px] text-tertiary hover:underline truncate block mt-0.5">${item.image_url.startsWith("data:") ? "View Full Image ↗" : escapeHTML(item.image_url)}</a>
                   </div>
                 </div>
                 <button onclick="deleteNoticeItem('${item.id}')" class="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-lg transition-colors shrink-0 flex items-center gap-1 text-xs font-semibold" title="Delete Poster">

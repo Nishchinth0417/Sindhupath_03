@@ -56,7 +56,7 @@
 
     /* ── Sidebar ── */
     #sidebar {
-      width: 260px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 50;
+      width: 210px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 50;
       background: linear-gradient(180deg,#071322 0%,#0B2345 100%);
       border-right: 1px solid rgba(200,155,60,0.15);
       display: flex; flex-direction: column; transition: width .3s ease, transform .3s ease;
@@ -68,6 +68,7 @@
     #sidebar.collapsed .nav-category-header,
     #sidebar.collapsed .faculty-info-wrap,
     #sidebar.collapsed .nav-badge { display: none !important; }
+    #sidebar.collapsed #faculty-card-wrap { justify-content: center; padding: 6px 0; margin: 4px auto; width: 44px; background: transparent; border: none !important; }
     #sidebar.collapsed .nav-item { justify-content: center !important; padding: 10px !important; width: calc(100% - 16px) !important; margin: 2px 8px !important; }
     #sidebar.collapsed .nav-item .material-symbols-outlined,
     #sidebar.collapsed .nav-item .iconify { font-size: 22px !important; margin: 0 !important; }
@@ -79,23 +80,23 @@
 
     /* ── Nav item buttons ── */
     .nav-item {
-      display: flex; align-items: center; gap: 10px; padding: 10px 16px;
-      margin: 2px 10px; border-radius: 12px; cursor: pointer; color: #CBD5E1;
-      font-family:'Oswald',sans-serif; font-size:14px; font-weight:500; letter-spacing:.3px;
-      transition: all .2s ease; user-select: none; width: calc(100% - 20px); text-align: left;
-      border: none; background: transparent; outline-offset: 2px;
+      display: flex; align-items: center; gap: 9px; padding: 9px 12px;
+      margin: 2px 8px; border-radius: 10px; cursor: pointer; color: #CBD5E1;
+      font-family:'Oswald',sans-serif; font-size:13.5px; font-weight:500; letter-spacing:.3px;
+      transition: all .2s ease; user-select: none; width: calc(100% - 16px); text-align: left;
+      border: none; background: transparent; outline-offset: 2px; white-space: nowrap;
     }
     .nav-item:hover, .nav-item:focus-visible { background: rgba(200,155,60,.15); color: #fff; outline: 2px solid #C89B3C; }
     .nav-item.active {
       background: linear-gradient(90deg, rgba(200,155,60,0.22), rgba(200,155,60,0.06));
       color: #C89B3C;
       border-left: 3px solid #C89B3C;
-      padding-left: 15px;
+      padding-left: 10px;
     }
-    .nav-item .material-symbols-outlined { font-size: 20px; flex-shrink: 0; }
+    .nav-item .material-symbols-outlined { font-size: 19px; flex-shrink: 0; }
 
     /* ── Main area ── */
-    #main { margin-left: 260px; min-height: 100vh; background: #F4F6FA; transition: margin-left .3s ease; }
+    #main { margin-left: 210px; min-height: 100vh; background: #F4F6FA; transition: margin-left .3s ease; }
     #main.sidebar-collapsed { margin-left: 64px; }
 
     /* ── Mobile Dock Button ── */
@@ -154,7 +155,7 @@
     /* ── Media Queries ── */
     @media (max-width: 767px) {
       #sidebar {
-        width: 260px !important; transform: translateX(-100%);
+        width: 210px !important; transform: translateX(-100%);
         transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         box-shadow: 4px 0 24px rgba(0,0,0,0.35);
       }
@@ -174,6 +175,7 @@
     @media (min-width: 768px) and (max-width: 1024px) {
       #sidebar { width: 64px !important; transform: translateX(0) !important; }
       #sidebar .nav-label, #sidebar .sidebar-brand-text, #sidebar .nav-category-header, #sidebar .faculty-info-wrap, #sidebar .nav-badge { display: none !important; }
+      #sidebar #faculty-card-wrap { justify-content: center !important; padding: 6px 0 !important; margin: 4px auto !important; width: 44px !important; background: transparent !important; border: none !important; }
       #sidebar .nav-item { justify-content: center !important; padding: 10px !important; width: calc(100% - 16px) !important; margin: 2px 8px !important; }
       #sidebar .nav-item .material-symbols-outlined { font-size: 22px !important; }
       #main { margin-left: 64px !important; }
@@ -268,18 +270,18 @@
 <!-- ════════════════ SIDEBAR ════════════════ -->
 <aside id="sidebar" class="select-none">
   <!-- Logo -->
-  <div class="flex items-center gap-3 px-5 pt-5 pb-3 border-b border-white/8">
-    <div class="w-9 h-9 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center shrink-0 cursor-pointer" onclick="toggleSidebar()" title="Toggle Sidebar">
-      <span class="material-symbols-outlined fill-icon text-gold text-xl">anchor</span>
+  <div class="flex items-center gap-2.5 px-3.5 pt-4 pb-3 border-b border-white/8">
+    <div class="w-8 h-8 rounded-lg bg-gold/20 border border-gold/30 flex items-center justify-center shrink-0 cursor-pointer" onclick="toggleSidebar()" title="Toggle Sidebar">
+      <span class="material-symbols-outlined fill-icon text-gold text-lg">anchor</span>
     </div>
-    <div class="sidebar-brand-text overflow-hidden">
-      <p class="font-display text-white text-lg leading-none tracking-widest">SINDHUPATH</p>
-      <p class="text-gold/80 text-[9px] font-sub tracking-widest uppercase">Faculty Command Deck</p>
+    <div class="sidebar-brand-text min-w-0 overflow-hidden">
+      <p class="font-display text-white text-lg leading-none tracking-widest truncate">SINDHUPATH</p>
+      <p class="text-gold/80 text-[9px] font-sub tracking-widest uppercase truncate">Faculty Command Deck</p>
     </div>
   </div>
 
   <!-- Faculty Info -->
-  <div class="mx-3 mt-3 mb-2 p-2.5 rounded-xl bg-white/5 border border-white/8 flex items-center gap-2.5 cursor-pointer hover:bg-white/10 transition-colors" onclick="switchTab('profile')" title="Edit Profile">
+  <div id="faculty-card-wrap" class="mx-3 mt-3 mb-2 p-2.5 rounded-xl bg-white/5 flex items-center gap-2.5 cursor-pointer hover:bg-white/10 transition-colors" onclick="switchTab('profile')" title="Edit Profile">
     <div id="sb-avatar-wrap" class="w-10 h-10 rounded-full bg-teal/20 border-2 border-teal/40 flex items-center justify-center shrink-0 overflow-hidden">
       <span class="material-symbols-outlined fill-icon text-teal text-xl" id="sb-avatar-icon">person</span>
     </div>
@@ -459,7 +461,7 @@
           <span class="material-symbols-outlined text-deep-sea/40 text-2xl">groups</span>
           <span class="badge bg-blue-50 text-blue-700">Enrolled</span>
         </div>
-        <p class="text-3xl font-display text-deep-sea">142</p>
+        <p id="fac-kpi-cadets" class="text-3xl font-display text-deep-sea">0</p>
         <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Commissioned Cadets</p>
       </div>
       <div class="stat-card">
@@ -467,7 +469,7 @@
           <span class="material-symbols-outlined text-deep-sea/40 text-2xl">sailing</span>
           <span class="badge bg-emerald-50 text-emerald-700">DG Compliant</span>
         </div>
-        <p class="text-3xl font-display text-emerald-600">89.4%</p>
+        <p id="fac-kpi-muster" class="text-3xl font-display text-emerald-600">0%</p>
         <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Avg Muster Rate</p>
       </div>
       <div class="stat-card">
@@ -475,16 +477,16 @@
           <span class="material-symbols-outlined text-deep-sea/40 text-2xl">verified</span>
           <span class="badge bg-teal/10 text-teal">Shortlisted</span>
         </div>
-        <p class="text-3xl font-display text-deep-sea">38</p>
+        <p id="fac-kpi-shortlisted" class="text-3xl font-display text-deep-sea">0</p>
         <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Sponsorship Finalists</p>
       </div>
       <div class="stat-card">
         <div class="flex items-center justify-between mb-2">
           <span class="material-symbols-outlined text-deep-sea/40 text-2xl">quiz</span>
-          <span class="badge bg-amber-50 text-amber-700">Next 48h</span>
+          <span class="badge bg-amber-50 text-amber-700">Exams</span>
         </div>
-        <p class="text-3xl font-display text-gold">2</p>
-        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">IMU-CET Mocks Due</p>
+        <p id="fac-kpi-exams" class="text-3xl font-display text-gold">0</p>
+        <p class="text-xs text-slate font-sub uppercase tracking-wide mt-1">Active Mock Tests</p>
       </div>
     </div>
 
@@ -2321,6 +2323,7 @@ function switchTab(id) {
     closeSidebar();
     closeMoreSheet();
   }
+  if (id === 'overview')   updateFacultyOverviewKPIs();
   if (id === 'students')   renderStudents();
   if (id === 'classes')    { renderCurriculumSubjects(); renderClasses(); }
   if (id === 'materials')  renderMaterials();
@@ -2701,34 +2704,41 @@ const CLASSES_DATA = [
   { id:6, subject:'IMU-CET Physics & Mathematics Intensive', batch:'All Entrance Cadets', schedule:'Mon / Wed / Fri – 04:30 PM', room:'Lecture Hall 101', students:76, progress:90, icon:'calculate', color:'deep-sea' },
 ];
 
-const STUDENTS_DATA = [
-  { id:1,  name:'Cadet Aryan Sharma',   roll:'SP-2026-D042', indos:'24IN08412', stream:'DNS Deck Cadet', batch:'A', fleet:'Maersk Line', sponsorship:'Shortlisted (Tech Cleared)', attendance:92, last_score:88 },
-  { id:2,  name:'Cadet Rohan Kulkarni',  roll:'SP-2026-E019', indos:'24IN09104', stream:'B.Tech Marine',  batch:'B', fleet:'Fleet Management', sponsorship:'Interview Cleared', attendance:88, last_score:91 },
-  { id:3,  name:'Cadet Varun Nair',      roll:'SP-2026-D055', indos:'24IN07892', stream:'DNS Deck Cadet', batch:'A', fleet:'MSC Geneva', sponsorship:'Board Defense Pending', attendance:86, last_score:76 },
-  { id:4,  name:'Cadet Sneha Roy',       roll:'SP-2026-D011', indos:'24IN09511', stream:'DNS Deck Cadet', batch:'A', fleet:'Synergy Marine', sponsorship:'Offer Received', attendance:96, last_score:94 },
-  { id:5,  name:'Cadet Aniket Verma',    roll:'SP-2026-G008', indos:'24IN08320', stream:'GME Engine',     batch:'C', fleet:'Anglo-Eastern', sponsorship:'Medical Cleared', attendance:89, last_score:82 },
-  { id:6,  name:'Cadet Kavitha Menon',   roll:'SP-2026-I031', indos:'24IN07154', stream:'IMU-CET Ranker', batch:'B', fleet:'Fleet Management', sponsorship:'Aptitude Qualified', attendance:94, last_score:85 },
-  { id:7,  name:'Cadet Vishnu Krishnan', roll:'SP-2026-D063', indos:'24IN09233', stream:'DNS Deck Cadet', batch:'A', fleet:'Scorpio Tankers', sponsorship:'Shortlisted', attendance:84, last_score:71 },
-  { id:8,  name:'Cadet Priya Nair',      roll:'SP-2026-I078', indos:'24IN08945', stream:'IMU-CET Ranker', batch:'B', fleet:'Maersk Line', sponsorship:'Written Cleared', attendance:91, last_score:79 },
-  { id:9,  name:'Cadet Rahul Pillai',    roll:'SP-2026-D029', indos:'24IN07740', stream:'DNS Deck Cadet', batch:'C', fleet:'BSM Schulte', sponsorship:'Panel Interview', attendance:74, last_score:68 },
-  { id:10, name:'Cadet Deepa Thomas',    roll:'SP-2026-S005', indos:'24IN08611', stream:'Sponsorship Only', batch:'C', fleet:'Synergy Marine', sponsorship:'Shortlisted', attendance:87, last_score:80 },
-  { id:11, name:'Cadet Sanjay Varma',    roll:'SP-2026-I014', indos:'24IN07490', stream:'IMU-CET Ranker', batch:'A', fleet:'Chevron Shipping', sponsorship:'Prep Stage', attendance:82, last_score:74 },
-  { id:12, name:'Cadet Nikhil Rao',      roll:'SP-2026-D071', indos:'24IN09880', stream:'DNS Deck Cadet', batch:'B', fleet:'NYK Line', sponsorship:'Tech Round Pending', attendance:71, last_score:62 },
-];
+let STUDENTS_DATA = [];
+let appMaterials = [];
+let appNotices = [];
 
-let appMaterials = [
-  { id:1, title:'Celestial Sight Reduction Tables (Norie\'s & Sight Form)', subject:'Navigation', type:'PDF', batch:'Batch Alpha', date:'20 Sep 2026', desc:'Sight reduction procedures for Sun, Stars, and Polaris latitude corrections.' },
-  { id:2, title:'Ship Stability & GZ Curves Calculation Sheet', subject:'Stability', type:'PDF', batch:'Batch Winter', date:'18 Sep 2026', desc:'Cross curves of stability, dynamical stability, and free surface effect notes.' },
-  { id:3, title:'COLREGs Quick-Action Matrix (Steering & Sailing Rules)', subject:'Watchkeeping', type:'PDF', batch:'All Batches', date:'15 Sep 2026', desc:'Rules 1 to 19 summary: Head-on, Crossing, Overtaking, and Restricted Visibility.' },
-  { id:4, title:'Marine Auxiliary Boilers & Fuel Oil Treatment Diagram', subject:'Marine Engineering', type:'Diagram', batch:'Batch Engine', date:'01 Oct 2026', desc:'High-pressure steam auxiliary systems, purifiers, and viscosity controls.' },
-  { id:5, title:'Maersk Line Sponsorship Interview Question Bank', subject:'Sponsorship', type:'Worksheet', batch:'Shortlisted', date:'10 Sep 2026', desc:'Real technical and situational questions from 2024-25 selection panels.' },
-];
+function updateFacultyOverviewKPIs() {
+  const cadetsEl = document.getElementById('fac-kpi-cadets');
+  const musterEl = document.getElementById('fac-kpi-muster');
+  const shortEl = document.getElementById('fac-kpi-shortlisted');
+  const examsEl = document.getElementById('fac-kpi-exams');
 
-let appNotices = [
-  { id:1, title:'DG Shipping Mandatory Attendance Audit — October 2026', category:'Compliance', target:'All Batches', date:'29 Sep 2026', content:'Cadets falling below the 85% attendance threshold are required to complete compensating watch shifts before sponsorship endorsement.' },
-  { id:2, title:'Maersk Fleet Sponsorship Technical Panel Schedule', category:'Sponsorship', target:'Batch Alpha & Winter', date:'27 Sep 2026', content:'Shortlisted cadets must report to Chartwork Lab 2 in full uniform at 0830 hrs on Saturday for final mock board defense.' },
-  { id:3, title:'IMU-CET Mock Exam Series 06 Uploaded', category:'Exam', target:'All Entrance Cadets', date:'25 Sep 2026', content:'Proctored CBT Mock Test Series 06 is live. Negative marking (-0.25) active across all sections.' },
-];
+  const total = STUDENTS_DATA.length;
+  if (cadetsEl) cadetsEl.textContent = total;
+
+  if (musterEl) {
+    if (total > 0) {
+      const avg = STUDENTS_DATA.reduce((acc, s) => acc + (Number(s.attendance) || 85), 0) / total;
+      musterEl.textContent = avg.toFixed(1) + '%';
+    } else {
+      musterEl.textContent = '100%';
+    }
+  }
+
+  if (shortEl) {
+    const shortlistedCount = STUDENTS_DATA.filter(s => {
+      const sp = (s.sponsorship || '').toLowerCase();
+      return sp.includes('cleared') || sp.includes('shortlisted') || sp.includes('offer') || sp.includes('paid');
+    }).length;
+    shortEl.textContent = shortlistedCount;
+  }
+
+  if (examsEl) {
+    const examCount = (typeof appTests !== 'undefined' && appTests) ? appTests.length : 2;
+    examsEl.textContent = examCount;
+  }
+}
 
 let appTests = [
   {
@@ -3646,6 +3656,35 @@ async function loadDynamicMaterials() {
   }
 }
 
+async function loadFacultyNoticesFromSupabase() {
+  if (!sbClient) return;
+  try {
+    const { data, error } = await sbClient.from('notices').select('*').order('created_at', { ascending: false });
+    if (!error && data && data.length > 0) {
+      appNotices = data.map(item => {
+        let cat = 'General';
+        let body = item.image_url || '';
+        let title = item.title || 'Academy Notice';
+        if (title.startsWith('BULLETIN:')) {
+          cat = 'Urgent';
+          title = title.replace('BULLETIN:', '').trim();
+        }
+        return {
+          id: item.id,
+          title: title,
+          content: body,
+          category: cat,
+          target: 'All Cadets',
+          date: new Date(item.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+        };
+      });
+      renderNotices();
+    }
+  } catch(e) {
+    console.warn('Error loading notices from Supabase:', e);
+  }
+}
+
 function renderNotices() {
   const CAT_COLOR = { Exam:'bg-red-100 text-red-700', Academic:'bg-blue-100 text-blue-700', Urgent:'bg-red-100 text-red-700', Holiday:'bg-purple-100 text-purple-700', General:'bg-gray-100 text-gray-700' };
   document.getElementById('notices-list').innerHTML = appNotices.map(n => `
@@ -3675,7 +3714,7 @@ function previewNotice() {
   document.getElementById('notice-preview-box').classList.remove('hidden');
 }
 
-function postNotice(e) {
+async function postNotice(e) {
   e.preventDefault();
   const title    = document.getElementById('n-title').value.trim();
   const content  = document.getElementById('n-content').value.trim();
@@ -3684,6 +3723,18 @@ function postNotice(e) {
   if (!title || !content) { toast('Title and content are required.', 'error'); return; }
   const n = { id: Date.now(), title, content, category, target, date: new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) };
   appNotices.unshift(n);
+
+  if (sbClient) {
+    try {
+      await sbClient.from('notices').insert([{
+        title: category === 'Urgent' ? `BULLETIN: ${title}` : title,
+        image_url: content
+      }]);
+    } catch(err) {
+      console.warn('Could not sync notice to Supabase:', err);
+    }
+  }
+
   try { localStorage.setItem('sp_notices', JSON.stringify(appNotices)); } catch(err){}
   renderNotices();
   e.target.reset();
@@ -3702,7 +3753,18 @@ function deleteNotice(id) {
 // ── DG Shipping Muster Roll Call & Compliance Engine ───────────────────────────────
 function loadAttendanceRoster() {
   const cls = document.getElementById('att-class')?.value || 'nav-a';
-  const list = ATT_ROSTERS[cls] || [];
+  let list = [];
+  if (STUDENTS_DATA && STUDENTS_DATA.length > 0) {
+    list = STUDENTS_DATA.map(s => ({
+      id: s.id,
+      name: s.name,
+      roll: s.roll,
+      indos: s.indos || s.roll,
+      attendance: s.attendance || 85
+    }));
+  } else {
+    list = ATT_ROSTERS[cls] || [];
+  }
   attState = {};
   list.forEach((s, i) => attState[i] = 'P'); // Default all present on deck
   renderRoster(list);
@@ -3785,7 +3847,7 @@ function updateAttCount() {
   }
 }
 
-function submitAttendance() {
+async function submitAttendance() {
   const total = Object.keys(attState).length;
   const present = Object.values(attState).filter(v => v === 'P').length;
   if (total === 0) { toast('No cadets in muster roster.', 'error'); return; }
@@ -3793,6 +3855,30 @@ function submitAttendance() {
   const clsName = document.getElementById('att-class')?.selectedOptions[0]?.text || 'Maritime Module';
   const shift = document.getElementById('att-shift')?.value || '0800';
   const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0];
+
+  // Sync attendance back to Supabase students table
+  if (sbClient && STUDENTS_DATA && STUDENTS_DATA.length > 0) {
+    try {
+      const updates = [];
+      STUDENTS_DATA.forEach((s, idx) => {
+        const mark = attState[idx] || 'P';
+        let currentAtt = s.attendance || 85;
+        let newAtt = mark === 'P' ? Math.min(100, currentAtt + 1) : Math.max(0, currentAtt - 2);
+        s.attendance = newAtt;
+        if (s.id) {
+          updates.push(sbClient.from('students').update({ attendance: newAtt }).eq('id', s.id));
+        }
+      });
+      if (updates.length > 0) {
+        Promise.all(updates).then(() => {
+          updateFacultyOverviewKPIs();
+          console.log('Synchronized attendance to Supabase students table');
+        }).catch(e => console.warn('Supabase attendance sync notice:', e));
+      }
+    } catch(err) {
+      console.warn('Attendance sync exception:', err);
+    }
+  }
   
   toast(`✓ Muster endorsed: ${present}/${total} present on deck for ${shift} Watch.`, 'success');
 }
@@ -3802,7 +3888,17 @@ function exportMusterCSV() {
   const clsTitle = document.getElementById('att-class')?.selectedOptions[0]?.text || 'Module';
   const shift = document.getElementById('att-shift')?.selectedOptions[0]?.text || 'Morning Watch';
   const date = document.getElementById('att-date')?.value || new Date().toISOString().split('T')[0];
-  const list = ATT_ROSTERS[cls] || [];
+  let list = [];
+  if (STUDENTS_DATA && STUDENTS_DATA.length > 0) {
+    list = STUDENTS_DATA.map(s => ({
+      name: s.name,
+      roll: s.roll,
+      indos: s.indos || s.roll,
+      attendance: s.attendance || 85
+    }));
+  } else if (ATT_ROSTERS[cls]) {
+    list = ATT_ROSTERS[cls];
+  }
   
   if (list.length === 0) {
     toast('No cadet muster data to export.', 'error');
@@ -4537,8 +4633,8 @@ function deleteScheduleEvent(id) {
 }
 
 // ── Profile Actions & Naval Dossier ──────────────────────────
-function saveProfile(e) {
-  e.preventDefault();
+async function saveProfile(e) {
+  if (e) e.preventDefault();
   const name    = document.getElementById('pf-name').value.trim();
   const desig   = document.getElementById('pf-designation').value;
   const coc     = document.getElementById('pf-coc')?.value.trim();
@@ -4562,13 +4658,39 @@ function saveProfile(e) {
     try { localStorage.setItem('sp_faculty_indos', indos); } catch(err) {}
   }
 
+  // Sync update to Supabase faculty table
+  if (sbClient && (currentFacultyEmail || currentFacultyId)) {
+    try {
+      const updatePayload = {};
+      if (name) updatePayload.name = name;
+      if (desig) updatePayload.designation = desig;
+      if (coc) updatePayload.qualification = coc;
+      if (indos) updatePayload.mobile = indos;
+      if (service) updatePayload.experience = service;
+
+      if (Object.keys(updatePayload).length > 0) {
+        let q = sbClient.from('faculty').update(updatePayload);
+        if (currentFacultyId && currentFacultyEmail) {
+          q = q.or(`user_id.eq.${currentFacultyId},email.eq.${currentFacultyEmail}`);
+        } else if (currentFacultyId) {
+          q = q.eq('user_id', currentFacultyId);
+        } else {
+          q = q.eq('email', currentFacultyEmail);
+        }
+        await q;
+      }
+    } catch(err) {
+      console.warn('Could not sync faculty profile to Supabase:', err);
+    }
+  }
+
   const msg = document.getElementById('profile-save-msg');
   if (msg) {
     msg.textContent = '✓ Command credentials and CoC license successfully endorsed!';
     msg.classList.remove('hidden');
     setTimeout(() => msg.classList.add('hidden'), 3500);
   }
-  toast('✓ Master Mariner credentials saved!', 'success');
+  toast('✓ Profile and credentials saved!', 'success');
 }
 
 // ── Marine Chronometer & Telemetry ──────────────────────────
@@ -5317,24 +5439,26 @@ async function loadFacultyStudentsFromSupabase() {
     const { data, error } = await sbClient.from('students').select('*').order('created_at', { ascending: false });
     if (!error && data && data.length > 0) {
       console.log('Loaded students from Supabase table:', data.length);
+      // Remove mock data: show ONLY real Supabase records
+      STUDENTS_DATA.length = 0;
       data.forEach(dbS => {
-        if (!STUDENTS_DATA.some(s => (s.roll && s.roll.toLowerCase() === dbS.roll.toLowerCase()) || (s.email && s.email.toLowerCase() === (dbS.email || '').toLowerCase()))) {
-          STUDENTS_DATA.unshift({
-            id: dbS.id,
-            name: dbS.name,
-            roll: dbS.roll,
-            indos: dbS.mobile || dbS.roll,
-            stream: dbS.course || 'DNS Deck Cadet',
-            batch: dbS.batch || 'A',
-            fleet: 'Maersk Line',
-            sponsorship: dbS.fees_status === 'Paid' ? 'Offer Received' : 'Shortlisted',
-            attendance: dbS.attendance || 85,
-            last_score: 85,
-            email: dbS.email
-          });
-        }
+        STUDENTS_DATA.push({
+          id: dbS.id,
+          name: dbS.name,
+          roll: dbS.roll,
+          indos: dbS.mobile || dbS.roll,
+          stream: dbS.course || 'DNS Deck Cadet',
+          batch: dbS.batch || 'A',
+          fleet: dbS.course || 'Naval Academy',
+          sponsorship: dbS.fees_status === 'Paid' ? 'Enrolled (Paid)' : 'Pending Verification',
+          attendance: dbS.attendance || 85,
+          last_score: 85,
+          email: dbS.email
+        });
       });
       renderStudents();
+      loadAttendanceRoster();
+      updateFacultyOverviewKPIs();
     }
   } catch(e) {
     console.warn('Error loading students from Supabase:', e);
@@ -5393,6 +5517,46 @@ async function loadFacultyStudentsFromSupabase() {
         } catch(profErr) {
           console.info('Profiles check fallback:', profErr.message);
         }
+
+        // Fetch detailed faculty credentials from public.faculty table
+        try {
+          let fQuery = sbClient.from('faculty').select('*');
+          if (session.user.id && session.user.email) {
+            fQuery = fQuery.or(`user_id.eq.${session.user.id},email.eq.${session.user.email}`);
+          } else if (session.user.id) {
+            fQuery = fQuery.eq('user_id', session.user.id);
+          } else {
+            fQuery = fQuery.eq('email', session.user.email);
+          }
+          const { data: facData, error: facErr } = await fQuery.limit(1).maybeSingle();
+          if (!facErr && facData) {
+            if (facData.name) setFacultyName(facData.name);
+            if (facData.designation) {
+              const rankEl = document.getElementById('profile-display-rank');
+              if (rankEl) rankEl.textContent = facData.designation;
+              const desigInput = document.getElementById('pf-designation');
+              if (desigInput) desigInput.value = facData.designation;
+            }
+            if (facData.qualification) {
+              const cocEl = document.getElementById('pf-disp-coc');
+              if (cocEl) cocEl.textContent = facData.qualification;
+              const cocInput = document.getElementById('pf-coc');
+              if (cocInput) cocInput.value = facData.qualification;
+            }
+            if (facData.mobile) {
+              const indosEl = document.getElementById('pf-disp-indos');
+              if (indosEl) indosEl.textContent = facData.mobile;
+              const indosInput = document.getElementById('pf-indos');
+              if (indosInput) indosInput.value = facData.mobile;
+            }
+            if (facData.experience) {
+              const servInput = document.getElementById('pf-service');
+              if (servInput) servInput.value = facData.experience;
+            }
+          }
+        } catch(fErr) {
+          console.warn('Faculty table fetch notice:', fErr);
+        }
       }
     } catch(err) {
       console.warn('Session check warning:', err);
@@ -5409,7 +5573,9 @@ async function loadFacultyStudentsFromSupabase() {
 
   // Restore name and avatar from localStorage
   const savedName = localStorage.getItem(LS_NAME);
-  setFacultyName(savedName || 'Faculty');
+  if (!document.getElementById('header-name').textContent || document.getElementById('header-name').textContent === 'Faculty Officer') {
+    setFacultyName(savedName || 'Faculty');
+  }
   const savedImg = localStorage.getItem(LS_IMG);
   if (savedImg) setFacultyAvatar(savedImg);
 
@@ -5440,10 +5606,12 @@ async function loadFacultyStudentsFromSupabase() {
   updateMarineChronometer();
   setInterval(updateMarineChronometer, 1000);
 
-  // Load dynamic classes, materials, and cadets from Supabase
+  // Load dynamic classes, materials, notices, and cadets from Supabase
   await loadDynamicClasses();
   await loadDynamicMaterials();
+  await loadFacultyNoticesFromSupabase();
   await loadFacultyStudentsFromSupabase();
+  updateFacultyOverviewKPIs();
 
   // Render Core Curriculum Subjects
   renderCurriculumSubjects();
