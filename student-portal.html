@@ -569,17 +569,10 @@
               <h2 class="font-sub text-xl text-deep-sea uppercase tracking-wide">My Enrolled Courses</h2>
               <p class="text-sm text-slate mt-1">Track your progress across all training modules.</p>
             </div>
-            <!-- Quick Simulation / Preview Switcher -->
-            <div class="flex items-center gap-1.5 p-1.5 rounded-xl bg-canvas border border-gray-200 self-start sm:self-auto shadow-2xs">
-              <span class="text-[10px] font-bold text-slate uppercase tracking-wider px-2 flex items-center gap-1">
-                <span class="material-symbols-outlined text-xs text-gold">admin_panel_settings</span> Access:
+            <div class="flex items-center gap-2">
+              <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 px-3 py-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Winter Batch Active
               </span>
-              <button id="sim-unlocked-btn" onclick="setSimMode('unlocked')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs">
-                All Unlocked (Default)
-              </button>
-              <button id="sim-locked-btn" onclick="setSimMode('locked')" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all">
-                Simulate CET-Only (Locked)
-              </button>
             </div>
           </div>
 
@@ -3956,13 +3949,14 @@ function closeCourseLockedModal() {
 
 // Live sync listener for course locks updated by Admin in another tab
 window.addEventListener('storage', (e) => {
-  if (e.key === LS_COURSE_LOCKS) {
+  if (e.key === LS_COURSE_LOCKS || e.key === 'sp_course_policies') {
     renderCadetCourses();
   }
 });
 
 const CADET_COURSES = [
   {
+    id: 'imu-cet',
     name: 'IMU-CET',
     category: 'Core Preparation',
     isCore: true, // Permanent core course, never locked
@@ -3972,7 +3966,7 @@ const CADET_COURSES = [
     iconColor: 'text-deep-sea',
     desc: 'Comprehensive preparation for Indian Maritime University Common Entrance Test across all 6 core subjects.',
     faculty: 'Capt. R. Sharma & Team',
-    batch: 'Batch A · 2026',
+    batch: 'Winter Batch',
     nextClass: 'Mon, 7:00 PM',
     duration: '6 Months',
     progress: 68,
@@ -3980,6 +3974,7 @@ const CADET_COURSES = [
     badgeClass: 'bg-emerald-100 text-emerald-700'
   },
   {
+    id: 'sponsorship-prep',
     name: 'Sponsorship Prep',
     category: 'Sponsorship Specialization',
     isCore: false,
@@ -3989,7 +3984,7 @@ const CADET_COURSES = [
     iconColor: 'text-gold',
     desc: 'All-in-one cadet sponsorship preparation: common interview PDFs, universal company question banks, and shipping company fleet & past papers.',
     faculty: 'Self-Paced Module',
-    batch: 'Batch 2026',
+    batch: 'Winter Batch',
     nextClass: '24x7 Self-Paced Access',
     duration: 'Full Access',
     progress: 45,
@@ -4452,7 +4447,7 @@ function renderImuCetHub() {
 
       <div class="flex items-center gap-2">
         <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold flex items-center gap-1 text-[11px]">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Batch A · 2026 Active
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Winter Batch Active
         </span>
       </div>
     </div>
@@ -4468,7 +4463,7 @@ function renderImuCetHub() {
         </div>
         <h2 class="font-sub text-xl sm:text-2xl font-bold uppercase tracking-wide">IMU-CET Comprehensive Curriculum</h2>
         <p class="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed">
-          Full preparation for Indian Maritime University Common Entrance Test across all 6 core subjects. Select any subject below to access study materials, CBT mock exams, and recorded class history.
+          Full preparation for Indian Maritime University Common Entrance Test across all 6 core subjects. Select any subject below to access study materials, CBT mock exams, and scheduled live online classes.
         </p>
 
         <!-- Metrics Row -->
@@ -4833,12 +4828,16 @@ function renderImuCetSubTabContent(subject, matItems, testItems, classItems) {
 
   if (currentImuCetSubTab === 'classes') {
     return `
-      <div class="mb-4 flex items-center justify-between">
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Online Class History &amp; Recordings</h3>
-          <p class="text-xs text-slate">Stream past lecture recordings, review key nautical concepts, or check upcoming live schedules.</p>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-[10px] uppercase">VIRTUAL BRIDGE</span>
+            <span class="badge bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold">RECORDINGS NOT ARCHIVED</span>
+          </div>
+          <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">Scheduled Live Online Classes</h3>
+          <p class="text-xs text-slate">Live interactive lectures via Google Meet / Zoom with academy faculty officers. (Note: Recordings are not available per academy policy).</p>
         </div>
-        <span class="text-xs text-slate font-medium">${classItems.length} lectures on record</span>
+        <span class="text-xs text-slate font-semibold bg-canvas px-3 py-1.5 rounded-lg border border-gray-200 shrink-0 self-start sm:self-auto">${classItems.length} Sessions Scheduled</span>
       </div>
 
       <div class="space-y-3.5">
@@ -4890,20 +4889,10 @@ function renderImuCetSubTabContent(subject, matItems, testItems, classItems) {
               </div>
 
               <div class="shrink-0 flex items-center gap-2 self-start md:self-auto">
-                ${isCompleted && c.recordingAvailable ? `
-                  <button onclick="openClassRecordingModal('${c.id}')" class="px-4 py-2.5 bg-deep-sea hover:bg-navy-mid text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-xs min-h-[42px] active:scale-95">
-                    <span class="material-symbols-outlined text-base text-gold">play_circle</span>
-                    <span>Watch Recording</span>
-                  </button>
-                  <button onclick="toast('Opening lecture slides in online viewer...', 'info')" class="p-2.5 rounded-xl border border-gray-200 text-slate hover:text-deep-sea hover:bg-canvas transition-colors min-h-[42px] min-w-[42px] flex items-center justify-center" title="View Class Slides">
-                    <span class="material-symbols-outlined text-base">visibility</span>
-                  </button>
-                ` : `
-                  <button onclick="toast('Live class link will activate 10 mins before class.', 'info')" class="px-4 py-2.5 bg-teal hover:bg-teal-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-xs min-h-[42px] active:scale-95">
-                    <span class="material-symbols-outlined text-base">videocam</span>
-                    <span>Join Class</span>
-                  </button>
-                `}
+                <a href="${c.meetingLink || c.meeting_link || 'https://meet.google.com/sp-live'}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 shadow-xs min-h-[42px] active:scale-95">
+                  <span class="material-symbols-outlined text-base">videocam</span>
+                  <span>Join Live Class</span>
+                </a>
               </div>
             </div>
           `;
@@ -6921,65 +6910,86 @@ window.addEventListener('storage', (e) => {
   }
 });
 
+
+// ── CADET COURSE VISIBILITY & MARKETING POLICY RESOLUTION ──
+function getCoursePolicy(courseId) {
+  try {
+    const raw = localStorage.getItem('sp_course_policies');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed[courseId]) return parsed[courseId];
+    }
+  } catch (e) {}
+  return courseId === 'imu-cet' ? 'open' : 'locked';
+}
+
 function renderCadetCourses() {
   const container = document.getElementById('cadet-courses-grid');
   if (!container) return;
-  const locks = getCourseLocks();
 
-  // Update simulation pill button states
-  const anyLocked = Object.values(locks).some(v => v === true);
-  const unlBtn = document.getElementById('sim-unlocked-btn');
-  const lckBtn = document.getElementById('sim-locked-btn');
-  if (unlBtn && lckBtn) {
-    if (anyLocked) {
-      lckBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-amber-600 text-white shadow-xs';
-      unlBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all';
-    } else {
-      unlBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-deep-sea text-white shadow-xs';
-      lckBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate hover:text-deep-sea transition-all';
-    }
-  }
+  // Determine course enrollment for the currently active cadet
+  const student = currentStudentRecord || {};
+  let enrolledStr = (student.course || '').toLowerCase();
+  let enrolledArr = Array.isArray(student.courses) ? student.courses.map(c => c.toLowerCase()) : [];
 
-  container.innerHTML = CADET_COURSES.map(c => {
-    const isLocked = !c.isCore && (locks[c.name] === true);
+  // Check if cadet is enrolled in Sponsorship Prep
+  const hasSponsorship = enrolledArr.some(c => c.includes('sponsorship')) || enrolledStr.includes('sponsorship');
 
-    if (isLocked) {
-      return `
-        <div class="bg-white/90 rounded-2xl border-2 border-dashed border-amber-300/80 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative">
-          <div class="h-2 bg-gradient-to-r from-amber-400 to-orange-400"></div>
-          <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-            <div>
-              <div class="flex items-start justify-between mb-3">
-                <div class="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-amber-600 text-2xl">lock</span>
+  const cardsHtml = CADET_COURSES.map(c => {
+    const isSponCourse = c.name.toLowerCase().includes('sponsorship');
+    const courseId = c.id || (isSponCourse ? 'sponsorship-prep' : 'imu-cet');
+    const policy = getCoursePolicy(courseId);
+
+    // Is cadet enrolled in this course? IMU-CET is core for all enrolled cadets
+    const isEnrolled = isSponCourse ? hasSponsorship : true;
+
+    if (!isEnrolled) {
+      // Cadet is not enrolled:
+      // Policy 1: 'hidden' -> completely omit card from portal
+      if (policy === 'hidden') {
+        return '';
+      }
+      // Policy 2: 'open' -> unlocked for all cadets (falls through to active card)
+      if (policy !== 'open') {
+        // Policy 3: 'locked' (default for sponsorship-prep) -> Show marketing locked card
+        return `
+          <div class="bg-white/90 rounded-2xl border-2 border-dashed border-amber-300/80 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative">
+            <div class="h-2 bg-gradient-to-r from-amber-400 to-orange-400"></div>
+            <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between mb-3">
+                  <div class="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-amber-600 text-2xl">lock</span>
+                  </div>
+                  <span class="badge bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs text-amber-700">lock</span> Locked (CET Only)
+                  </span>
                 </div>
-                <span class="badge bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-xs text-amber-700">lock</span> Locked
-                </span>
+                <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">${c.name}</h3>
+                <p class="text-xs text-slate mt-1 mb-3 line-clamp-2">${c.desc}</p>
+                
+                <div class="grid grid-cols-2 gap-2 text-xs mb-4 p-2.5 rounded-xl bg-gray-50/80 border border-gray-100">
+                  <div><p class="text-slate text-[10px] uppercase font-bold">Faculty</p><p class="font-semibold text-gray-700 truncate">${c.faculty}</p></div>
+                  <div><p class="text-slate text-[10px] uppercase font-bold">Duration</p><p class="font-semibold text-gray-700">${c.duration}</p></div>
+                </div>
               </div>
-              <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">${c.name}</h3>
-              <p class="text-xs text-slate mt-1 mb-3 line-clamp-2">${c.desc}</p>
-              
-              <div class="grid grid-cols-2 gap-2 text-xs mb-4 p-2.5 rounded-xl bg-gray-50/80 border border-gray-100">
-                <div><p class="text-slate text-[10px] uppercase font-bold">Faculty</p><p class="font-semibold text-gray-700 truncate">${c.faculty}</p></div>
-                <div><p class="text-slate text-[10px] uppercase font-bold">Duration</p><p class="font-semibold text-gray-700">${c.duration}</p></div>
-              </div>
-            </div>
 
-            <div>
-              <div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200 text-[11px] text-amber-900 flex items-center gap-2 mb-1">
-                <span class="material-symbols-outlined text-amber-600 text-base shrink-0">lock</span>
-                <span>Requires <strong>IMU-CET + Sponsorship</strong> tier.</span>
+              <div>
+                <div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200 text-[11px] text-amber-900 flex items-center gap-2 mb-1">
+                  <span class="material-symbols-outlined text-amber-600 text-base shrink-0">lock</span>
+                  <span>You are currently enrolled in <strong>IMU-CET Only</strong>.</span>
+                </div>
+                <button onclick="openCourseLockedModal('${c.name}')" class="mt-3 w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider transition-colors min-h-[44px] flex items-center justify-center gap-1.5 shadow-xs">
+                  <span class="material-symbols-outlined text-sm">lock_open</span> Unlock / Request Enrollment
+                </button>
               </div>
-              <button onclick="openCourseLockedModal('${c.name}')" class="mt-3 w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider transition-colors min-h-[44px] flex items-center justify-center gap-1.5 shadow-xs">
-                <span class="material-symbols-outlined text-sm">lock_open</span> Unlock / Contact Admin
-              </button>
             </div>
           </div>
-        </div>
-      `;
+        `;
+      }
     }
 
+    // Active Unlocked Card
     return `
       <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col justify-between">
         <div class="h-2 bg-gradient-to-r ${c.gradient}"></div>
@@ -6989,89 +6999,34 @@ function renderCadetCourses() {
               <div class="w-11 h-11 rounded-xl ${c.iconBg} flex items-center justify-center">
                 <span class="material-symbols-outlined ${c.iconColor} text-2xl">${c.icon}</span>
               </div>
-              <span class="badge ${c.badgeClass}">${c.status}</span>
+              <div class="flex items-center gap-1.5">
+                <span class="badge bg-green-100 text-green-800 text-[10px] font-bold">Active</span>
+                <span class="badge bg-blue-100 text-blue-800 text-[10px] font-bold">Enrolled</span>
+              </div>
             </div>
             <h3 class="font-sub text-base font-bold text-deep-sea uppercase tracking-wide">${c.name}</h3>
             <p class="text-xs text-slate mt-1 mb-3 line-clamp-2">${c.desc}</p>
-            ${c.name === 'Sponsorship Prep' ? `
-            <div class="grid grid-cols-2 gap-2 text-xs mb-4">
-              <div><p class="text-slate text-[10px] uppercase font-bold">Modules</p><p class="font-semibold text-teal font-bold">8 Units (PDF &amp; CBT)</p></div>
-              <div><p class="text-slate text-[10px] uppercase font-bold">Coverage</p><p class="font-semibold text-gold font-bold">6 Global Lines</p></div>
-              <div><p class="text-slate text-[10px] uppercase font-bold">Mode</p><p class="font-semibold text-gray-700">Self-Paced / 24x7</p></div>
-              <div><p class="text-slate text-[10px] uppercase font-bold">Access</p><p class="font-semibold text-gray-700">Full Access</p></div>
-            </div>
-          ` : `
-            <div class="grid grid-cols-2 gap-2 text-xs mb-4">
+            
+            <div class="grid grid-cols-2 gap-2 text-xs mb-4 p-2.5 rounded-xl bg-gray-50 border border-gray-100">
               <div><p class="text-slate text-[10px] uppercase font-bold">Faculty</p><p class="font-semibold text-gray-700 truncate">${c.faculty}</p></div>
-              <div><p class="text-slate text-[10px] uppercase font-bold">Batch</p><p class="font-semibold text-gray-700">${c.batch}</p></div>
-              <div><p class="text-slate text-[10px] uppercase font-bold">Next Class</p><p class="font-semibold text-gold truncate">${c.nextClass}</p></div>
+              <div><p class="text-slate text-[10px] uppercase font-bold">Batch</p><p class="font-semibold text-green-700">${student.batch || 'Winter Batch'}</p></div>
+              <div><p class="text-slate text-[10px] uppercase font-bold">Curriculum</p><p class="font-semibold text-gold">${c.subjectsCount || (c.id === 'imu-cet' ? 6 : 3)} Subjects</p></div>
               <div><p class="text-slate text-[10px] uppercase font-bold">Duration</p><p class="font-semibold text-gray-700">${c.duration}</p></div>
             </div>
-          `}
           </div>
 
           <div>
-            <button onclick="showCourseDetail('${c.name}')" class="w-full py-2.5 rounded-xl bg-deep-sea text-white text-xs font-bold uppercase tracking-wider hover:bg-navy-mid transition-colors min-h-[44px] flex items-center justify-center shadow-xs">View Details</button>
+            <button onclick="cadetOpenCourseHub('${c.id || (isSponCourse ? 'sponsorship-prep' : 'imu-cet')}')" class="w-full py-2.5 rounded-xl bg-deep-sea hover:bg-deep-sea/90 text-white font-sub text-xs uppercase tracking-wider transition-colors min-h-[44px] shadow-xs">
+              VIEW DETAILS
+            </button>
           </div>
         </div>
       </div>
     `;
-  }).join('');
-}
+  }).filter(Boolean).join('');
 
-const COURSE_DETAILS = {
-  'IMU-CET': {
-    desc: 'Comprehensive preparation for the Indian Maritime University Common Entrance Test. Covers Mathematics, Physics, Chemistry, English, General Aptitude / Reasoning, and General Knowledge / General Science.',
-    faculty: 'Capt. R. Sharma & Faculty Panel', batch: 'Batch A · April–October 2026',
-    duration: '6 Months', fee: '₹45,000', nextClass: 'Monday, 07:00 PM — Trigonometry (Live Online)',
-    topics: ['Mathematics (Algebra, Trigonometry, Calculus, Vectors & 3D Geometry)','Physics (Mechanics, Optics, Thermodynamics, Waves)','English (Grammar, Comprehension, Nautical Lexicon)','Chemistry (Bonding, Thermodynamics, Periodic Trends)','General Aptitude / Reasoning (Logic, Series, Shortcuts)','General Knowledge / General Science (IMO, SOLAS, Science)'],
-    progress: 68
-  },
-  'IMU-CET Coaching': {
-    desc: 'Comprehensive preparation for the Indian Maritime University Common Entrance Test. Covers Mathematics, Physics, Chemistry, English, and General Aptitude.',
-    faculty: 'Capt. R. Sharma (Ex-Merchant Navy Officer)', batch: 'Batch A · April–October 2026',
-    duration: '6 Months', fee: '₹45,000', nextClass: 'Monday, 07:00 PM — Trigonometry (Live Online)',
-    topics: ['Mathematics (Algebra, Trigonometry, Calculus, Statistics)','Physics (Mechanics, Optics, Thermodynamics)','English (Grammar, Comprehension, Vocabulary)','General Knowledge (Maritime Awareness, Current Affairs)'],
-    progress: 68
-  },
-  'Sponsorship Prep': {
-    desc: 'Comprehensive cadet sponsorship specialization for Diploma in Nautical Science and B.Sc Nautical Science. Integrates common interview question PDFs, universal sponsorship question banks, and shipping company fleet & past papers.',
-    faculty: 'Capt. Arun Pillai (Master Mariner, 20+ years)', batch: 'Batch A · July–October 2026',
-    duration: '3 Months', fee: '₹25,000', nextClass: 'Tuesday, 08:15 PM — Ship Stability (Live Online)',
-    topics: ['Interview Question PDF Banks','Universal Company Sponsorship Questions','Ship Stability & Buoyancy','Navigation & Chartwork','Company Fleet Intelligence & Past Papers'],
-    progress: 45
-  },
-  'DNS Sponsorship Prep': {
-    desc: 'Comprehensive cadet sponsorship specialization for Diploma in Nautical Science and B.Sc Nautical Science. Integrates common interview question PDFs, universal sponsorship question banks, and shipping company fleet & past papers.',
-    faculty: 'Capt. Arun Pillai (Master Mariner, 20+ years)', batch: 'Batch A · July–October 2026',
-    duration: '3 Months', fee: '₹25,000', nextClass: 'Tuesday, 08:15 PM — Ship Stability (Live Online)',
-    topics: ['Interview Question PDF Banks','Universal Company Sponsorship Questions','Ship Stability & Buoyancy','Navigation & Chartwork','Company Fleet Intelligence & Past Papers'],
-    progress: 45
-  },
-  'Interview Preparation & Viva': {
-    desc: 'Intensive 1-on-1 and panel interview coaching for shipping company cadet sponsorships. Covers technical viva, maritime HR protocols, situational judgment, and psychometric assessments. Scheduled on Sundays and subjective to interviewer availability with 48-hr prior email and portal confirmation.',
-    faculty: 'Capt. Arun Pillai (Master Mariner) & Chief Eng. S. Raman',
-    batch: 'Batch A · 2026',
-    duration: '3 Months',
-    fee: '₹20,000 (Included in Sponsorship Bundle)',
-    nextClass: 'Sunday, 10:00 AM – 01:00 PM (Subject to Interviewer Availability — Confirmed 48h Prior via Email & Portal)',
-    topics: [
-      'Maritime HR & Behavioral Questions (Why Merchant Navy, Leadership, Conflict Resolution)',
-      'Technical Viva (Ship types, Buoyancy, Engine cycles, STCW & SOLAS conventions)',
-      'Shipping Company Specific Rounds (Anglo-Eastern, Synergy, Fleet, Great Eastern)',
-      '1-on-1 Mock Interview Sessions with Master Mariners',
-      'Psychometric Profiling & Situation Reaction Tests (SRT)'
-    ],
-    progress: 35
-  },
-  'Aptitude Test Prep': {
-    desc: 'Focused preparation for psychometric and aptitude tests used in maritime recruitment drives by major shipping companies.',
-    faculty: 'Mr. Vikas Menon (Aptitude Specialist)', batch: 'Batch B · October–December 2026',
-    duration: '2 Months', fee: '₹15,000', nextClass: 'Starting 05 Oct 2026',
-    topics: ['Logical Reasoning','Spatial Awareness','Numerical Ability','Verbal Ability','Psychometric Assessment'],
-    progress: 0
-  }
-};
+  container.innerHTML = cardsHtml;
+}
 
 function showCourseDetail(name) {
   if (name === 'IMU-CET' || name === 'IMU-CET Coaching') {
@@ -7896,6 +7851,112 @@ function resetChatMessages() {
 }
 
 // ── INIT — verify Supabase session & restore saved state ────────
+
+// ══════════════════════════════════════════════════════════════════
+// ⚡ DYNAMIC ACADEMY COURSES, BATCHES & SUBJECTS SUPABASE SYNC
+// ══════════════════════════════════════════════════════════════════
+async function loadDynamicCoursesAndSubjectsFromSupabase() {
+  if (!sbClient) return;
+  try {
+    const [cRes, csRes, ocRes] = await Promise.all([
+      sbClient.from('courses').select('*'),
+      sbClient.from('course_subjects').select('*'),
+      sbClient.from('online_classes').select('*').order('scheduled_at', { ascending: true })
+    ]);
+
+    // 1. Sync courses created by admin
+    if (!cRes.error && cRes.data && cRes.data.length > 0) {
+      cRes.data.forEach(c => {
+        if (!CADET_COURSES.some(cc => cc.name.toLowerCase() === c.name.toLowerCase())) {
+          CADET_COURSES.push({
+            name: c.name,
+            category: 'Academic Preparation',
+            isCore: false,
+            icon: 'school',
+            gradient: 'from-blue-700 to-indigo-800',
+            iconBg: 'bg-blue-50',
+            iconColor: 'text-blue-700',
+            desc: c.description || 'Comprehensive preparation curriculum.',
+            faculty: 'Assigned Academy Faculty',
+            batch: 'Winter Batch',
+            nextClass: 'Live Google Meet Sessions',
+            duration: c.duration || '6 Months',
+            progress: 0,
+            status: c.status || 'Active',
+            badgeClass: 'bg-emerald-100 text-emerald-700'
+          });
+        }
+      });
+      renderCadetCourses();
+    }
+
+    // 2. Sync dynamic subjects created by admin
+    if (!csRes.error && csRes.data && csRes.data.length > 0) {
+      csRes.data.forEach(row => {
+        if (row.course_id === 'imu-cet') {
+          const existing = IMU_CET_SUBJECTS.find(s => s.key === row.key);
+          if (existing) {
+            existing.name = row.name;
+            if (row.short_name) existing.shortName = row.short_name;
+            if (row.icon) existing.icon = row.icon;
+          } else {
+            IMU_CET_SUBJECTS.push({
+              key: row.key,
+              name: row.name,
+              shortName: row.short_name || row.name,
+              icon: row.icon || 'menu_book',
+              colorGradient: row.color_gradient || 'from-blue-600 to-indigo-600',
+              iconBg: 'bg-blue-50',
+              iconColor: 'text-blue-600',
+              badgeClass: 'bg-blue-100 text-blue-700',
+              faculty: 'Assigned Academy Officer',
+              progress: 50,
+              weeklySchedule: 'Winter Batch Schedule',
+              topics: ['Curriculum Theory & Principles', 'Formulas & Problem Solving'],
+              classes: []
+            });
+          }
+        }
+      });
+    }
+
+    // 3. Sync live scheduled online classes (no recordings)
+    if (!ocRes.error && ocRes.data && ocRes.data.length > 0) {
+      ocRes.data.forEach(oc => {
+        const matchingSubject = IMU_CET_SUBJECTS.find(s => {
+          const csRow = csRes.data ? csRes.data.find(r => r.id === oc.subject_id) : null;
+          return (csRow && csRow.key === s.key) || s.name.toLowerCase().includes((oc.title || '').toLowerCase());
+        }) || IMU_CET_SUBJECTS[0];
+
+        if (matchingSubject) {
+          const scheduledDate = new Date(oc.scheduled_at);
+          const dateStr = scheduledDate.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+          const timeStr = scheduledDate.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+          const dayStr = scheduledDate.toLocaleDateString('en-IN', { weekday:'long' });
+
+          if (!matchingSubject.classes.some(c => c.title === oc.title && c.date === dateStr)) {
+            matchingSubject.classes.unshift({
+              id: oc.id,
+              title: oc.title,
+              date: dateStr,
+              day: dayStr,
+              time: timeStr,
+              status: 'scheduled',
+              duration: `${oc.duration_minutes || 60} mins`,
+              faculty: oc.faculty_name,
+              recordingAvailable: false,
+              meetingLink: oc.meeting_link,
+              summary: `Live virtual lecture for ${oc.batch_name || 'Winter Batch'}. Google Meet session with academy faculty.`
+            });
+          }
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('loadDynamicCoursesAndSubjectsFromSupabase notice:', err);
+  }
+}
+
 (async function initFromStorage() {
   let activeStudent = null;
 
@@ -8015,6 +8076,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 loadStudentMaterialsFromSupabase();
+loadDynamicCoursesAndSubjectsFromSupabase();
 loadCadetProfileExtras();
 renderMockTestSubjectFilters();
 renderAvailableTests();
